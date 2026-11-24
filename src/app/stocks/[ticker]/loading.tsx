@@ -18,7 +18,12 @@ export default function StockLoading() {
           </div>
           <Block className="h-10 w-36 rounded-xl" />
         </div>
-        <Block className="mt-10 h-64" />
+        <Block className="mt-10 h-72" />
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          {Array.from({ length: 5 }, (_, index) => (
+            <Block key={index} className="h-24" />
+          ))}
+        </div>
         <Block className="mt-4 h-72" />
       </main>
       <SiteFooter />

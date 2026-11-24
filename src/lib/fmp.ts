@@ -1,3 +1,4 @@
+import { scoreSnapshot, type Pillar } from "@/lib/score";
 import { formatMoney } from "@/lib/stocks";
 
 const FMP_BASE = "https://financialmodelingprep.com/stable";
@@ -52,6 +53,9 @@ type IncomeStatement = {
 
 type Ratios = {
   priceToEarningsRatio?: number | null;
+  netProfitMargin?: number | null;
+  currentRatio?: number | null;
+  debtToEquityRatio?: number | null;
 };
 
 type IncomeGrowth = {
@@ -79,6 +83,9 @@ export type FmpSnapshot = {
   pe: number | null;
   revenue: number | null;
   revenueGrowth: number | null;
+  netMargin: number | null;
+  currentRatio: number | null;
+  debtToEquity: number | null;
   volume: number | null;
   yearLow: number | null;
   yearHigh: number | null;
@@ -95,6 +102,10 @@ export type StockPageData = {
   fetchedAt: string;
   history: PricePoint[];
   metrics: StockMetric[];
+  score: number | null;
+  band: string | null;
+  pillars: Pillar[];
+  reasons: string[];
 };
 
 function apiKey() {
@@ -226,6 +237,9 @@ export async function getFmpSnapshot(symbol: string): Promise<FmpSnapshot> {
     pe: ratios?.priceToEarningsRatio ?? null,
     revenue: income?.revenue ?? null,
     revenueGrowth: growth?.growthRevenue ?? null,
+    netMargin: ratios?.netProfitMargin ?? null,
+    currentRatio: ratios?.currentRatio ?? null,
+    debtToEquity: ratios?.debtToEquityRatio ?? null,
     volume: quote?.volume ?? null,
     yearLow: quote?.yearLow ?? null,
     yearHigh: quote?.yearHigh ?? null,
@@ -235,6 +249,7 @@ export async function getFmpSnapshot(symbol: string): Promise<FmpSnapshot> {
 }
 
 export function buildStockPage(snapshot: FmpSnapshot): StockPageData {
+  const scored = scoreSnapshot(snapshot);
   return {
     ticker: snapshot.symbol,
     name: snapshot.companyName,
@@ -278,5 +293,9 @@ export function buildStockPage(snapshot: FmpSnapshot): StockPageData {
         hint: "Quote",
       },
     ],
+    score: scored.score,
+    band: scored.band,
+    pillars: scored.pillars,
+    reasons: scored.reasons,
   };
 }
