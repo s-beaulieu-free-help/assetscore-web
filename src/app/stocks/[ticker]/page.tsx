@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { StockView } from "@/components/stock-view";
-import { applyFmpSnapshot, FmpNotFoundError, getFmpSnapshot } from "@/lib/fmp";
-import { getStock, parseTicker } from "@/lib/stocks";
+import { buildStockPage, FmpNotFoundError, getFmpSnapshot } from "@/lib/fmp";
+import { parseTicker } from "@/lib/stocks";
 
 type StockPageProps = {
   params: Promise<{ ticker: string }>;
@@ -30,8 +30,7 @@ export async function generateMetadata({ params }: StockPageProps): Promise<Meta
 export default async function StockPage({ params }: StockPageProps) {
   const { ticker: raw } = await params;
   const ticker = parseTicker(raw);
-  const baseline = ticker ? getStock(ticker) : null;
-  if (!ticker || !baseline) notFound();
+  if (!ticker) notFound();
 
   let snapshot;
   try {
@@ -42,5 +41,5 @@ export default async function StockPage({ params }: StockPageProps) {
 
   if (!snapshot) notFound();
 
-  return <StockView stock={applyFmpSnapshot(baseline, snapshot)} />;
+  return <StockView stock={buildStockPage(snapshot)} />;
 }

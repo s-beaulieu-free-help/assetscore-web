@@ -21,7 +21,7 @@ export function PriceChart({ points, ticker }: PriceChartProps) {
   const fillId = `price-fill-${ticker}`;
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="h-52 w-full sm:h-56" role="img" aria-label={`${ticker} illustrative price path`}>
+    <svg viewBox={`0 0 ${width} ${height}`} className="h-52 w-full sm:h-56" role="img" aria-label={`${ticker} closing prices`}>
       <defs>
         <linearGradient id={fillId} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#d7f25c" stopOpacity="0.28" />

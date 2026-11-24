@@ -1,4 +1,4 @@
-import { formatMoney, type StockAnalysis } from "@/lib/stocks";
+import { formatMoney } from "@/lib/stocks";
 
 const FMP_BASE = "https://financialmodelingprep.com/stable";
 
@@ -39,6 +39,12 @@ type Quote = {
   volume?: number;
   yearLow?: number;
   yearHigh?: number;
+  timestamp?: number;
+};
+
+type LightBar = {
+  date?: string;
+  price?: number;
 };
 
 type IncomeStatement = {
@@ -51,6 +57,17 @@ type Ratios = {
 
 type IncomeGrowth = {
   growthRevenue?: number | null;
+};
+
+export type PricePoint = {
+  date: string;
+  price: number;
+};
+
+export type StockMetric = {
+  label: string;
+  value: string;
+  hint: string;
 };
 
 export type FmpSnapshot = {
@@ -66,6 +83,19 @@ export type FmpSnapshot = {
   volume: number | null;
   yearLow: number | null;
   yearHigh: number | null;
+  updatedAt: string;
+  history: PricePoint[];
+};
+
+export type StockPageData = {
+  ticker: string;
+  name: string;
+  exchange: string;
+  price: number;
+  change: number;
+  updatedAt: string;
+  history: PricePoint[];
+  metrics: StockMetric[];
 };
 
 function apiKey() {
@@ -122,6 +152,36 @@ function first<T>(rows: T[] | null | undefined) {
   return rows?.[0];
 }
 
+function isoDate(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function historyWindow() {
+  const to = new Date();
+  const from = new Date(to);
+  from.setUTCMonth(from.getUTCMonth() - 18);
+  return { from: isoDate(from), to: isoDate(to) };
+}
+
+function normalizeHistory(rows: LightBar[] | null): PricePoint[] {
+  if (!rows) return [];
+  return rows
+    .flatMap((row) => {
+      if (!row.date || row.price == null || !Number.isFinite(row.price)) return [];
+      return [{ date: row.date, price: row.price }];
+    })
+    .sort((left, right) => left.date.localeCompare(right.date));
+}
+
+function updatedAtFrom(quote: Quote | undefined) {
+  const timestamp = quote?.timestamp;
+  if (timestamp != null && Number.isFinite(timestamp) && timestamp > 0) {
+    const milliseconds = timestamp > 1e12 ? timestamp : timestamp * 1000;
+    return new Date(milliseconds).toISOString();
+  }
+  return new Date().toISOString();
+}
+
 function formatCompact(value: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -142,12 +202,14 @@ function formatGrowth(value: number) {
 }
 
 export async function getFmpSnapshot(symbol: string): Promise<FmpSnapshot> {
-  const [profileRows, quoteRows, incomeRows, ratioRows, growthRows] = await Promise.all([
+  const window = historyWindow();
+  const [profileRows, quoteRows, incomeRows, ratioRows, growthRows, historyRows] = await Promise.all([
     fmpGet<Profile[]>("profile", symbol),
     optional(fmpGet<Quote[]>("quote", symbol)),
     optional(fmpGet<IncomeStatement[]>("income-statement", symbol, { limit: "1", period: "annual" })),
     optional(fmpGet<Ratios[]>("ratios", symbol, { limit: "1", period: "annual" })),
     optional(fmpGet<IncomeGrowth[]>("income-statement-growth", symbol, { limit: "1", period: "annual" })),
+    optional(fmpGet<LightBar[]>("historical-price-eod/light", symbol, window)),
   ]);
 
   const profile = first(profileRows);
@@ -177,21 +239,20 @@ export async function getFmpSnapshot(symbol: string): Promise<FmpSnapshot> {
     volume: quote?.volume ?? null,
     yearLow: quote?.yearLow ?? null,
     yearHigh: quote?.yearHigh ?? null,
+    updatedAt: updatedAtFrom(quote),
+    history: normalizeHistory(historyRows),
   };
 }
 
-export function applyFmpSnapshot(stock: StockAnalysis, snapshot: FmpSnapshot): StockAnalysis {
-  const last = stock.history.at(-1) || snapshot.price;
-  const scale = last ? snapshot.price / last : 1;
-
+export function buildStockPage(snapshot: FmpSnapshot): StockPageData {
   return {
-    ...stock,
     ticker: snapshot.symbol,
     name: snapshot.companyName,
     exchange: snapshot.exchange,
     price: snapshot.price,
     change: snapshot.change,
-    history: stock.history.map((point) => Number((point * scale).toFixed(2))),
+    updatedAt: snapshot.updatedAt,
+    history: snapshot.history,
     metrics: [
       {
         label: "Market cap",
