@@ -32,6 +32,12 @@ export function Hero() {
             style={{ animationDelay: "140ms" }}
           >
             <a
+              href="#analyze"
+              className="inline-flex h-11 items-center justify-center rounded-full bg-accent px-5 text-sm font-medium text-ink transition hover:brightness-110"
+            >
+              Analyze a Stock
+            </a>
+            <a
               href="#top-rated"
               className="inline-flex h-11 items-center justify-center rounded-full border border-line px-5 text-sm font-medium text-foreground transition hover:bg-white/5"
             >

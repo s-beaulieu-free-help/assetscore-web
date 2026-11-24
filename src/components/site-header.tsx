@@ -26,6 +26,12 @@ export function SiteHeader() {
             About
           </Link>
         </nav>
+        <Link
+          href="/#analyze"
+          className="inline-flex h-9 shrink-0 items-center rounded-full bg-accent px-3.5 text-[13px] font-medium text-ink transition hover:brightness-110"
+        >
+          Analyze a Stock
+        </Link>
       </div>
     </header>
   );
