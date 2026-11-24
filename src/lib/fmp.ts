@@ -39,7 +39,6 @@ type Quote = {
   volume?: number;
   yearLow?: number;
   yearHigh?: number;
-  timestamp?: number;
 };
 
 type LightBar = {
@@ -83,7 +82,7 @@ export type FmpSnapshot = {
   volume: number | null;
   yearLow: number | null;
   yearHigh: number | null;
-  updatedAt: string;
+  fetchedAt: string;
   history: PricePoint[];
 };
 
@@ -93,7 +92,7 @@ export type StockPageData = {
   exchange: string;
   price: number;
   change: number;
-  updatedAt: string;
+  fetchedAt: string;
   history: PricePoint[];
   metrics: StockMetric[];
 };
@@ -173,15 +172,6 @@ function normalizeHistory(rows: LightBar[] | null): PricePoint[] {
     .sort((left, right) => left.date.localeCompare(right.date));
 }
 
-function updatedAtFrom(quote: Quote | undefined) {
-  const timestamp = quote?.timestamp;
-  if (timestamp != null && Number.isFinite(timestamp) && timestamp > 0) {
-    const milliseconds = timestamp > 1e12 ? timestamp : timestamp * 1000;
-    return new Date(milliseconds).toISOString();
-  }
-  return new Date().toISOString();
-}
-
 function formatCompact(value: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -239,7 +229,7 @@ export async function getFmpSnapshot(symbol: string): Promise<FmpSnapshot> {
     volume: quote?.volume ?? null,
     yearLow: quote?.yearLow ?? null,
     yearHigh: quote?.yearHigh ?? null,
-    updatedAt: updatedAtFrom(quote),
+    fetchedAt: new Date().toISOString(),
     history: normalizeHistory(historyRows),
   };
 }
@@ -251,7 +241,7 @@ export function buildStockPage(snapshot: FmpSnapshot): StockPageData {
     exchange: snapshot.exchange,
     price: snapshot.price,
     change: snapshot.change,
-    updatedAt: snapshot.updatedAt,
+    fetchedAt: snapshot.fetchedAt,
     history: snapshot.history,
     metrics: [
       {

@@ -1,0 +1,85 @@
+/**
+ * Stock-page data source indicators.
+ * Set SHOW_DATA_SOURCE_STATUS to false to remove the developer panel.
+ * Delete this module to remove the badge, source line, and panel together.
+ */
+export const SHOW_DATA_SOURCE_STATUS = true;
+
+export function formatFetchedAt(iso: string) {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: "America/New_York",
+    timeZoneName: "short",
+  }).format(new Date(iso));
+}
+
+export function LiveDataBadge({ live }: { live: boolean }) {
+  return (
+    <span
+      className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 font-mono text-[10px] tracking-[0.16em] uppercase ${
+        live
+          ? "border-accent-2/35 bg-accent-2/10 text-accent-2"
+          : "border-[#f0a3a8]/40 bg-[#f0a3a8]/10 text-[#f0a3a8]"
+      }`}
+    >
+      <span className="relative flex size-1.5" aria-hidden="true">
+        {live ? <span className="live-ping absolute inline-flex size-full rounded-full bg-accent-2 opacity-70" /> : null}
+        <span className={`relative inline-flex size-1.5 rounded-full ${live ? "bg-accent-2" : "bg-[#f0a3a8]"}`} />
+      </span>
+      {live ? "LIVE DATA" : "DATA UNAVAILABLE"}
+    </span>
+  );
+}
+
+export function MarketDataSource({ fetchedAt }: { fetchedAt: string | null }) {
+  return (
+    <div className="mt-3">
+      <p className="text-xs text-muted">Source: Financial Modeling Prep</p>
+      <p className="mt-1 text-xs text-muted">
+        Last Updated:{" "}
+        {fetchedAt ? (
+          <time className="font-mono text-foreground/85" dateTime={fetchedAt}>
+            {formatFetchedAt(fetchedAt)}
+          </time>
+        ) : (
+          <span className="font-mono text-foreground/85">—</span>
+        )}
+      </p>
+    </div>
+  );
+}
+
+export function DataSourceStatus({
+  apiConnected,
+  lastRefresh,
+  tickerLoaded,
+}: {
+  apiConnected: boolean;
+  lastRefresh: boolean;
+  tickerLoaded: boolean;
+}) {
+  if (!SHOW_DATA_SOURCE_STATUS) return null;
+
+  const rows = [
+    ["API Connected", apiConnected],
+    ["Last Refresh", lastRefresh],
+    ["Ticker Loaded", tickerLoaded],
+  ] as const;
+
+  return (
+    <section className="mt-14 rounded-2xl border border-dashed border-line px-5 py-4" aria-label="Data Source Status">
+      <h2 className="font-mono text-[11px] tracking-[0.18em] text-muted uppercase">Data Source Status</h2>
+      <ul className="mt-3 space-y-1.5 text-sm text-foreground/90">
+        {rows.map(([label, ok]) => (
+          <li key={label}>
+            {label} {ok ? "✅" : "❌"}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
