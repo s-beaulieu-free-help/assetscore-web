@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { StockView } from "@/components/stock-view";
+import { applyFmpSnapshot, FmpNotFoundError, getFmpSnapshot } from "@/lib/fmp";
 import { getStock, parseTicker } from "@/lib/stocks";
 
 type StockPageProps = {
@@ -10,23 +11,36 @@ type StockPageProps = {
 export async function generateMetadata({ params }: StockPageProps): Promise<Metadata> {
   const { ticker: raw } = await params;
   const ticker = parseTicker(raw);
-  const stock = ticker ? getStock(ticker) : null;
+  if (!ticker) return { title: "Stock not found · AssetScore" };
 
-  if (!stock) {
-    return { title: "Stock not found · AssetScore" };
+  try {
+    const snapshot = await getFmpSnapshot(ticker);
+    return {
+      title: `${snapshot.symbol} · AssetScore`,
+      description: `${snapshot.companyName} market data and AssetScore. Score any investment in seconds.`,
+    };
+  } catch {
+    return {
+      title: `${ticker} · AssetScore`,
+      description: "Score any investment in seconds.",
+    };
   }
-
-  return {
-    title: `${stock.ticker} · AssetScore`,
-    description: `${stock.name} has an illustrative AssetScore of ${stock.score}. Score any investment in seconds.`,
-  };
 }
 
 export default async function StockPage({ params }: StockPageProps) {
   const { ticker: raw } = await params;
-  const stock = getStock(raw);
+  const ticker = parseTicker(raw);
+  const baseline = ticker ? getStock(ticker) : null;
+  if (!ticker || !baseline) notFound();
 
-  if (!stock) notFound();
+  let snapshot;
+  try {
+    snapshot = await getFmpSnapshot(ticker);
+  } catch (error) {
+    if (!(error instanceof FmpNotFoundError)) throw error;
+  }
 
-  return <StockView stock={stock} />;
+  if (!snapshot) notFound();
+
+  return <StockView stock={applyFmpSnapshot(baseline, snapshot)} />;
 }

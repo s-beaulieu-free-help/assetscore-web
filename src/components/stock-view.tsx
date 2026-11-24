@@ -48,7 +48,7 @@ export function StockView({ stock }: { stock: StockAnalysis }) {
         </div>
 
         <p className="mt-5 max-w-2xl text-sm leading-6 text-muted">
-          Illustrative snapshot for this preview. Figures are not live market data and they are not a recommendation.
+          Price and fundamentals are from Financial Modeling Prep. The AssetScore is a preview model and is not a recommendation.
         </p>
 
         <section className="mt-10 grid items-center gap-4 rounded-2xl border border-line bg-card px-6 py-8 lg:grid-cols-[280px_1fr] lg:px-10">
