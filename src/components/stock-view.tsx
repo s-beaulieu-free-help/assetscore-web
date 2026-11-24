@@ -49,7 +49,13 @@ export function StockView({ stock }: { stock: StockPageData }) {
             </p>
           </div>
           <div className="sm:text-right">
-            <p className="font-mono text-3xl tracking-[-0.04em] tabular-nums">{formatMoney(stock.price)}</p>
+            <Link
+              href={`/compare/${stock.ticker}`}
+              className="inline-flex h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-ink transition hover:brightness-110"
+            >
+              Compare
+            </Link>
+            <p className="mt-4 font-mono text-3xl tracking-[-0.04em] tabular-nums">{formatMoney(stock.price)}</p>
             <p className={`mt-1 font-mono text-sm tabular-nums ${positive ? "text-accent-2" : "text-[#f0a3a8]"}`}>
               {formatChange(stock.change, stock.price)}
             </p>

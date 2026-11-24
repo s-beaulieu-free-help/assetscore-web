@@ -1,14 +1,15 @@
 type ScoreGaugeProps = {
   score: number;
   size?: number;
+  id?: string;
 };
 
-export function ScoreGauge({ score, size = 168 }: ScoreGaugeProps) {
+export function ScoreGauge({ score, size = 168, id }: ScoreGaugeProps) {
   const stroke = size >= 220 ? 10 : 7;
   const radius = (size - stroke) / 2;
   const circ = 2 * Math.PI * radius;
   const offset = circ * (1 - score / 100);
-  const gradientId = `score-gauge-${size}`;
+  const gradientId = `score-gauge-${id ?? size}`;
 
   return (
     <div className="relative grid place-items-center" style={{ width: size, height: size }}>
