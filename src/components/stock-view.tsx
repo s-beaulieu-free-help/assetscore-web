@@ -175,7 +175,7 @@ export function StockView({ stock }: { stock: StockPageData }) {
           </div>
           <div className="mt-6">
             {hasHistory ? (
-              <PriceChart points={closes} ticker={stock.ticker} />
+              <PriceChart points={history} ticker={stock.ticker} />
             ) : (
               <p className="text-sm leading-6 text-muted">
                 Price history is unavailable for this symbol.
