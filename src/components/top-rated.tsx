@@ -35,10 +35,11 @@ export function TopRated() {
           </div>
           <ol>
             {rankings.map((asset, index) => (
-              <li
-                key={asset.ticker}
-                className="grid grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-line px-5 py-4 last:border-b-0 sm:grid-cols-[4.5rem_7rem_1fr_9rem_6rem_3.5rem] sm:px-6"
-              >
+              <li key={asset.ticker} className="border-b border-line last:border-b-0">
+                <a
+                  href={`/stocks/${asset.ticker}`}
+                  className="grid grid-cols-[auto_1fr_auto] items-center gap-4 px-5 py-4 transition-colors hover:bg-white/[0.03] sm:grid-cols-[4.5rem_7rem_1fr_9rem_6rem_3.5rem] sm:px-6"
+                >
                 <span className="font-mono text-[13px] text-muted tabular-nums">
                   {String(index + 1).padStart(2, "0")}
                 </span>
@@ -52,6 +53,7 @@ export function TopRated() {
                 </span>
                 <span className="hidden text-[13px] text-muted sm:block">{asset.band}</span>
                 <span className="text-right font-mono text-base tabular-nums">{asset.score}</span>
+                </a>
               </li>
             ))}
           </ol>

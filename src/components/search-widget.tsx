@@ -1,8 +1,12 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
+const tickerPattern = /^[A-Z][A-Z0-9.-]{0,9}$/;
+
 export function SearchWidget() {
+  const router = useRouter();
   const [ticker, setTicker] = useState("");
   const [message, setMessage] = useState("");
 
@@ -15,10 +19,13 @@ export function SearchWidget() {
       return;
     }
 
+    if (!tickerPattern.test(symbol)) {
+      setMessage("Use a ticker symbol such as NVDA or AAPL.");
+      return;
+    }
+
     setTicker(symbol);
-    setMessage(
-      `${symbol} is queued for scoring. Live analysis opens in the next release. The NVDA card shows the score format.`,
-    );
+    router.push(`/stocks/${symbol}`);
   }
 
   return (

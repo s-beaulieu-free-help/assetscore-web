@@ -1,16 +1,17 @@
 type ScoreGaugeProps = {
   score: number;
+  size?: number;
 };
 
-export function ScoreGauge({ score }: ScoreGaugeProps) {
-  const size = 168;
-  const stroke = 7;
+export function ScoreGauge({ score, size = 168 }: ScoreGaugeProps) {
+  const stroke = size >= 220 ? 10 : 7;
   const radius = (size - stroke) / 2;
   const circ = 2 * Math.PI * radius;
   const offset = circ * (1 - score / 100);
+  const gradientId = `score-gauge-${size}`;
 
   return (
-    <div className="relative grid size-[168px] place-items-center">
+    <div className="relative grid place-items-center" style={{ width: size, height: size }}>
       <svg
         width={size}
         height={size}
@@ -32,7 +33,7 @@ export function ScoreGauge({ score }: ScoreGaugeProps) {
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="url(#score-gauge)"
+          stroke={`url(#${gradientId})`}
           strokeWidth={stroke}
           strokeLinecap="round"
           style={{
@@ -43,14 +44,16 @@ export function ScoreGauge({ score }: ScoreGaugeProps) {
           }}
         />
         <defs>
-          <linearGradient id="score-gauge" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#4fd6ae" />
             <stop offset="100%" stopColor="#d7f25c" />
           </linearGradient>
         </defs>
       </svg>
       <div className="pointer-events-none absolute text-center">
-        <p className="font-mono text-[2.75rem] leading-none font-medium tracking-[-0.06em] text-foreground tabular-nums">
+        <p
+          className={`font-mono leading-none font-medium tracking-[-0.06em] text-foreground tabular-nums ${size >= 220 ? "text-6xl" : "text-[2.75rem]"}`}
+        >
           {score}
         </p>
         <p className="mt-1.5 text-[10px] tracking-[0.18em] text-muted uppercase">

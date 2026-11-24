@@ -5,7 +5,7 @@ export function SiteFooter() {
     <footer className="border-t border-line">
       <div className="mx-auto w-full max-w-6xl px-6 py-14">
         <div className="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
-          <a href="#top" className="flex items-center gap-2.5">
+          <a href="/" className="flex items-center gap-2.5">
             <BrandLogo className="size-8" />
             <span>
               <span className="block text-sm font-medium tracking-[-0.02em]">
@@ -17,13 +17,13 @@ export function SiteFooter() {
             </span>
           </a>
           <nav className="flex gap-6 text-[13px] text-muted">
-            <a href="#example" className="transition-colors hover:text-foreground">
+            <a href="/#example" className="transition-colors hover:text-foreground">
               Example
             </a>
-            <a href="#features" className="transition-colors hover:text-foreground">
+            <a href="/#features" className="transition-colors hover:text-foreground">
               Features
             </a>
-            <a href="#coverage" className="transition-colors hover:text-foreground">
+            <a href="/#coverage" className="transition-colors hover:text-foreground">
               Coverage
             </a>
           </nav>
