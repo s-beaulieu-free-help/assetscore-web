@@ -26,6 +26,9 @@ export function SiteFooter() {
             <a href="/#coverage" className="transition-colors hover:text-foreground">
               Coverage
             </a>
+            <a href="/about" className="transition-colors hover:text-foreground">
+              About
+            </a>
           </nav>
         </div>
         <p className="mt-12 max-w-md border-t border-line pt-6 text-xs leading-5 text-muted">

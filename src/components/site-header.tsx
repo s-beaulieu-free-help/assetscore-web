@@ -21,6 +21,9 @@ export function SiteHeader() {
           <a href="/#coverage" className="transition-colors hover:text-foreground">
             Coverage
           </a>
+          <a href="/about" className="transition-colors hover:text-foreground">
+            About
+          </a>
         </nav>
         <a
           href="/#analyze"
