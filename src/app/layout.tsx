@@ -21,17 +21,37 @@ const instrument = Instrument_Serif({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://assetscore.net"),
-  title: "AssetScore — Score any investment in seconds",
-  description:
-    "AssetScore transforms complex financial data into a simple score that helps investors identify opportunities faster.",
+  title: "AssetScore",
+  description: "Score any investment in seconds.",
   applicationName: "AssetScore",
+  icons: {
+    icon: [
+      { url: "/brand/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/brand/favicon-48.png", sizes: "48x48", type: "image/png" },
+    ],
+    apple: [{ url: "/brand/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
   openGraph: {
-    title: "AssetScore — Score any investment in seconds",
-    description:
-      "AssetScore transforms complex financial data into a simple score that helps investors identify opportunities faster.",
+    title: "AssetScore",
+    description: "Score any investment in seconds.",
     url: "https://assetscore.net",
     siteName: "AssetScore",
     type: "website",
+    images: [
+      {
+        url: "/logo.png",
+        width: 1353,
+        height: 1353,
+        alt: "AssetScore",
+        type: "image/png",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary",
+    title: "AssetScore",
+    description: "Score any investment in seconds.",
+    images: ["/logo.png"],
   },
 };
 
