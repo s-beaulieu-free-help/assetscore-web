@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { scoreSnapshot, type Pillar } from "@/lib/score";
 import { formatMoney } from "@/lib/stocks";
 
@@ -125,7 +126,7 @@ function endpoint(path: string, symbol: string, extra?: Record<string, string>) 
   return url;
 }
 
-async function fmpGet<T>(path: string, symbol: string, extra?: Record<string, string>): Promise<T> {
+async function fmpGet<T>(path: string, symbol: string, extra?: Record<string, string>, attempt = 0): Promise<T> {
   let response: Response;
   try {
     response = await fetch(endpoint(path, symbol, extra), {
@@ -134,6 +135,11 @@ async function fmpGet<T>(path: string, symbol: string, extra?: Record<string, st
     });
   } catch {
     throw new FmpError("Financial Modeling Prep could not be reached.", 503);
+  }
+
+  if (response.status === 429 && attempt < 2) {
+    await new Promise((resolve) => setTimeout(resolve, 400 * (attempt + 1)));
+    return fmpGet(path, symbol, extra, attempt + 1);
   }
 
   if (response.status === 401 || response.status === 403) {
@@ -202,7 +208,7 @@ function formatGrowth(value: number) {
   return `${sign}${percent.toFixed(1)}%`;
 }
 
-export async function getFmpSnapshot(symbol: string): Promise<FmpSnapshot> {
+export const getFmpSnapshot = cache(async (symbol: string): Promise<FmpSnapshot> => {
   const window = historyWindow();
   const [profileRows, quoteRows, incomeRows, ratioRows, growthRows, historyRows] = await Promise.all([
     fmpGet<Profile[]>("profile", symbol),
@@ -246,7 +252,7 @@ export async function getFmpSnapshot(symbol: string): Promise<FmpSnapshot> {
     fetchedAt: new Date().toISOString(),
     history: normalizeHistory(historyRows),
   };
-}
+});
 
 export function buildStockPage(snapshot: FmpSnapshot): StockPageData {
   const scored = scoreSnapshot(snapshot);

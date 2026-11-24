@@ -6,6 +6,8 @@ import { SiteHeader } from "@/components/site-header";
 import { TopRated } from "@/components/top-rated";
 import { Trust } from "@/components/trust";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
     <div id="top">
