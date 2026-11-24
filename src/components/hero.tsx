@@ -14,10 +14,7 @@ export function Hero() {
       />
       <div className="relative mx-auto grid w-full max-w-6xl items-center gap-16 px-6 pt-20 pb-24 lg:grid-cols-[minmax(0,1.05fr)_minmax(340px,0.9fr)] lg:gap-20 lg:pt-28 lg:pb-32">
         <div>
-          <p className="rise font-mono text-[11px] tracking-[0.22em] text-muted uppercase">
-            Public preview · 0 to 100
-          </p>
-          <h1 className="rise mt-6 max-w-[12ch] text-[2.75rem] leading-[0.98] font-medium tracking-[-0.045em] text-balance sm:text-6xl lg:text-[4.25rem]">
+          <h1 className="rise max-w-[12ch] text-[2.75rem] leading-[0.98] font-medium tracking-[-0.045em] text-balance sm:text-6xl lg:text-[4.25rem]">
             Score any investment{" "}
             <span className="font-serif font-normal tracking-[-0.03em] text-accent">
               in seconds
