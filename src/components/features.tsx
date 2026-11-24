@@ -25,22 +25,19 @@ const features = [
 export function Features() {
   return (
     <section id="features" className="border-t border-line">
-      <div className="mx-auto w-full max-w-6xl px-5 py-20 lg:py-28">
-        <p className="font-mono text-xs tracking-[0.18em] text-muted uppercase">
+      <div className="mx-auto w-full max-w-6xl px-6 py-24 lg:py-32">
+        <p className="font-mono text-[11px] tracking-[0.2em] text-muted uppercase">
           Why AssetScore
         </p>
-        <h2 className="mt-3 max-w-xl text-3xl font-medium tracking-tight sm:text-4xl">
+        <h2 className="mt-4 max-w-xl text-[2rem] leading-[1.1] font-medium tracking-[-0.035em] text-balance sm:text-4xl">
           A score you can explain to yourself in one sitting.
         </h2>
-        <div className="mt-12 grid gap-4 md:grid-cols-3">
+        <div className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-line bg-line md:grid-cols-3">
           {features.map((feature) => (
-            <article
-              key={feature.title}
-              className="rounded-3xl border border-line bg-white/[0.02] p-6 transition duration-300 hover:-translate-y-0.5 hover:border-white/20"
-            >
-              <p className="font-mono text-xs text-accent">{feature.index}</p>
-              <h3 className="mt-6 text-2xl font-medium tracking-tight">{feature.title}</h3>
-              <p className="mt-3 text-base leading-7 text-foreground">{feature.line}</p>
+            <article key={feature.title} className="bg-background px-7 py-8 sm:px-8 sm:py-10">
+              <p className="font-mono text-[11px] tracking-[0.16em] text-muted">{feature.index}</p>
+              <h3 className="mt-8 text-2xl font-medium tracking-[-0.03em]">{feature.title}</h3>
+              <p className="mt-4 text-[15px] leading-7 text-foreground">{feature.line}</p>
               <p className="mt-3 text-sm leading-6 text-muted">{feature.detail}</p>
             </article>
           ))}

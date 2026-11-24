@@ -4,6 +4,7 @@ import { Hero } from "@/components/hero";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { TopRated } from "@/components/top-rated";
+import { Trust } from "@/components/trust";
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
       <SiteHeader />
       <main>
         <Hero />
+        <Trust />
         <TopRated />
         <Features />
         <Coverage />

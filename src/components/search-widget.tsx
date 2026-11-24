@@ -26,7 +26,7 @@ export function SearchWidget() {
       <label htmlFor="ticker" className="sr-only">
         Ticker symbol
       </label>
-      <div className="flex flex-col gap-2 rounded-2xl border border-line bg-white/[0.03] p-2 shadow-[0_0_0_1px_rgba(255,255,255,0.02)] sm:flex-row sm:items-center">
+      <div className="flex flex-col gap-2 rounded-xl border border-line bg-white/[0.03] p-1.5 transition focus-within:border-white/20 sm:flex-row sm:items-center">
         <input
           id="ticker"
           name="ticker"
@@ -38,16 +38,16 @@ export function SearchWidget() {
           spellCheck={false}
           autoComplete="off"
           maxLength={12}
-          className="h-12 w-full bg-transparent px-3 text-base text-foreground outline-none placeholder:text-muted/80"
+          className="h-11 w-full bg-transparent px-3 text-[15px] text-foreground outline-none placeholder:text-muted/70"
         />
         <button
           type="submit"
-          className="h-12 shrink-0 rounded-xl bg-foreground px-5 text-sm font-medium text-background transition hover:bg-white"
+          className="h-11 shrink-0 rounded-lg bg-foreground px-5 text-sm font-medium text-background transition hover:bg-white"
         >
           Analyze
         </button>
       </div>
-      <p aria-live="polite" className="mt-3 min-h-5 text-sm text-muted">
+      <p aria-live="polite" className="mt-3 min-h-5 text-[13px] leading-5 text-muted">
         {message}
       </p>
     </form>

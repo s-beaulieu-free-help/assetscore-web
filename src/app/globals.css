@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #07080c;
-  --foreground: #f4f2ec;
-  --muted: #a39e94;
-  --line: rgba(244, 242, 236, 0.1);
-  --accent: #d6f25c;
-  --accent-2: #3ee0b6;
-  --card: #101218;
+  --background: #090a0c;
+  --foreground: #f4f5f7;
+  --muted: #8e95a1;
+  --line: rgba(244, 245, 247, 0.09);
+  --accent: #d7f25c;
+  --accent-2: #4fd6ae;
+  --card: #111317;
   --ink: #12140c;
 }
 
@@ -27,7 +27,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 5rem;
+  scroll-padding-top: 5.5rem;
   color-scheme: dark;
 }
 
@@ -35,17 +35,18 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "ss01" on, "cv11" on;
 }
 
 ::selection {
-  background: #d6f25c;
+  background: #d7f25c;
   color: #12140c;
 }
 
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
@@ -62,13 +63,29 @@ body {
   }
 }
 
+@keyframes gauge-draw {
+  from {
+    stroke-dashoffset: var(--gauge-circ);
+  }
+  to {
+    stroke-dashoffset: var(--gauge-offset);
+  }
+}
+
 .rise {
-  animation: rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .bar-fill {
   transform-origin: left center;
   animation: bar-fill 1.15s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.gauge-arc {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: rotate(-90deg);
+  animation: gauge-draw 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -77,7 +94,8 @@ body {
   }
 
   .rise,
-  .bar-fill {
+  .bar-fill,
+  .gauge-arc {
     animation: none;
   }
 }
