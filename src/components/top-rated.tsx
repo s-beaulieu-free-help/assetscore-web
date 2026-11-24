@@ -14,13 +14,16 @@ export async function TopRated() {
       tickers.map(async (asset) => {
         try {
           const stock = buildStockPage(await getFmpSnapshot(asset.ticker));
+          if (stock.score == null || !stock.band) return null;
           return { ...asset, score: stock.score, band: stock.band };
         } catch {
-          return { ...asset, score: null, band: null };
+          return null;
         }
       }),
     )
-  ).sort((left, right) => (right.score ?? -1) - (left.score ?? -1));
+  )
+    .filter((asset) => asset != null)
+    .sort((left, right) => right.score - left.score);
 
   return (
     <section id="top-rated" className="border-t border-line">
@@ -61,11 +64,11 @@ export async function TopRated() {
                   <span className="hidden h-1 overflow-hidden rounded-full bg-white/8 sm:block">
                     <span
                       className="bar-fill block h-full rounded-full bg-gradient-to-r from-accent-2 to-accent"
-                      style={{ width: `${asset.score ?? 0}%`, animationDelay: `${index * 80}ms` }}
+                      style={{ width: `${asset.score}%`, animationDelay: `${index * 80}ms` }}
                     />
                   </span>
-                  <span className="hidden text-[13px] text-muted sm:block">{asset.band ?? "—"}</span>
-                  <span className="text-right font-mono text-base tabular-nums">{asset.score ?? "—"}</span>
+                  <span className="hidden text-[13px] text-muted sm:block">{asset.band}</span>
+                  <span className="text-right font-mono text-base tabular-nums">{asset.score}</span>
                 </Link>
               </li>
             ))}
