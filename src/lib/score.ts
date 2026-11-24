@@ -6,6 +6,7 @@ export type Pillar = {
   label: PillarLabel;
   score: number | null;
   note: string;
+  why: string | null;
 };
 
 export type ScoreInput = {
@@ -53,43 +54,86 @@ function number(value: number, digits = 1) {
   return value.toFixed(digits);
 }
 
+function valueWhy(score: number, pe: number) {
+  if (pe <= 0) {
+    return `Earnings are negative, so the multiple of ${number(pe)} cannot support a high value reading. It stays at ${score}.`;
+  }
+  if (score >= 75) {
+    return `At ${number(pe)} times earnings, the price still leaves room. Value is a support at ${score}, not the constraint.`;
+  }
+  if (score >= 50) {
+    return `Paying ${number(pe)} times earnings is a middle reading. Value neither rescues the score nor sinks it, and lands at ${score}.`;
+  }
+  return `The market is paying ${number(pe)} times earnings. That is the expensive part of the profile, and it holds value down at ${score}.`;
+}
+
 function valueScore(pe: number | null): Pillar {
   if (pe == null || !Number.isFinite(pe)) {
-    return { label: "Value", score: null, note: "Annual price-to-earnings was not returned." };
+    return { label: "Value", score: null, note: "Annual price-to-earnings was not returned.", why: null };
   }
   if (pe <= 0) {
+    const score = 12;
     return {
       label: "Value",
-      score: 12,
+      score,
       note: `Annual price-to-earnings is ${number(pe)}. A negative multiple keeps value low.`,
+      why: valueWhy(score, pe),
     };
   }
+  const score = roundScore(100 - (pe - 8) * 1.6);
   return {
     label: "Value",
-    score: roundScore(100 - (pe - 8) * 1.6),
+    score,
     note: `Annual price-to-earnings is ${number(pe)}. A lower multiple scores higher.`,
+    why: valueWhy(score, pe),
   };
+}
+
+function growthWhy(score: number, growth: number) {
+  const pace = percent(growth);
+  if (growth < 0) {
+    return `Sales moved the wrong way, ${pace} from last year. That decline is why growth is only ${score}.`;
+  }
+  if (score >= 90) {
+    return `Sales accelerated ${pace} from a year ago, fast enough to push growth to ${score}.`;
+  }
+  return `The top line grew ${pace} versus last year. That pace is respectable, and growth comes out at ${score}.`;
 }
 
 function growthScore(growth: number | null): Pillar {
   if (growth == null || !Number.isFinite(growth)) {
-    return { label: "Growth", score: null, note: "Year-over-year revenue growth was not returned." };
+    return { label: "Growth", score: null, note: "Year-over-year revenue growth was not returned.", why: null };
   }
+  const score = roundScore(50 + growth * 80);
   return {
     label: "Growth",
-    score: roundScore(50 + growth * 80),
+    score,
     note: `Revenue growth is ${percent(growth)} year over year.`,
+    why: growthWhy(score, growth),
   };
+}
+
+function qualityWhy(score: number, margin: number) {
+  const kept = percent(margin, 1).replace("+", "");
+  if (margin < 0) {
+    return `The business lost ${kept.replace("-", "")} of revenue. Profitability is the weak point, so quality is ${score}.`;
+  }
+  if (score >= 85) {
+    return `Roughly ${kept} of revenue is retained as profit. That is a wide margin, and quality reflects it at ${score}.`;
+  }
+  return `Profit takes ${kept} of revenue. Quality treats that as a ${score}, solid without being exceptional.`;
 }
 
 function qualityScore(margin: number | null): Pillar {
   if (margin == null || !Number.isFinite(margin)) {
-    return { label: "Quality", score: null, note: "Annual net profit margin was not returned." };
+    return { label: "Quality", score: null, note: "Annual net profit margin was not returned.", why: null };
   }
+  const score = roundScore(35 + margin * 140);
   return {
     label: "Quality",
-    score: roundScore(35 + margin * 140),
+    score,
     note: `Annual net profit margin is ${percent(margin, 1).replace("+", "")}.`,
+    why: qualityWhy(score, margin),
   };
 }
 
@@ -109,13 +153,24 @@ function healthScore(currentRatio: number | null, debtToEquity: number | null): 
       label: "Financial Health",
       score: null,
       note: "Current ratio and debt to equity were not returned.",
+      why: null,
     };
   }
   const score = Math.round(parts.reduce((sum, value) => sum + value, 0) / parts.length);
+  const coverage =
+    currentRatio != null && Number.isFinite(currentRatio)
+      ? `short-term assets cover liabilities ${number(currentRatio, 2)} times`
+      : null;
+  const leverage =
+    debtToEquity != null && Number.isFinite(debtToEquity)
+      ? `debt is ${number(debtToEquity, 2)} times equity`
+      : null;
+  const picture = [coverage, leverage].filter(Boolean).join(", and ");
   return {
     label: "Financial Health",
     score,
     note: `Latest annual ${bits.join(" and ")}.`,
+    why: `The balance sheet reads as follows: ${picture}. Financial health scores ${score} on that mix.`,
   };
 }
 
@@ -129,24 +184,35 @@ function momentumScore(input: ScoreInput): Pillar {
     yearHigh > yearLow
   ) {
     const position = clamp((price - yearLow) / (yearHigh - yearLow), 0, 1);
+    const score = roundScore(position * 100);
+    const place = Math.round(position * 100);
+    const why =
+      place >= 70
+        ? `The shares are ${place}% of the way up the 52-week span, close to the high. Momentum agrees with that strength at ${score}.`
+        : place <= 35
+          ? `Most of the past year's range has been given back. The price sits ${place}% of the way up from the low, so momentum is the soft spot at ${score}.`
+          : `The price is mid-range for the year, ${place}% of the way from low to high. Momentum is neutral at ${score}.`;
     return {
       label: "Momentum",
-      score: roundScore(position * 100),
-      note: `The price is ${Math.round(position * 100)}% of the way from the 52-week low to the high.`,
+      score,
+      note: `The price is ${place}% of the way from the 52-week low to the high.`,
+      why,
     };
   }
 
   const earlier = history.length >= 40 ? history[Math.max(0, history.length - 127)] : undefined;
   if (earlier && earlier.price > 0) {
     const change = price / earlier.price - 1;
+    const score = roundScore(50 + change * 120);
     return {
       label: "Momentum",
-      score: roundScore(50 + change * 120),
+      score,
       note: `The price is ${percent(change)} versus the close on ${earlier.date}.`,
+      why: `Compared with the ${earlier.date} close, the shares are ${percent(change)}. That stretch of the chart is what sets momentum at ${score}.`,
     };
   }
 
-  return { label: "Momentum", score: null, note: "A 52-week range was not returned." };
+  return { label: "Momentum", score: null, note: "A 52-week range was not returned.", why: null };
 }
 
 export function scoreSnapshot(input: ScoreInput): ScoreResult {
@@ -168,13 +234,17 @@ export function scoreSnapshot(input: ScoreInput): ScoreResult {
   }
 
   const score = Math.round(scored.reduce((sum, pillar) => sum + pillar.score, 0) / scored.length);
+  const band = bandFor(score);
+  const strongest = [...scored].sort((left, right) => right.score - left.score)[0];
+  const softest = [...scored].sort((left, right) => left.score - right.score)[0];
+  const closing =
+    strongest.label === softest.label
+      ? `The pillars sit close together. Rounded, they average ${score}, which is the ${band} band.`
+      : `${strongest.label} carries the result at ${strongest.score}. ${softest.label} is the drag at ${softest.score}. Together they round to ${score}, ${band}.`;
   return {
     score,
-    band: bandFor(score),
+    band,
     pillars,
-    reasons: [
-      ...scored.map((pillar) => `${pillar.label} is ${pillar.score}. ${pillar.note}`),
-      `The AssetScore of ${score} is the rounded average of ${scored.map((pillar) => pillar.label.toLowerCase()).join(", ")}.`,
-    ],
+    reasons: [...scored.flatMap((pillar) => (pillar.why ? [pillar.why] : [])), closing],
   };
 }
