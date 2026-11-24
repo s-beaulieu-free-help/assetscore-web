@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
@@ -196,12 +197,12 @@ export default function AboutPage() {
         <section className="border-t border-line">
           <div className="mx-auto flex w-full max-w-6xl flex-col items-start gap-6 px-6 py-20 sm:flex-row sm:items-center sm:justify-between lg:py-24">
             <h2 className="text-3xl font-medium tracking-[-0.035em] sm:text-4xl">Ready to explore?</h2>
-            <a
+            <Link
               href="/"
               className="inline-flex h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-ink transition hover:brightness-110"
             >
               Analyze Stocks
-            </a>
+            </Link>
           </div>
         </section>
       </main>

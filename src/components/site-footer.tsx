@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { BrandLogo } from "@/components/brand-logo";
 
 export function SiteFooter() {
@@ -5,7 +6,7 @@ export function SiteFooter() {
     <footer className="border-t border-line">
       <div className="mx-auto w-full max-w-6xl px-6 py-14">
         <div className="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
-          <a href="/" className="flex items-center gap-2.5">
+          <Link href="/" className="flex items-center gap-2.5">
             <BrandLogo className="size-8" />
             <span>
               <span className="block text-sm font-medium tracking-[-0.02em]">
@@ -15,20 +16,20 @@ export function SiteFooter() {
                 Score any investment in seconds.
               </span>
             </span>
-          </a>
+          </Link>
           <nav className="flex gap-6 text-[13px] text-muted">
-            <a href="/#example" className="transition-colors hover:text-foreground">
+            <Link href="/#example" className="transition-colors hover:text-foreground">
               Example
-            </a>
-            <a href="/#features" className="transition-colors hover:text-foreground">
+            </Link>
+            <Link href="/#features" className="transition-colors hover:text-foreground">
               Features
-            </a>
-            <a href="/#coverage" className="transition-colors hover:text-foreground">
+            </Link>
+            <Link href="/#coverage" className="transition-colors hover:text-foreground">
               Coverage
-            </a>
-            <a href="/about" className="transition-colors hover:text-foreground">
+            </Link>
+            <Link href="/about" className="transition-colors hover:text-foreground">
               About
-            </a>
+            </Link>
           </nav>
         </div>
         <p className="mt-12 max-w-md border-t border-line pt-6 text-xs leading-5 text-muted">

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
@@ -13,12 +14,12 @@ export default function NotFound() {
         <p className="mt-4 max-w-md text-sm leading-6 text-muted">
           Tickers use letters and numbers, like NVDA or AAPL.
         </p>
-        <a
+        <Link
           href="/"
           className="mt-8 inline-flex h-11 w-fit items-center rounded-full bg-accent px-5 text-sm font-medium text-ink"
         >
           Back to AssetScore
-        </a>
+        </Link>
       </main>
       <SiteFooter />
     </div>

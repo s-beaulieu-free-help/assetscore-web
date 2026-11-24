@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { PriceChart } from "@/components/price-chart";
 import { ScoreGauge } from "@/components/score-gauge";
 import { SiteFooter } from "@/components/site-footer";
@@ -17,9 +18,9 @@ export function StockView({ stock }: { stock: StockAnalysis }) {
       <SiteHeader />
       <main className="mx-auto w-full max-w-6xl px-6 pt-10 pb-24">
         <p className="font-mono text-[11px] tracking-[0.2em] text-muted uppercase">
-          <a href="/" className="transition-colors hover:text-foreground">
+          <Link href="/" className="transition-colors hover:text-foreground">
             AssetScore
-          </a>
+          </Link>
           <span className="px-2 text-white/20">/</span>
           Stocks
         </p>
