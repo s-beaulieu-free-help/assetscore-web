@@ -126,44 +126,35 @@ function endpoint(path: string, symbol: string, extra?: Record<string, string>) 
   return url;
 }
 
-let requestGate: Promise<void> = Promise.resolve();
-
-function pace<T>(task: () => Promise<T>): Promise<T> {
-  const run = requestGate.then(async () => {
-    await new Promise((resolve) => setTimeout(resolve, 250));
-    return task();
-  });
-  requestGate = run.then(
-    () => undefined,
-    () => undefined,
-  );
-  return run;
-}
-
 const successCache = new Map<string, { at: number; data: unknown }>();
 const SUCCESS_TTL_MS = 300_000;
+let limitedUntil = 0;
 
-async function fmpGet<T>(path: string, symbol: string, extra?: Record<string, string>, attempt = 0): Promise<T> {
+async function fmpGet<T>(path: string, symbol: string, extra?: Record<string, string>): Promise<T> {
   const url = endpoint(path, symbol, extra);
   const cacheKey = url.toString();
   const cached = successCache.get(cacheKey);
   if (cached && Date.now() - cached.at < SUCCESS_TTL_MS) return cached.data as T;
 
+  if (Date.now() < limitedUntil) {
+    throw new FmpError("Financial Modeling Prep returned status 429.", 429);
+  }
+
   let response: Response;
   try {
-    response = await pace(() =>
-      fetch(url, {
-        headers: { apikey: apiKey() },
-        cache: "no-store",
-      }),
-    );
+    response = await fetch(url, {
+      headers: { apikey: apiKey() },
+      next: { revalidate: 300 },
+    });
   } catch {
     throw new FmpError("Financial Modeling Prep could not be reached.", 503);
   }
 
-  if (response.status === 429 && attempt < 3) {
-    await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** attempt));
-    return fmpGet(path, symbol, extra, attempt + 1);
+  if (response.status === 429) {
+    const retryAfter = Number(response.headers.get("retry-after"));
+    const waitMs = Number.isFinite(retryAfter) && retryAfter > 0 ? Math.min(retryAfter * 1000, 120_000) : 60_000;
+    limitedUntil = Math.max(limitedUntil, Date.now() + waitMs);
+    throw new FmpError("Financial Modeling Prep returned status 429.", 429);
   }
 
   if (response.status === 401 || response.status === 403) {
