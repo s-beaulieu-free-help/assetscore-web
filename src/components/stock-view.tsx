@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { FavoriteControl } from "@/components/favorite-control";
-import { DataSourceStatus, LiveDataBadge, MarketDataSource } from "@/components/market-data-status";
+import { LiveDataBadge, MarketDataSource } from "@/components/market-data-status";
 import { PriceChart } from "@/components/price-chart";
 import { ScoreGauge } from "@/components/score-gauge";
 import { SiteFooter } from "@/components/site-footer";
@@ -194,7 +194,6 @@ export function StockView({ stock }: { stock: StockPageData }) {
         </section>
 
         <StockReviews ticker={stock.ticker} />
-        <DataSourceStatus apiConnected lastRefresh tickerLoaded />
       </main>
       <SiteFooter />
     </div>

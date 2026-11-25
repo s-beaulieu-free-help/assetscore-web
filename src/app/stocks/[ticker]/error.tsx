@@ -1,7 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { DataSourceStatus, LiveDataBadge, MarketDataSource } from "@/components/market-data-status";
+import { LiveDataBadge, MarketDataSource } from "@/components/market-data-status";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeaderBar } from "@/components/site-header-bar";
 
@@ -14,9 +13,6 @@ export default function StockError({
 }) {
   const leaked = /apikey|financialmodelingprep\.com/i.test(error.message);
   const message = leaked || !error.message ? "Market data could not be loaded." : error.message;
-  const ticker = usePathname().split("/").filter(Boolean).at(-1)?.toUpperCase() ?? "";
-  const tickerLoaded = /^[A-Z][A-Z0-9.-]{0,9}$/.test(ticker);
-
   return (
     <div>
       <SiteHeaderBar name={null} />
@@ -34,7 +30,6 @@ export default function StockError({
         >
           Try again
         </button>
-        <DataSourceStatus apiConnected={false} lastRefresh={false} tickerLoaded={tickerLoaded} />
       </main>
       <SiteFooter />
     </div>

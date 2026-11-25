@@ -1,10 +1,4 @@
-/**
- * Stock-page data source indicators.
- * Set SHOW_DATA_SOURCE_STATUS to false to remove the developer panel.
- * Delete this module to remove the badge, source line, and panel together.
- */
-export const SHOW_DATA_SOURCE_STATUS = true;
-
+/** Stock-page live badge and source line. */
 export function formatFetchedAt(iso: string) {
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
@@ -50,36 +44,5 @@ export function MarketDataSource({ fetchedAt }: { fetchedAt: string | null }) {
         )}
       </p>
     </div>
-  );
-}
-
-export function DataSourceStatus({
-  apiConnected,
-  lastRefresh,
-  tickerLoaded,
-}: {
-  apiConnected: boolean;
-  lastRefresh: boolean;
-  tickerLoaded: boolean;
-}) {
-  if (!SHOW_DATA_SOURCE_STATUS) return null;
-
-  const rows = [
-    ["API Connected", apiConnected],
-    ["Last Refresh", lastRefresh],
-    ["Ticker Loaded", tickerLoaded],
-  ] as const;
-
-  return (
-    <section className="mt-14 rounded-2xl border border-dashed border-line px-5 py-4" aria-label="Data Source Status">
-      <h2 className="font-mono text-[11px] tracking-[0.18em] text-muted uppercase">Data Source Status</h2>
-      <ul className="mt-3 space-y-1.5 text-sm text-foreground/90">
-        {rows.map(([label, ok]) => (
-          <li key={label}>
-            {label} {ok ? "✅" : "❌"}
-          </li>
-        ))}
-      </ul>
-    </section>
   );
 }
