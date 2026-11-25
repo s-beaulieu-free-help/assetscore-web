@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Coverage } from "@/components/coverage";
 import { FavoritesBoard } from "@/components/favorites-board";
 import { Features } from "@/components/features";
 import { Hero } from "@/components/hero";
@@ -38,7 +37,6 @@ export default async function Home() {
         <FavoritesBoard />
         <TopRated />
         <Features />
-        <Coverage />
       </main>
       <SiteFooter />
     </div>
