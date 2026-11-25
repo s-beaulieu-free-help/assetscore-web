@@ -56,7 +56,7 @@ export function LoginForm() {
         setMessage(authMessage(error.message));
         return;
       }
-      router.push("/account");
+      router.push("/");
       router.refresh();
     });
   }
