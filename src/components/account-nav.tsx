@@ -44,6 +44,9 @@ export function AccountNav({ name, notice = null }: { name: string | null; notic
       <Link href="/favorites" className={linkClass}>
         Favorites
       </Link>
+      <Link href="/markets" className={linkClass}>
+        Markets
+      </Link>
       <Link href="/portfolios" className={linkClass}>
         Portfolios
       </Link>

@@ -10,6 +10,7 @@ type PricePoint = {
 type PriceChartProps = {
   points: PricePoint[];
   ticker: string;
+  currency?: string;
 };
 
 const WIDTH = 760;
@@ -52,10 +53,10 @@ function formatAxisDay(isoDate: string) {
   }).format(new Date(parseDay(isoDate)));
 }
 
-function formatPrice(value: number) {
+function formatPrice(value: number, currency: string) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
+    currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(value);
@@ -86,7 +87,7 @@ function dateTicks(points: PricePoint[]) {
   return Array.from({ length: count }, (_, index) => Math.round((index / (count - 1)) * (points.length - 1)));
 }
 
-export function PriceChart({ points, ticker }: PriceChartProps) {
+export function PriceChart({ points, ticker, currency = "USD" }: PriceChartProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [range, setRange] = useState<RangeId>("ALL");
   const [custom, setCustom] = useState<[number, number] | null>(null);
@@ -123,7 +124,7 @@ export function PriceChart({ points, ticker }: PriceChartProps) {
     .map((point, index) => `${index === 0 ? "M" : "L"}${xFor(index).toFixed(1)},${yFor(point.price).toFixed(1)}`)
     .join(" ");
   const area = `${line} L${xFor(windowed.length - 1).toFixed(1)},${PAD.top + plotHeight} L${PAD.left},${PAD.top + plotHeight} Z`;
-  const fillId = `price-fill-${ticker}`;
+  const fillId = `price-fill-${ticker.replace(/[^A-Za-z0-9_-]/g, "")}`;
   const hovered = hover == null ? null : windowed[hover];
 
   function indexAt(clientX: number) {
@@ -170,7 +171,7 @@ export function PriceChart({ points, ticker }: PriceChartProps) {
         </div>
         <p className="font-mono text-xs text-muted tabular-nums">
           {hovered
-            ? `${formatDay(hovered.date)} · ${formatPrice(hovered.price)}`
+            ? `${formatDay(hovered.date)} · ${formatPrice(hovered.price, currency)}`
             : `${formatDay(windowed[0].date)} – ${formatDay(windowed[windowed.length - 1].date)}`}
         </p>
       </div>
@@ -229,7 +230,7 @@ export function PriceChart({ points, ticker }: PriceChartProps) {
                 stroke="rgba(244,245,247,0.1)"
               />
               <text x={PAD.left - 8} y={y + 4} textAnchor="end" fill="#8e95a1" fontSize="11" fontFamily="ui-monospace, monospace">
-                {formatPrice(tick)}
+                {formatPrice(tick, currency)}
               </text>
             </g>
           );

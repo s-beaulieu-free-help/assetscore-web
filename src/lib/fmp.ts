@@ -117,10 +117,9 @@ function apiKey() {
   return key;
 }
 
-function endpoint(path: string, symbol: string, extra?: Record<string, string>) {
+function endpoint(path: string, params: Record<string, string>) {
   const url = new URL(`${FMP_BASE}/${path}`);
-  url.searchParams.set("symbol", symbol);
-  for (const [name, value] of Object.entries(extra ?? {})) {
+  for (const [name, value] of Object.entries(params)) {
     url.searchParams.set(name, value);
   }
   return url;
@@ -131,7 +130,11 @@ const SUCCESS_TTL_MS = 300_000;
 let limitedUntil = 0;
 
 async function fmpGet<T>(path: string, symbol: string, extra?: Record<string, string>): Promise<T> {
-  const url = endpoint(path, symbol, extra);
+  return fmpQuery<T>(path, { symbol, ...extra });
+}
+
+async function fmpQuery<T>(path: string, params: Record<string, string>): Promise<T> {
+  const url = endpoint(path, params);
   const cacheKey = url.toString();
   const cached = successCache.get(cacheKey);
   if (cached && Date.now() - cached.at < SUCCESS_TTL_MS) return cached.data as T;
@@ -278,6 +281,43 @@ export const getFmpSnapshot = cache(async (symbol: string): Promise<FmpSnapshot>
     yearHigh: quote?.yearHigh ?? null,
     fetchedAt: new Date().toISOString(),
     history: normalizeHistory(historyResult.data),
+  };
+});
+
+export type IndexSeries = {
+  symbol: string;
+  name: string;
+  price: number;
+  change: number;
+  history: PricePoint[];
+  fetchedAt: string;
+};
+
+export const getIndexSeries = cache(async (symbol: string): Promise<IndexSeries | null> => {
+  const window = historyWindow();
+  const [quoteResult, historyResult] = await Promise.all([
+    optional(fmpGet<Quote[]>("quote", symbol)),
+    optional(fmpGet<LightBar[]>("historical-price-eod/light", symbol, window)),
+  ]);
+  const quote = first(quoteResult.data);
+  const price = quote?.price;
+  if (price == null || Number.isNaN(price)) {
+    if (quoteResult.rateLimited || historyResult.rateLimited) {
+      throw new FmpError("Financial Modeling Prep returned status 429.", 429);
+    }
+    return null;
+  }
+
+  return {
+    symbol: quote?.symbol ?? symbol,
+    name: quote?.name ?? symbol,
+    price,
+    change:
+      quote?.previousClose != null
+        ? price - quote.previousClose
+        : (quote?.change ?? 0),
+    history: normalizeHistory(historyResult.data),
+    fetchedAt: new Date().toISOString(),
   };
 });
 
