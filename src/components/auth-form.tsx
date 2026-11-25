@@ -16,7 +16,25 @@ function authMessage(message: string) {
   if (/already registered|already been registered/i.test(message)) {
     return "An account with that email already exists.";
   }
+  if (/abort|timeout/i.test(message)) {
+    return "The request timed out. Check your connection and try again.";
+  }
+  if (/subtle|crypto/i.test(message)) {
+    return "Open this site at localhost or https. The browser cannot create an account from an insecure address.";
+  }
   return message;
+}
+
+async function runAuth(setPending: (value: boolean) => void, setMessage: (value: string) => void, task: () => Promise<void>) {
+  setPending(true);
+  setMessage("");
+  try {
+    await task();
+  } catch (error) {
+    setMessage(authMessage(error instanceof Error ? error.message : "Something went wrong. Try again."));
+  } finally {
+    setPending(false);
+  }
 }
 
 export function LoginForm() {
@@ -29,16 +47,15 @@ export function LoginForm() {
     const form = new FormData(event.currentTarget);
     const email = String(form.get("email") ?? "").trim();
     const password = String(form.get("password") ?? "");
-    setPending(true);
-    setMessage("");
-    const { error } = await createSupabaseBrowser().auth.signInWithPassword({ email, password });
-    setPending(false);
-    if (error) {
-      setMessage(authMessage(error.message));
-      return;
-    }
-    router.push("/account");
-    router.refresh();
+    await runAuth(setPending, setMessage, async () => {
+      const { error } = await createSupabaseBrowser().auth.signInWithPassword({ email, password });
+      if (error) {
+        setMessage(authMessage(error.message));
+        return;
+      }
+      router.push("/account");
+      router.refresh();
+    });
   }
 
   return (
@@ -102,24 +119,23 @@ export function RegisterForm() {
       return;
     }
 
-    setPending(true);
-    setMessage("");
-    const redirectTo = `${window.location.origin}/auth/callback?next=/account`;
-    const { data, error } = await createSupabaseBrowser().auth.signUp({
-      email,
-      password,
-      options: { data: { display_name: displayName }, emailRedirectTo: redirectTo },
+    await runAuth(setPending, setMessage, async () => {
+      const redirectTo = `${window.location.origin}/auth/callback?next=/account`;
+      const { data, error } = await createSupabaseBrowser().auth.signUp({
+        email,
+        password,
+        options: { data: { display_name: displayName }, emailRedirectTo: redirectTo },
+      });
+      if (error) {
+        setMessage(authMessage(error.message));
+        return;
+      }
+      if (data.session) {
+        window.location.assign("/account");
+        return;
+      }
+      setDone(true);
     });
-    setPending(false);
-    if (error) {
-      setMessage(authMessage(error.message));
-      return;
-    }
-    if (data.session) {
-      window.location.assign("/account");
-      return;
-    }
-    setDone(true);
   }
 
   if (done) {
@@ -175,16 +191,15 @@ export function ForgotPasswordForm() {
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const email = String(new FormData(event.currentTarget).get("email") ?? "").trim();
-    setPending(true);
-    setMessage("");
-    const redirectTo = `${window.location.origin}/auth/callback?next=/reset-password`;
-    const { error } = await createSupabaseBrowser().auth.resetPasswordForEmail(email, { redirectTo });
-    setPending(false);
-    if (error) {
-      setMessage(authMessage(error.message));
-      return;
-    }
-    setMessage("If an account exists for that email, a reset message is on its way.");
+    await runAuth(setPending, setMessage, async () => {
+      const redirectTo = `${window.location.origin}/auth/callback?next=/reset-password`;
+      const { error } = await createSupabaseBrowser().auth.resetPasswordForEmail(email, { redirectTo });
+      if (error) {
+        setMessage(authMessage(error.message));
+        return;
+      }
+      setMessage("If an account exists for that email, a reset message is on its way.");
+    });
   }
 
   return (
@@ -230,15 +245,15 @@ export function ResetPasswordForm() {
       setMessage("The passwords do not match.");
       return;
     }
-    setPending(true);
-    const { error } = await createSupabaseBrowser().auth.updateUser({ password });
-    setPending(false);
-    if (error) {
-      setMessage(authMessage(error.message));
-      return;
-    }
-    router.push("/account");
-    router.refresh();
+    await runAuth(setPending, setMessage, async () => {
+      const { error } = await createSupabaseBrowser().auth.updateUser({ password });
+      if (error) {
+        setMessage(authMessage(error.message));
+        return;
+      }
+      router.push("/account");
+      router.refresh();
+    });
   }
 
   return (
