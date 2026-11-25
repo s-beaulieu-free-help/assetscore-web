@@ -126,19 +126,43 @@ function endpoint(path: string, symbol: string, extra?: Record<string, string>) 
   return url;
 }
 
+let requestGate: Promise<void> = Promise.resolve();
+
+function pace<T>(task: () => Promise<T>): Promise<T> {
+  const run = requestGate.then(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 250));
+    return task();
+  });
+  requestGate = run.then(
+    () => undefined,
+    () => undefined,
+  );
+  return run;
+}
+
+const successCache = new Map<string, { at: number; data: unknown }>();
+const SUCCESS_TTL_MS = 300_000;
+
 async function fmpGet<T>(path: string, symbol: string, extra?: Record<string, string>, attempt = 0): Promise<T> {
+  const url = endpoint(path, symbol, extra);
+  const cacheKey = url.toString();
+  const cached = successCache.get(cacheKey);
+  if (cached && Date.now() - cached.at < SUCCESS_TTL_MS) return cached.data as T;
+
   let response: Response;
   try {
-    response = await fetch(endpoint(path, symbol, extra), {
-      headers: { apikey: apiKey() },
-      next: { revalidate: 300 },
-    });
+    response = await pace(() =>
+      fetch(url, {
+        headers: { apikey: apiKey() },
+        cache: "no-store",
+      }),
+    );
   } catch {
     throw new FmpError("Financial Modeling Prep could not be reached.", 503);
   }
 
-  if (response.status === 429 && attempt < 2) {
-    await new Promise((resolve) => setTimeout(resolve, 400 * (attempt + 1)));
+  if (response.status === 429 && attempt < 3) {
+    await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** attempt));
     return fmpGet(path, symbol, extra, attempt + 1);
   }
 
@@ -150,15 +174,18 @@ async function fmpGet<T>(path: string, symbol: string, extra?: Record<string, st
     throw new FmpError(`Financial Modeling Prep returned status ${response.status}.`, response.status);
   }
 
-  return (await response.json()) as T;
+  const data = (await response.json()) as T;
+  successCache.set(cacheKey, { at: Date.now(), data });
+  return data;
 }
 
-async function optional<T>(request: Promise<T>): Promise<T | null> {
+async function optional<T>(request: Promise<T>): Promise<{ data: T | null; rateLimited: boolean }> {
   try {
-    return await request;
+    return { data: await request, rateLimited: false };
   } catch (error) {
-    if (error instanceof FmpError && (error.status === 402 || error.status === 403 || error.status === 404)) {
-      return null;
+    if (error instanceof FmpError && error.status === 429) return { data: null, rateLimited: true };
+    if (error instanceof FmpError && (error.status === 402 || error.status === 404)) {
+      return { data: null, rateLimited: false };
     }
     throw error;
   }
@@ -210,8 +237,8 @@ function formatGrowth(value: number) {
 
 export const getFmpSnapshot = cache(async (symbol: string): Promise<FmpSnapshot> => {
   const window = historyWindow();
-  const [profileRows, quoteRows, incomeRows, ratioRows, growthRows, historyRows] = await Promise.all([
-    fmpGet<Profile[]>("profile", symbol),
+  const [profileResult, quoteResult, incomeResult, ratioResult, growthResult, historyResult] = await Promise.all([
+    optional(fmpGet<Profile[]>("profile", symbol)),
     optional(fmpGet<Quote[]>("quote", symbol)),
     optional(fmpGet<IncomeStatement[]>("income-statement", symbol, { limit: "1", period: "annual" })),
     optional(fmpGet<Ratios[]>("ratios", symbol, { limit: "1", period: "annual" })),
@@ -219,16 +246,25 @@ export const getFmpSnapshot = cache(async (symbol: string): Promise<FmpSnapshot>
     optional(fmpGet<LightBar[]>("historical-price-eod/light", symbol, window)),
   ]);
 
-  const profile = first(profileRows);
-  const quote = first(quoteRows);
-  if (!profile && !quote) throw new FmpNotFoundError(symbol);
+  const profile = first(profileResult.data);
+  const quote = first(quoteResult.data);
+  const rateLimited = [profileResult, quoteResult, incomeResult, ratioResult, growthResult, historyResult].some(
+    (result) => result.rateLimited,
+  );
+  if (!profile && !quote) {
+    if (rateLimited) throw new FmpError("Financial Modeling Prep returned status 429.", 429);
+    throw new FmpNotFoundError(symbol);
+  }
 
   const price = quote?.price ?? profile?.price;
-  if (price == null || Number.isNaN(price)) throw new FmpNotFoundError(symbol);
+  if (price == null || Number.isNaN(price)) {
+    if (rateLimited) throw new FmpError("Financial Modeling Prep returned status 429.", 429);
+    throw new FmpNotFoundError(symbol);
+  }
 
-  const income = first(incomeRows);
-  const ratios = first(ratioRows);
-  const growth = first(growthRows);
+  const income = first(incomeResult.data);
+  const ratios = first(ratioResult.data);
+  const growth = first(growthResult.data);
 
   return {
     symbol: profile?.symbol ?? quote?.symbol ?? symbol,
@@ -250,7 +286,7 @@ export const getFmpSnapshot = cache(async (symbol: string): Promise<FmpSnapshot>
     yearLow: quote?.yearLow ?? null,
     yearHigh: quote?.yearHigh ?? null,
     fetchedAt: new Date().toISOString(),
-    history: normalizeHistory(historyRows),
+    history: normalizeHistory(historyResult.data),
   };
 });
 

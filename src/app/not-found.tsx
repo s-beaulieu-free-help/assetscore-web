@@ -12,7 +12,7 @@ export default function NotFound() {
           No analysis for that symbol.
         </h1>
         <p className="mt-4 max-w-md text-sm leading-6 text-muted">
-          Tickers use letters and numbers, like NVDA or AAPL.
+          AssetScore looks up any ticker Financial Modeling Prep lists. Check the symbol and try again.
         </p>
         <Link
           href="/"
