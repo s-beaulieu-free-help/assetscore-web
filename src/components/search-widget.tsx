@@ -38,7 +38,10 @@ export function SearchWidget() {
           id="ticker"
           name="ticker"
           value={ticker}
-          onChange={(event) => setTicker(event.target.value)}
+          onChange={(event) => {
+            setTicker(event.target.value);
+            if (message) setMessage("");
+          }}
           placeholder="Enter ticker symbol (AAPL, NVDA, TSLA...)"
           autoCapitalize="characters"
           autoCorrect="off"
@@ -55,7 +58,7 @@ export function SearchWidget() {
         </button>
       </div>
       <p aria-live="polite" className="mt-3 min-h-5 text-[13px] leading-5 text-muted">
-        {message}
+        {message || "US-listed tickers only."}
       </p>
     </form>
   );
