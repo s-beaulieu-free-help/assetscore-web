@@ -14,8 +14,8 @@ export function SiteHeaderBar({ name }: { name: string | null }) {
           </span>
         </Link>
         <nav className="hidden items-center gap-8 text-[13px] text-muted md:flex">
-          <Link href="/#example" className="transition-colors hover:text-foreground">
-            Example
+          <Link href="/#top" className="transition-colors hover:text-foreground">
+            Home
           </Link>
           <Link href="/#features" className="transition-colors hover:text-foreground">
             Features
