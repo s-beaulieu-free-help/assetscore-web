@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
+import { rememberStaySignedIn } from "@/lib/supabase/stay-signed-in";
 
 const inputClass =
   "h-11 w-full rounded-xl border border-line bg-white/[0.03] px-3 text-[15px] text-foreground outline-none placeholder:text-muted/70 focus:border-white/20";
@@ -47,7 +48,9 @@ export function LoginForm() {
     const form = new FormData(event.currentTarget);
     const email = String(form.get("email") ?? "").trim();
     const password = String(form.get("password") ?? "");
+    const staySignedIn = form.get("stay") === "on";
     await runAuth(setPending, setMessage, async () => {
+      rememberStaySignedIn(staySignedIn);
       const { error } = await createSupabaseBrowser().auth.signInWithPassword({ email, password });
       if (error) {
         setMessage(authMessage(error.message));
@@ -67,6 +70,10 @@ export function LoginForm() {
       <label className="block text-sm text-muted">
         Password
         <input name="password" type="password" autoComplete="current-password" required className={`${inputClass} mt-2`} />
+      </label>
+      <label className="flex items-center gap-2 text-sm text-muted">
+        <input name="stay" type="checkbox" defaultChecked className="size-4 accent-accent" />
+        Stay signed in
       </label>
       <button
         type="submit"

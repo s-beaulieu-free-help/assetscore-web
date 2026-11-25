@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
+import { rememberStaySignedIn } from "@/lib/supabase/stay-signed-in";
 
 const linkClass = "text-[13px] text-muted transition-colors hover:text-foreground";
 
@@ -12,6 +13,7 @@ export function AccountNav({ name }: { name: string | null }) {
   async function logout() {
     const supabase = createSupabaseBrowser();
     await supabase.auth.signOut();
+    rememberStaySignedIn(false);
     router.push("/");
     router.refresh();
   }

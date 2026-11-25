@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { supabaseEnv } from "@/lib/supabase/env";
+import { wantsStaySignedIn, withSessionLifetime } from "@/lib/supabase/stay-signed-in";
 
 export async function middleware(request: NextRequest) {
   const env = supabaseEnv();
@@ -13,11 +14,12 @@ export async function middleware(request: NextRequest) {
         return request.cookies.getAll();
       },
       setAll(cookiesToSet) {
-        for (const { name, value } of cookiesToSet) {
+        const nextCookies = withSessionLifetime(cookiesToSet, wantsStaySignedIn(request.cookies.getAll()));
+        for (const { name, value } of nextCookies) {
           request.cookies.set(name, value);
         }
         response = NextResponse.next({ request });
-        for (const { name, value, options } of cookiesToSet) {
+        for (const { name, value, options } of nextCookies) {
           response.cookies.set(name, value, options);
         }
       },
