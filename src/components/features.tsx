@@ -1,20 +1,17 @@
 const features = [
   {
-    index: "01",
     title: "Simple",
     line: "One score instead of hundreds of metrics",
     detail:
       "Value, growth, quality, financial health, and momentum collapse into a single number from 0 to 100.",
   },
   {
-    index: "02",
     title: "Fast",
     line: "Evaluate an asset in seconds",
     detail:
       "Type a ticker and read the score before a spreadsheet finishes loading. Built for people who invest after work, not only for full-time analysts.",
   },
   {
-    index: "03",
     title: "Transparent",
     line: "See exactly how the score is calculated",
     detail:
@@ -35,8 +32,7 @@ export function Features() {
         <div className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-line bg-line md:grid-cols-3">
           {features.map((feature) => (
             <article key={feature.title} className="bg-background px-7 py-8 sm:px-8 sm:py-10">
-              <p className="font-mono text-[11px] tracking-[0.16em] text-muted">{feature.index}</p>
-              <h3 className="mt-8 text-2xl font-medium tracking-[-0.03em]">{feature.title}</h3>
+              <h3 className="text-2xl font-medium tracking-[-0.03em]">{feature.title}</h3>
               <p className="mt-4 text-[15px] leading-7 text-foreground">{feature.line}</p>
               <p className="mt-3 text-sm leading-6 text-muted">{feature.detail}</p>
             </article>
