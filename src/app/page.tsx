@@ -1,10 +1,8 @@
 import Link from "next/link";
-import { FavoritesBoard } from "@/components/favorites-board";
 import { Features } from "@/components/features";
 import { Hero } from "@/components/hero";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { TopRated } from "@/components/top-rated";
 import { Trust } from "@/components/trust";
 import { loadViewer, viewerName } from "@/lib/viewer";
 
@@ -34,8 +32,6 @@ export default async function Home() {
         </p>
         <Hero />
         <Trust />
-        <FavoritesBoard />
-        <TopRated />
         <Features />
       </main>
       <SiteFooter />

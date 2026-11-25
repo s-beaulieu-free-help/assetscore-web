@@ -27,18 +27,7 @@ export function Hero() {
             AssetScore transforms complex financial data into a simple score that
             helps investors identify opportunities faster.
           </p>
-          <div
-            className="rise mt-10 flex flex-col gap-3 sm:flex-row"
-            style={{ animationDelay: "140ms" }}
-          >
-            <a
-              href="#top-rated"
-              className="inline-flex h-11 items-center justify-center rounded-full border border-line px-5 text-sm font-medium text-foreground transition hover:bg-white/5"
-            >
-              See Top Rated Assets
-            </a>
-          </div>
-          <div className="rise mt-10" style={{ animationDelay: "200ms" }}>
+          <div className="rise mt-10" style={{ animationDelay: "140ms" }}>
             <SearchWidget />
           </div>
         </div>
