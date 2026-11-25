@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { DataSourceStatus, LiveDataBadge, MarketDataSource } from "@/components/market-data-status";
 import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
+import { SiteHeaderBar } from "@/components/site-header-bar";
 
 export default function StockError({
   error,
@@ -19,7 +19,7 @@ export default function StockError({
 
   return (
     <div>
-      <SiteHeader />
+      <SiteHeaderBar name={null} />
       <main className="mx-auto flex min-h-[60vh] w-full max-w-6xl flex-col justify-center px-6 py-24">
         <LiveDataBadge live={false} />
         <MarketDataSource fetchedAt={null} />

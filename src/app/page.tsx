@@ -1,4 +1,5 @@
 import { Coverage } from "@/components/coverage";
+import { FavoritesBoard } from "@/components/favorites-board";
 import { Features } from "@/components/features";
 import { Hero } from "@/components/hero";
 import { SiteFooter } from "@/components/site-footer";
@@ -15,6 +16,7 @@ export default function Home() {
       <main>
         <Hero />
         <Trust />
+        <FavoritesBoard />
         <TopRated />
         <Features />
         <Coverage />

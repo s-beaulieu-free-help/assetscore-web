@@ -36,7 +36,7 @@ function roundScore(value: number) {
   return Math.round(clamp(value, 0, 100));
 }
 
-function bandFor(score: number) {
+export function bandFor(score: number) {
   if (score >= 90) return "Exceptional";
   if (score >= 80) return "Strong";
   if (score >= 70) return "Solid";

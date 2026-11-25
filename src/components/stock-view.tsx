@@ -1,9 +1,11 @@
 import Link from "next/link";
+import { FavoriteControl } from "@/components/favorite-control";
 import { DataSourceStatus, LiveDataBadge, MarketDataSource } from "@/components/market-data-status";
 import { PriceChart } from "@/components/price-chart";
 import { ScoreGauge } from "@/components/score-gauge";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { StockReviews } from "@/components/stock-reviews";
 import type { StockPageData } from "@/lib/fmp";
 import { formatChange, formatMoney } from "@/lib/stocks";
 
@@ -47,6 +49,7 @@ export function StockView({ stock }: { stock: StockPageData }) {
               <span className="px-2 text-white/20">·</span>
               {stock.exchange}
             </p>
+            <FavoriteControl ticker={stock.ticker} />
           </div>
           <div className="sm:text-right">
             <Link
@@ -190,6 +193,7 @@ export function StockView({ stock }: { stock: StockPageData }) {
           </div>
         </section>
 
+        <StockReviews ticker={stock.ticker} />
         <DataSourceStatus apiConnected lastRefresh tickerLoaded />
       </main>
       <SiteFooter />
