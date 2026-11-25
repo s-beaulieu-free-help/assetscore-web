@@ -34,7 +34,7 @@ export async function FavoritesBoard() {
   );
 }
 
-async function FavoriteList({ userId }: { userId: string }) {
+export async function FavoriteList({ userId }: { userId: string }) {
   const { supabase } = await loadViewer();
   if (!supabase) return null;
   const { data, error } = await supabase

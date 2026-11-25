@@ -34,6 +34,9 @@ export function AccountNav({ name }: { name: string | null }) {
 
   return (
     <div className="flex items-center gap-3">
+      <Link href="/favorites" className={linkClass}>
+        Favorites
+      </Link>
       <Link href="/portfolios" className={linkClass}>
         Portfolios
       </Link>
