@@ -37,7 +37,10 @@ export function CompareForm({ ticker }: { ticker: string }) {
         <input
           id="compare-ticker"
           value={value}
-          onChange={(event) => setValue(event.target.value)}
+          onChange={(event) => {
+            setValue(event.target.value);
+            if (message) setMessage("");
+          }}
           placeholder="Enter ticker symbol"
           autoCapitalize="characters"
           autoCorrect="off"
@@ -54,7 +57,7 @@ export function CompareForm({ ticker }: { ticker: string }) {
         </button>
       </div>
       <p aria-live="polite" className="mt-3 min-h-5 text-[13px] leading-5 text-muted">
-        {message}
+        {message || "US-listed tickers only."}
       </p>
     </form>
   );
