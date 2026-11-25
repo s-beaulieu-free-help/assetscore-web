@@ -9,7 +9,7 @@ export default function RegisterPage() {
     <AuthScreen
       kicker="Account"
       title="Create an account"
-      copy="Choose a display name. It is what other people see on your reviews. Your email stays private."
+      copy="Take control of your investments. Create your free account and unlock unlimited stock analysis and portfolio tools for 30 days. No credit card is required, and the trial does not charge you when it ends."
     >
       <RegisterForm />
     </AuthScreen>

@@ -33,6 +33,7 @@ function formatDate(value: string) {
 export function ReviewPanel({
   ticker,
   signedIn,
+  canReview = true,
   average,
   count,
   reviews,
@@ -40,6 +41,7 @@ export function ReviewPanel({
 }: {
   ticker: string;
   signedIn: boolean;
+  canReview?: boolean;
   average: number | null;
   count: number;
   reviews: ReviewItem[];
@@ -189,7 +191,7 @@ export function ReviewPanel({
       </ul>
 
       <div className="mt-8 border-t border-line pt-8">
-        {signedIn ? (
+        {signedIn && canReview ? (
           <div>
             <h3 className="text-lg font-medium tracking-[-0.03em]">{own ? "Your review" : "Write a review"}</h3>
             <div className="mt-4 flex gap-2">
@@ -230,6 +232,14 @@ export function ReviewPanel({
               ) : null}
             </div>
           </div>
+        ) : signedIn ? (
+          <p className="text-sm leading-6 text-muted">
+            Writing reviews is included with Pro. Approved reviews stay visible.{" "}
+            <Link href="/pricing" className="text-foreground hover:text-accent">
+              Upgrade to Pro
+            </Link>
+            .
+          </p>
         ) : (
           <p className="text-sm leading-6 text-muted">
             <Link href="/login" className="text-foreground hover:text-accent">

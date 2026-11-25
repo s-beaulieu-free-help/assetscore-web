@@ -127,7 +127,7 @@ export function RegisterForm() {
     }
 
     await runAuth(setPending, setMessage, async () => {
-      const redirectTo = `${window.location.origin}/auth/callback?next=/account`;
+      const redirectTo = `${window.location.origin}/auth/callback?next=/`;
       const { data, error } = await createSupabaseBrowser().auth.signUp({
         email,
         password,
@@ -138,7 +138,7 @@ export function RegisterForm() {
         return;
       }
       if (data.session) {
-        window.location.assign("/account");
+        window.location.assign("/");
         return;
       }
       setDone(true);
@@ -148,7 +148,7 @@ export function RegisterForm() {
   if (done) {
     return (
       <p className="mt-8 text-sm leading-6 text-muted">
-        Check your inbox and confirm the email address. After that, you can log in. Your display name is saved with the account.
+        Check your inbox and confirm the email address. The 30-day Pro trial starts after that confirmation, with no credit card and no automatic charge. Your display name is saved with the account.
       </p>
     );
   }

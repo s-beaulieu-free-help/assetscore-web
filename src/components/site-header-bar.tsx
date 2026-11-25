@@ -2,7 +2,7 @@ import Link from "next/link";
 import { AccountNav } from "@/components/account-nav";
 import { BrandLogo } from "@/components/brand-logo";
 
-export function SiteHeaderBar({ name }: { name: string | null }) {
+export function SiteHeaderBar({ name, notice = null }: { name: string | null; notice?: string | null }) {
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-background/90 backdrop-blur-xl">
       <div className="mx-auto flex min-h-[4.25rem] w-full max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-3 px-6 py-3">
@@ -25,7 +25,7 @@ export function SiteHeaderBar({ name }: { name: string | null }) {
           </Link>
         </nav>
         <div className="flex items-center gap-3">
-          <AccountNav name={name} />
+          <AccountNav name={name} notice={notice} />
           <Link
             href="/#analyze"
             className="inline-flex h-9 shrink-0 items-center rounded-full bg-accent px-3.5 text-[13px] font-medium text-ink transition hover:brightness-110"

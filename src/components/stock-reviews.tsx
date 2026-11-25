@@ -1,8 +1,9 @@
+import { loadAccess } from "@/lib/billing/access";
 import { ReviewPanel, type ReviewItem } from "@/components/review-panel";
 import { loadViewer, viewerName } from "@/lib/viewer";
 
 export async function StockReviews({ ticker }: { ticker: string }) {
-  const { supabase, user, profile } = await loadViewer();
+  const [{ supabase, user, profile }, access] = await Promise.all([loadViewer(), loadAccess()]);
   if (!supabase) return null;
 
   const [{ data: summary }, { data: approved }, ownResult] = await Promise.all([
@@ -56,6 +57,7 @@ export async function StockReviews({ ticker }: { ticker: string }) {
     <ReviewPanel
       ticker={ticker}
       signedIn={Boolean(user)}
+      canReview={access.canReview}
       average={summary?.average_rating == null ? null : Number(summary.average_rating)}
       count={summary?.review_count == null ? 0 : Number(summary.review_count)}
       reviews={visible}

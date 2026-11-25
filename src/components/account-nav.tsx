@@ -7,7 +7,7 @@ import { rememberStaySignedIn } from "@/lib/supabase/stay-signed-in";
 
 const linkClass = "text-[13px] text-muted transition-colors hover:text-foreground";
 
-export function AccountNav({ name }: { name: string | null }) {
+export function AccountNav({ name, notice = null }: { name: string | null; notice?: string | null }) {
   const router = useRouter();
 
   async function logout() {
@@ -36,6 +36,11 @@ export function AccountNav({ name }: { name: string | null }) {
 
   return (
     <div className="flex items-center gap-3">
+      {notice ? (
+        <Link href="/pricing" className={linkClass}>
+          {notice}
+        </Link>
+      ) : null}
       <Link href="/favorites" className={linkClass}>
         Favorites
       </Link>

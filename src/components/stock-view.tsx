@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AdSlot } from "@/components/ad-slot";
 import { FavoriteControl } from "@/components/favorite-control";
 import { LiveDataBadge, MarketDataSource } from "@/components/market-data-status";
 import { PriceChart } from "@/components/price-chart";
@@ -19,7 +20,7 @@ function formatDay(isoDate: string) {
   }).format(new Date(Date.UTC(year, month - 1, day)));
 }
 
-export function StockView({ stock }: { stock: StockPageData }) {
+export function StockView({ stock, showAds = false }: { stock: StockPageData; showAds?: boolean }) {
   const positive = stock.change >= 0;
   const history = stock.history;
   const closes = history.map((point) => point.price);
@@ -194,6 +195,7 @@ export function StockView({ stock }: { stock: StockPageData }) {
         </section>
 
         <StockReviews ticker={stock.ticker} />
+        {showAds ? <AdSlot /> : null}
       </main>
       <SiteFooter />
     </div>

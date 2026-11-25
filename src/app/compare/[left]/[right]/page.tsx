@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { loadAccess } from "@/lib/billing/access";
 import { CompareView } from "@/components/compare-view";
+import { UpgradeNote } from "@/components/upgrade-note";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { buildStockPage, FmpNotFoundError, getFmpSnapshot } from "@/lib/fmp";
@@ -35,6 +37,15 @@ export async function generateMetadata({ params }: ComparePageProps): Promise<Me
 }
 
 export default async function ComparePage({ params }: ComparePageProps) {
+  const access = await loadAccess();
+  if (access.isFree) {
+    return (
+      <UpgradeNote
+        title="Stock comparisons are a Pro feature"
+        copy="Free accounts can keep the comparisons they already understand from individual stock pages. Side-by-side comparison stays available on the Pro trial and on a paid plan."
+      />
+    );
+  }
   const { left, right } = await params;
   const base = parseTicker(left);
   const other = parseTicker(right);

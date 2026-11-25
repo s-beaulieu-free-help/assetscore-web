@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { loadAccess } from "@/lib/billing/access";
 import { AccountSettings } from "@/components/account-settings";
+import { SubscriptionPanel } from "@/components/subscription-panel";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { loadViewer, viewerName } from "@/lib/viewer";
@@ -8,7 +10,7 @@ import { loadViewer, viewerName } from "@/lib/viewer";
 export const metadata: Metadata = { title: "Account · AssetScore" };
 
 export default async function AccountPage() {
-  const { user, profile } = await loadViewer();
+  const [{ user, profile }, access] = await Promise.all([loadViewer(), loadAccess()]);
 
   return (
     <div>
@@ -21,6 +23,7 @@ export default async function AccountPage() {
             <p className="mt-4 max-w-xl text-sm leading-6 text-muted">
               This name appears on your reviews. Your email is not shown publicly.
             </p>
+            <SubscriptionPanel access={access} />
             <AccountSettings
               userId={user.id}
               email={user.email ?? ""}

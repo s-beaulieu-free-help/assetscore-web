@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AdSlot } from "@/components/ad-slot";
+import { loadAccess } from "@/lib/billing/access";
 import { CreatePortfolioForm } from "@/components/portfolio-editor";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -8,7 +10,7 @@ import { loadViewer } from "@/lib/viewer";
 export const metadata: Metadata = { title: "Portfolios · AssetScore" };
 
 export default async function PortfoliosPage() {
-  const { supabase, user } = await loadViewer();
+  const [{ supabase, user }, access] = await Promise.all([loadViewer(), loadAccess()]);
   const { data } =
     supabase && user
       ? await supabase
@@ -29,7 +31,17 @@ export default async function PortfoliosPage() {
             <p className="mt-4 max-w-xl text-sm leading-6 text-muted">
               Portfolios are private until you mark one public. A new portfolio starts as a draft.
             </p>
-            <CreatePortfolioForm />
+            {access.canCreatePortfolio ? (
+              <CreatePortfolioForm />
+            ) : (
+              <p className="mt-6 max-w-xl text-sm leading-6 text-muted">
+                Creating a portfolio is included with Pro. Portfolios you already saved stay available.{" "}
+                <Link href="/pricing" className="text-foreground hover:text-accent">
+                  Upgrade to Pro
+                </Link>
+                .
+              </p>
+            )}
             <ul className="mt-10 divide-y divide-line overflow-hidden rounded-2xl border border-line bg-card">
               {data?.length ? (
                 data.map((portfolio) => (
@@ -59,6 +71,7 @@ export default async function PortfoliosPage() {
             . You can still browse stock scores without an account.
           </p>
         )}
+        {access.shouldDisplayAds ? <AdSlot /> : null}
       </main>
       <SiteFooter />
     </div>

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { loadAccess } from "@/lib/billing/access";
 import { CompareForm } from "@/components/compare-form";
+import { UpgradeNote } from "@/components/upgrade-note";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { FmpNotFoundError, getFmpSnapshot } from "@/lib/fmp";
@@ -16,6 +18,15 @@ export async function generateMetadata({ params }: ComparePickProps): Promise<Me
 }
 
 export default async function ComparePickPage({ params }: ComparePickProps) {
+  const access = await loadAccess();
+  if (access.isFree) {
+    return (
+      <UpgradeNote
+        title="Stock comparisons are a Pro feature"
+        copy="Free accounts can keep reading individual stock pages. Side-by-side comparison stays available on the Pro trial and on a paid plan."
+      />
+    );
+  }
   const ticker = parseTicker((await params).left);
   if (!ticker) notFound();
 
