@@ -18,8 +18,8 @@ export function SiteFooter() {
             </span>
           </Link>
           <nav className="flex gap-6 text-[13px] text-muted">
-            <Link href="/#example" className="transition-colors hover:text-foreground">
-              Example
+            <Link href="/#top" className="transition-colors hover:text-foreground">
+              Home
             </Link>
             <Link href="/#features" className="transition-colors hover:text-foreground">
               Features
