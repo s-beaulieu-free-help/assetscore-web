@@ -16,7 +16,13 @@ function ScoreCardFrame({ children }: { children: ReactNode }) {
       className="rise relative w-full overflow-hidden rounded-2xl border border-line bg-card shadow-[0_30px_80px_-48px_rgba(0,0,0,0.85)]"
       style={{ animationDelay: "140ms" }}
     >
-      {children}
+      <Link
+        href="/stocks/NVDA"
+        aria-label="Open the NVDA stock page"
+        className="block text-inherit transition hover:bg-white/[0.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+      >
+        {children}
+      </Link>
     </article>
   );
 }
@@ -55,11 +61,7 @@ export async function ScoreCard() {
       <div className="px-5 py-7 sm:px-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-[1.75rem] font-medium tracking-[-0.04em]">
-              <Link href="/stocks/NVDA" className="transition-colors hover:text-accent">
-                {stock.ticker}
-              </Link>
-            </h2>
+            <h2 className="text-[1.75rem] font-medium tracking-[-0.04em]">{stock.ticker}</h2>
             <p className="mt-1 text-sm text-muted">{stock.name}</p>
           </div>
           {stock.band ? (
