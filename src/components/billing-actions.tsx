@@ -7,11 +7,9 @@ const quietClass = "inline-flex h-11 items-center justify-center rounded-full bo
 
 export function BillingActions({
   showMonthly = false,
-  showAnnual = false,
   showPortal = false,
 }: {
   showMonthly?: boolean;
-  showAnnual?: boolean;
   showPortal?: boolean;
 }) {
   const [message, setMessage] = useState("");
@@ -44,12 +42,7 @@ export function BillingActions({
       <div className="flex flex-wrap gap-3">
         {showMonthly ? (
           <button type="button" className={buttonClass} disabled={Boolean(pending)} onClick={() => open("/api/stripe/checkout", { interval: "month" }, "month")}>
-            {pending === "month" ? "Opening checkout…" : "Choose monthly"}
-          </button>
-        ) : null}
-        {showAnnual ? (
-          <button type="button" className={buttonClass} disabled={Boolean(pending)} onClick={() => open("/api/stripe/checkout", { interval: "year" }, "year")}>
-            {pending === "year" ? "Opening checkout…" : "Choose annual"}
+            {pending === "month" ? "Opening checkout…" : "Subscribe — $5.99 US/month"}
           </button>
         ) : null}
         {showPortal ? (

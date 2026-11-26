@@ -5,7 +5,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { deleteScreen, saveScreen } from "@/app/screener/actions";
 import { loadAccess } from "@/lib/billing/access";
-import { PRO_ANNUAL_PRICE, PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
+import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
 import {
   SCREENER_INDEXES,
   SCREENER_PRESETS,
@@ -104,7 +104,7 @@ function UpgradeCopy({ free }: { free: boolean }) {
           : "The Stock Screener is included with an AssetScore Pro trial or a paid Pro plan. Results stay private and are not shown on this public page."}
       </p>
       <p className="mt-4 text-sm text-foreground">
-        {PRO_MONTHLY_PRICE.label}, or {PRO_ANNUAL_PRICE.label}.
+        {PRO_MONTHLY_PRICE.label}.
       </p>
       <div className="mt-8 flex flex-wrap gap-3">
         <Link href="/pricing" className="inline-flex h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-ink">

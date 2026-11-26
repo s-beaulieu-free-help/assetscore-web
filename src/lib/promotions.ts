@@ -1,4 +1,4 @@
-import { PRO_ANNUAL_PRICE, PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
+import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
 
 export const PROMOTION_PLACEMENTS = ["stock", "portfolio", "account"] as const;
 
@@ -60,26 +60,13 @@ export const PROMOTIONS: PromotionCampaign[] = [
     priority: 30,
   },
   {
-    id: "annual-pro",
-    name: "Annual Subscription",
-    headline: "Get AssetScore Pro for Less",
-    description: `Enjoy the full Pro experience for just ${PRO_ANNUAL_PRICE.label}. That is about 30% less than paying monthly.`,
-    cta: "Get Annual Pro",
-    href: "/pricing#annual",
-    placements: ["account"],
-    active: true,
-    startsAt: null,
-    endsAt: null,
-    priority: 60,
-  },
-  {
     id: "monthly-pro",
     name: "Monthly Subscription",
     headline: "Unlock More With Pro",
-    description: `Get unlimited stock evaluations for only ${PRO_MONTHLY_PRICE.label}.`,
+    description: `Get the stock screener and portfolio tools for ${PRO_MONTHLY_PRICE.label}.`,
     cta: "Explore Pro",
     href: "/pricing#monthly",
-    placements: ["stock"],
+    placements: ["stock", "account"],
     active: true,
     startsAt: null,
     endsAt: null,

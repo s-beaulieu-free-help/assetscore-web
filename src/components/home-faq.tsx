@@ -1,4 +1,4 @@
-import { FREE_EVALUATION_LIMIT_FALLBACK, PRO_ANNUAL_PRICE, PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
+import { FREE_EVALUATION_LIMIT_FALLBACK, PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
 
 export const homeFaqs = [
   {
@@ -28,7 +28,7 @@ export const homeFaqs = [
   },
   {
     question: "What happens after my 30-day free trial?",
-    answer: `The trial ends without a charge. The account moves to the Free plan: ${FREE_EVALUATION_LIMIT_FALLBACK} stock evaluations per calendar month, basic results, and advertisements. New portfolios, comparisons, favorites, and reviews require Pro. Portfolios, favorites, and reviews you already saved stay in the account. Pro is ${PRO_MONTHLY_PRICE.label} or ${PRO_ANNUAL_PRICE.label} only if you choose a paid plan.`,
+    answer: `The trial ends without a charge. The account moves to the Free plan: ${FREE_EVALUATION_LIMIT_FALLBACK} stock evaluations per calendar month, basic results, and advertisements. New portfolios, comparisons, favorites, and reviews require Pro. Portfolios, favorites, and reviews you already saved stay in the account. Pro is ${PRO_MONTHLY_PRICE.label} only if you choose a paid plan.`,
   },
   {
     question: "Can I cancel my subscription at any time?",

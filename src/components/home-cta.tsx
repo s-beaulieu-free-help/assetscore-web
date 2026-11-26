@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PRO_ANNUAL_PRICE, PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
+import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
 
 const points = [
   "Free registration",
@@ -27,7 +27,7 @@ export function HomeCta() {
         </ul>
         <p className="mt-6 max-w-2xl text-sm leading-6 text-muted">
           The trial starts after you confirm your email. It does not turn into a paid subscription. Pro is{" "}
-          {PRO_MONTHLY_PRICE.label} or {PRO_ANNUAL_PRICE.label} only if you choose it later.
+          {PRO_MONTHLY_PRICE.label} only if you choose it later.
         </p>
         <Link
           href="/register"

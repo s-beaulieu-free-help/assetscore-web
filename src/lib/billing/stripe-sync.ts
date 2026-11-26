@@ -40,12 +40,12 @@ export async function syncStripeSubscription(admin: Admin, subscription: Stripe.
   if (typeof existing?.stripe_event_at === "number" && existing.stripe_event_at > eventCreated) return;
 
   const { start, end, priceId } = periodOf(subscription);
-  const pricePlan =
-    priceId && priceId === process.env.STRIPE_PRICE_PRO_ANNUAL
-      ? "pro_annual"
-      : priceId && priceId === process.env.STRIPE_PRICE_PRO_MONTHLY
-        ? "pro_monthly"
-        : null;
+  const monthlyPrice = process.env.STRIPE_PRICE_PRO_MONTHLY;
+  const legacyAnnualPrice = process.env.STRIPE_PRICE_PRO_ANNUAL;
+  const keepsAnnual =
+    (priceId && legacyAnnualPrice && priceId === legacyAnnualPrice) ||
+    (existing?.plan === "pro_annual" && priceId !== monthlyPrice);
+  const pricePlan = priceId && priceId === monthlyPrice ? "pro_monthly" : keepsAnnual ? "pro_annual" : null;
   const trialEndsAt = existing?.trial_ends_at ?? null;
   const trialStillActive = Boolean(trialEndsAt) && new Date(trialEndsAt as string).getTime() > Date.now();
   const paid = (subscription.status === "active" || subscription.status === "trialing") && pricePlan;

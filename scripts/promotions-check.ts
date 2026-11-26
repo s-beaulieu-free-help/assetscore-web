@@ -44,7 +44,8 @@ if (stock.map((item) => item.id).join(",") !== "unlock-analysis,beyond-score,mon
   throw new Error(`Unexpected stock rotation order: ${stock.map((item) => item.id).join(",")}`);
 }
 if (activePromotions("portfolio", now).length !== 1) throw new Error("Portfolio placement should have one campaign.");
-if (activePromotions("account", now)[0]?.id !== "annual-pro") throw new Error("Account placement should offer annual Pro.");
+if (activePromotions("account", now)[0]?.id !== "monthly-pro") throw new Error("Account placement should offer monthly Pro.");
+if (JSON.stringify(activePromotions("account", now)).includes("49.99")) throw new Error("Promotions must not advertise an annual price.");
 
 const sample: PromotionCampaign[] = stock;
 const first = choosePromotion(sample, { dismissed: [], seen: [], turn: 0 });

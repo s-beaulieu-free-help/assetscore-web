@@ -4,12 +4,12 @@ import { BillingActions } from "@/components/billing-actions";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { freeEvaluationLimit, loadAccess } from "@/lib/billing/access";
-import { annualSavingsPercent, PRO_ANNUAL_PRICE, PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
+import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
 import { loadViewer } from "@/lib/viewer";
 
 export const metadata: Metadata = {
   title: "Pricing · AssetScore",
-  description: "Try AssetScore Pro free for 30 days. Full access, no credit card, and no automatic charge. Pro is $5.99 US/month or $49.99 US/year.",
+  description: "Try AssetScore Pro free for 30 days. Full access, no credit card, and no automatic charge. Pro is $5.99 US/month.",
 };
 
 const freeFeatures = [
@@ -39,7 +39,6 @@ export default async function PricingPage({
 }) {
   const params = await searchParams;
   const [{ user }, access, limit] = await Promise.all([loadViewer(), loadAccess(), freeEvaluationLimit()]);
-  const savings = annualSavingsPercent();
   const notice =
     params.checkout === "success"
       ? "Payment received. Pro access starts after Stripe confirms the subscription. Reaching this page does not activate Pro by itself."
@@ -69,7 +68,7 @@ export default async function PricingPage({
         ) : null}
         {notice ? <p className="mt-6 max-w-2xl text-sm leading-6 text-foreground">{notice}</p> : null}
 
-        <div className="mt-12 grid gap-4 lg:grid-cols-3">
+        <div className="mt-12 grid gap-4 lg:grid-cols-2">
           <article className="rounded-2xl border border-line bg-card p-6">
             <h2 className="text-lg font-medium">Free</h2>
             <p className="mt-3 font-mono text-2xl">$0</p>
@@ -83,12 +82,12 @@ export default async function PricingPage({
             </ul>
           </article>
 
-          <article id="monthly" className="scroll-mt-24 rounded-2xl border border-line bg-card p-6">
-            <h2 className="text-lg font-medium">Pro Monthly</h2>
+          <article id="monthly" className="scroll-mt-24 rounded-2xl border border-accent/40 bg-card p-6">
+            <h2 className="text-lg font-medium">AssetScore Pro</h2>
             <p className="mt-3 font-mono text-2xl">{PRO_MONTHLY_PRICE.label}</p>
             <p className="mt-2 text-xs leading-5 text-muted">
-              Billed every month in US dollars. The price is {PRO_MONTHLY_PRICE.label}. Taxes are shown on the Stripe
-              payment page before you pay.
+              Recurring monthly subscription. Billed every month in US dollars. Taxes are shown on the Stripe payment
+              page before you pay.
             </p>
             <ul className="mt-6 space-y-2 text-sm leading-6 text-muted">
               {proFeatures.map((item) => (
@@ -96,21 +95,6 @@ export default async function PricingPage({
               ))}
             </ul>
             <div className="mt-6">{user ? <BillingActions showMonthly /> : <AuthLinks />}</div>
-          </article>
-
-          <article id="annual" className="scroll-mt-24 rounded-2xl border border-accent/40 bg-card p-6">
-            <h2 className="text-lg font-medium">Pro Annual</h2>
-            <p className="mt-3 font-mono text-2xl">{PRO_ANNUAL_PRICE.label}</p>
-            <p className="mt-2 text-sm text-foreground">Save approximately {savings}% with annual billing.</p>
-            <p className="mt-2 text-xs leading-5 text-muted">
-              One payment of {PRO_ANNUAL_PRICE.label}. Billed once each year in US dollars, instead of twelve monthly
-              payments of {PRO_MONTHLY_PRICE.label}. Taxes are shown on the Stripe payment page before you pay.
-            </p>
-            <ul className="mt-6 space-y-2 text-sm leading-6 text-muted">
-              <li>Same benefits as Pro Monthly</li>
-              <li>No advertisements</li>
-            </ul>
-            <div className="mt-6">{user ? <BillingActions showAnnual /> : <AuthLinks />}</div>
           </article>
         </div>
       </main>

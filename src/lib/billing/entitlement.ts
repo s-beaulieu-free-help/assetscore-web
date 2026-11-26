@@ -1,4 +1,4 @@
-import { PRO_ANNUAL_PRICE, PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
+import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
 
 export type SubscriptionRow = {
   user_id: string;
@@ -78,7 +78,7 @@ function fullAccess(plan: Access["plan"], extra: Partial<Access> = {}): Access {
     status: null,
     cancelAtPeriodEnd: false,
     currentPeriodEnd: null,
-    billingLabel: plan === "pro_monthly" ? PRO_MONTHLY_PRICE.label : plan === "pro_annual" ? PRO_ANNUAL_PRICE.label : null,
+    billingLabel: plan === "pro_monthly" ? PRO_MONTHLY_PRICE.label : null,
     hasStripeSubscription: false,
     ...extra,
   };

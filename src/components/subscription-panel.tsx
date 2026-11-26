@@ -1,6 +1,6 @@
 import { BillingActions } from "@/components/billing-actions";
 import type { Access } from "@/lib/billing/entitlement";
-import { PRO_ANNUAL_PRICE, PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
+import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
 
 function planTitle(access: Access) {
   if (access.isTrialActive) return "Pro Trial";
@@ -41,7 +41,9 @@ export function SubscriptionPanel({ access }: { access: Access }) {
         </div>
         <div>
           <dt className="text-muted">Subscription price</dt>
-          <dd className="mt-1">{access.billingLabel ?? "No paid subscription"}</dd>
+          <dd className="mt-1">
+            {access.plan === "pro_annual" ? "On file with Stripe" : access.billingLabel ?? "No paid subscription"}
+          </dd>
         </div>
         <div>
           <dt className="text-muted">Next billing date</dt>
@@ -59,8 +61,8 @@ export function SubscriptionPanel({ access }: { access: Access }) {
       {access.isTrialActive && access.daysRemaining != null && access.daysRemaining <= 7 ? (
         <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
           Your Pro trial ends in {access.daysRemaining} {access.daysRemaining === 1 ? "day" : "days"}. Continue
-          enjoying unlimited stock analysis and portfolio management for {PRO_MONTHLY_PRICE.label}. Annual billing is{" "}
-          {PRO_ANNUAL_PRICE.label}. The trial will not charge a card.
+          enjoying unlimited stock analysis and portfolio management for {PRO_MONTHLY_PRICE.label}. The trial will
+          not charge a card.
         </p>
       ) : null}
       {access.trialEnded && access.isFree ? (
@@ -71,15 +73,15 @@ export function SubscriptionPanel({ access }: { access: Access }) {
         </p>
       ) : (
         <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
-          The free trial does not charge a card when it ends. Pro continues only after you choose a paid plan. Monthly
-          is {PRO_MONTHLY_PRICE.label}. Annual is {PRO_ANNUAL_PRICE.label}.
+          The free trial does not charge a card when it ends. Pro continues only after you choose a paid plan at{" "}
+          {PRO_MONTHLY_PRICE.label}.
         </p>
       )}
       <div className="mt-5">
         {paid || access.hasStripeSubscription ? (
-          <BillingActions showPortal showMonthly={!paid} showAnnual={!paid} />
+          <BillingActions showPortal showMonthly={!paid} />
         ) : (
-          <BillingActions showMonthly showAnnual />
+          <BillingActions showMonthly />
         )}
       </div>
     </section>

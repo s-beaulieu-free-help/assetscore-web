@@ -7,10 +7,16 @@ import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { createSupabaseServer } from "@/lib/supabase/server";
 
 export async function POST(request: Request) {
+  const body = (await request.json().catch(() => null)) as { interval?: string } | null;
+  if (body?.interval !== "month") {
+    return NextResponse.json({ message: "AssetScore Pro is $5.99 US/month." }, { status: 400 });
+  }
+
   const supabase = await createSupabaseServer();
   const admin = createSupabaseAdmin();
   const stripe = stripeClient();
-  if (!supabase || !admin || !stripe) {
+  const price = stripePriceId();
+  if (!supabase || !admin || !stripe || !price) {
     return NextResponse.json({ message: "Billing is not configured yet." }, { status: 503 });
   }
 
@@ -18,13 +24,6 @@ export async function POST(request: Request) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ message: "Log in to subscribe." }, { status: 401 });
-
-  const body = (await request.json().catch(() => null)) as { interval?: string } | null;
-  const interval = body?.interval === "year" ? "year" : body?.interval === "month" ? "month" : null;
-  const price = interval ? stripePriceId(interval) : null;
-  if (!interval || !price) {
-    return NextResponse.json({ message: "Choose a monthly or annual plan." }, { status: 400 });
-  }
 
   const { data: row } = await admin
     .from("subscriptions")

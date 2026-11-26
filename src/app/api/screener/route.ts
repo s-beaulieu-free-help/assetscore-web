@@ -14,7 +14,7 @@ export async function GET(request: Request) {
   const access = await loadAccess();
   if (!canUseScreener(access)) {
     return NextResponse.json(
-      { message: "The Stock Screener is included with an active 30-day Pro trial, Pro Monthly, and Pro Annual." },
+      { message: "The Stock Screener is included with an active 30-day Pro trial or AssetScore Pro." },
       { status: 403 },
     );
   }
