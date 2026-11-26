@@ -24,14 +24,12 @@ const inputClass =
 export function PortfolioEditor({
   id,
   name,
-  isPublic,
   status,
   canEdit,
   holdings,
 }: {
   id: string;
   name: string;
-  isPublic: boolean;
   status: string;
   canEdit: boolean;
   holdings: HoldingView[];
@@ -106,14 +104,6 @@ export function PortfolioEditor({
     if (!window.confirm("Remove this stock from the portfolio?")) return;
     const supabase = createSupabaseBrowser();
     await run(() => supabase.from("portfolio_stocks").delete().eq("id", holdingId), "Stock removed.");
-  }
-
-  async function setVisibility(nextPublic: boolean) {
-    const supabase = createSupabaseBrowser();
-    await run(
-      () => supabase.from("portfolios").update({ is_public: nextPublic }).eq("id", id),
-      nextPublic ? "This portfolio is now public." : "This portfolio is now private.",
-    );
   }
 
   async function complete() {
@@ -261,14 +251,6 @@ export function PortfolioEditor({
                   Rename
                 </button>
               </form>
-              <label className="mt-4 flex items-center gap-3 text-sm text-muted">
-                <input
-                  type="checkbox"
-                  checked={isPublic}
-                  onChange={(event) => void setVisibility(event.target.checked)}
-                />
-                Public portfolio
-              </label>
               <button
                 type="button"
                 onClick={() => void complete()}

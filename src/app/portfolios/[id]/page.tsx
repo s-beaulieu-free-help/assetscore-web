@@ -24,7 +24,7 @@ export default async function PortfolioPage({ params }: PortfolioPageProps) {
 
   const { data: portfolio } = await supabase
     .from("portfolios")
-    .select("id, user_id, name, is_public, status")
+    .select("id, user_id, name, status")
     .eq("id", id)
     .maybeSingle();
   if (!portfolio) notFound();
@@ -74,13 +74,10 @@ export default async function PortfolioPage({ params }: PortfolioPageProps) {
           </Link>
         </p>
         <h1 className="mt-4 text-4xl font-medium tracking-[-0.045em] sm:text-5xl">{portfolio.name}</h1>
-        <p className="mt-4 text-sm text-muted">
-          {portfolio.is_public ? "Public" : "Private"} · {portfolio.status === "complete" ? "Complete" : "Draft"}
-        </p>
+        <p className="mt-4 text-sm text-muted">{portfolio.status === "complete" ? "Complete" : "Draft"}</p>
         <PortfolioEditor
           id={portfolio.id}
           name={portfolio.name}
-          isPublic={portfolio.is_public}
           status={portfolio.status}
           canEdit={owner && access.canUseAdvancedPortfolioAnalysis}
           holdings={holdings}

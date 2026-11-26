@@ -16,7 +16,7 @@ export default async function PortfoliosPage() {
     supabase && user
       ? await supabase
           .from("portfolios")
-          .select("id, name, is_public, status")
+          .select("id, name, status")
           .eq("user_id", user.id)
           .order("updated_at", { ascending: false })
       : { data: null };
@@ -29,9 +29,7 @@ export default async function PortfoliosPage() {
         <h1 className="mt-4 text-4xl font-medium tracking-[-0.045em] sm:text-5xl">Your portfolios</h1>
         {user ? (
           <>
-            <p className="mt-4 max-w-xl text-sm leading-6 text-muted">
-              Portfolios are private until you mark one public. A new portfolio starts as a draft.
-            </p>
+            <p className="mt-4 max-w-xl text-sm leading-6 text-muted">A new portfolio starts as a draft.</p>
             {access.canCreatePortfolio ? (
               <CreatePortfolioForm />
             ) : (
@@ -52,7 +50,7 @@ export default async function PortfoliosPage() {
                       <span>
                         <span className="block text-lg font-medium">{portfolio.name}</span>
                         <span className="mt-1 block text-sm text-muted">
-                          {portfolio.status === "complete" ? "Complete" : "Draft"} · {portfolio.is_public ? "Public" : "Private"}
+                          {portfolio.status === "complete" ? "Complete" : "Draft"}
                         </span>
                       </span>
                       <span className="text-sm text-muted">Open</span>
