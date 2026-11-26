@@ -25,6 +25,7 @@ const proFeatures = [
   "Complete portfolio scoring",
   "Unlimited favorites",
   "Stock comparisons",
+  "Stock Screener",
   "Advanced financial analysis",
   "Historical score tracking, where it is implemented",
   "Full access to Pro features",

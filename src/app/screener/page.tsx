@@ -25,6 +25,8 @@ import { formatMoney } from "@/lib/stocks";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { loadViewer } from "@/lib/viewer";
 
+export const dynamic = "force-dynamic";
+
 const title = "Stock Screener — Find Stocks by Financial Health and AssetScore";
 const description =
   "Discover stocks using AssetScore's five financial pillars, valuation metrics, growth indicators, and financial health filters.";

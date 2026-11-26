@@ -25,6 +25,7 @@ export type Access = {
   canViewHistoricalScores: boolean;
   canReview: boolean;
   canAddFavorite: boolean;
+  canUseScreener: boolean;
   shouldDisplayAds: boolean;
   trialEndsAt: string | null;
   daysRemaining: number | null;
@@ -69,6 +70,7 @@ function fullAccess(plan: Access["plan"], extra: Partial<Access> = {}): Access {
     canViewHistoricalScores: true,
     canReview: true,
     canAddFavorite: true,
+    canUseScreener: plan === "trial" || plan === "pro_monthly" || plan === "pro_annual",
     shouldDisplayAds: false,
     trialEndsAt: null,
     daysRemaining: null,
@@ -100,6 +102,7 @@ export function freeAccess(extra: Partial<Access> = {}): Access {
     canViewHistoricalScores: false,
     canReview: false,
     canAddFavorite: false,
+    canUseScreener: false,
     shouldDisplayAds: true,
     billingLabel: null,
     ...extra,

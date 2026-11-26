@@ -108,7 +108,7 @@ type PublishedFile = {
 const PAGE_SIZE = 20;
 
 export function canUseScreener(access: Access) {
-  return access.isTrialActive || access.plan === "pro_monthly" || access.plan === "pro_annual";
+  return access.canUseScreener && (access.isTrialActive || access.plan === "pro_monthly" || access.plan === "pro_annual");
 }
 
 function emptyFilters(indexes: ScreenerIndexId[] = SCREENER_INDEXES.map((item) => item.id)): ScreenerFilters {

@@ -13,7 +13,10 @@ import {
 export async function GET(request: Request) {
   const access = await loadAccess();
   if (!canUseScreener(access)) {
-    return NextResponse.json({ message: "The Stock Screener is included with AssetScore Pro." }, { status: 403 });
+    return NextResponse.json(
+      { message: "The Stock Screener is included with an active 30-day Pro trial, Pro Monthly, and Pro Annual." },
+      { status: 403 },
+    );
   }
   const url = new URL(request.url);
   const params = Object.fromEntries(url.searchParams.entries());
