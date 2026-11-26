@@ -1,0 +1,191 @@
+{
+  "publishedAt": "2026-11-26T02:23:46.429Z",
+  "lists": [
+    {
+      "id": "sp500",
+      "name": "S&P 500",
+      "entries": [
+        {
+          "rank": 1,
+          "symbol": "MU",
+          "name": "Micron Technology",
+          "score": 85,
+          "band": "Strong"
+        },
+        {
+          "rank": 2,
+          "symbol": "REGN",
+          "name": "Regeneron Pharmaceuticals",
+          "score": 81,
+          "band": "Strong"
+        },
+        {
+          "rank": 3,
+          "symbol": "PTC",
+          "name": "PTC Inc.",
+          "score": 80,
+          "band": "Strong"
+        },
+        {
+          "rank": 4,
+          "symbol": "INCY",
+          "name": "Incyte",
+          "score": 79,
+          "band": "Solid"
+        },
+        {
+          "rank": 5,
+          "symbol": "ACGL",
+          "name": "Arch Capital Group",
+          "score": 78,
+          "band": "Solid"
+        },
+        {
+          "rank": 6,
+          "symbol": "CINF",
+          "name": "Cincinnati Financial",
+          "score": 78,
+          "band": "Solid"
+        },
+        {
+          "rank": 7,
+          "symbol": "SNDK",
+          "name": "Sandisk",
+          "score": 78,
+          "band": "Solid"
+        },
+        {
+          "rank": 8,
+          "symbol": "VRSN",
+          "name": "Verisign",
+          "score": 78,
+          "band": "Solid"
+        }
+      ]
+    },
+    {
+      "id": "nasdaq100",
+      "name": "Nasdaq 100",
+      "entries": [
+        {
+          "rank": 1,
+          "symbol": "MU",
+          "name": "Micron Technology",
+          "score": 85,
+          "band": "Strong"
+        },
+        {
+          "rank": 2,
+          "symbol": "REGN",
+          "name": "Regeneron Pharmaceuticals",
+          "score": 81,
+          "band": "Strong"
+        },
+        {
+          "rank": 3,
+          "symbol": "SNDK",
+          "name": "Sandisk",
+          "score": 78,
+          "band": "Solid"
+        },
+        {
+          "rank": 4,
+          "symbol": "VRTX",
+          "name": "Vertex Pharmaceuticals",
+          "score": 78,
+          "band": "Solid"
+        },
+        {
+          "rank": 5,
+          "symbol": "GILD",
+          "name": "Gilead Sciences",
+          "score": 76,
+          "band": "Solid"
+        },
+        {
+          "rank": 6,
+          "symbol": "MSFT",
+          "name": "Microsoft",
+          "score": 76,
+          "band": "Solid"
+        },
+        {
+          "rank": 7,
+          "symbol": "NVDA",
+          "name": "Nvidia",
+          "score": 73,
+          "band": "Solid"
+        },
+        {
+          "rank": 8,
+          "symbol": "PAYX",
+          "name": "Paychex",
+          "score": 72,
+          "band": "Solid"
+        }
+      ]
+    },
+    {
+      "id": "dow",
+      "name": "Dow Jones",
+      "entries": [
+        {
+          "rank": 1,
+          "symbol": "V",
+          "name": "Visa Inc.",
+          "score": 77,
+          "band": "Solid"
+        },
+        {
+          "rank": 2,
+          "symbol": "MSFT",
+          "name": "Microsoft",
+          "score": 76,
+          "band": "Solid"
+        },
+        {
+          "rank": 3,
+          "symbol": "MRK",
+          "name": "Merck & Co.",
+          "score": 74,
+          "band": "Solid"
+        },
+        {
+          "rank": 4,
+          "symbol": "JNJ",
+          "name": "Johnson & Johnson",
+          "score": 73,
+          "band": "Solid"
+        },
+        {
+          "rank": 5,
+          "symbol": "NVDA",
+          "name": "Nvidia",
+          "score": 73,
+          "band": "Solid"
+        },
+        {
+          "rank": 6,
+          "symbol": "KO",
+          "name": "Coca-Cola Company (The)",
+          "score": 72,
+          "band": "Solid"
+        },
+        {
+          "rank": 7,
+          "symbol": "TRV",
+          "name": "Travelers Companies (The)",
+          "score": 72,
+          "band": "Solid"
+        },
+        {
+          "rank": 8,
+          "symbol": "DIS",
+          "name": "Walt Disney Company (The)",
+          "score": 71,
+          "band": "Solid"
+        }
+      ]
+    }
+  ]
+}
