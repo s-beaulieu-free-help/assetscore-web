@@ -29,8 +29,8 @@ export function AnalyticsConsent() {
     <div className="fixed inset-x-0 bottom-0 z-50 border-t border-line bg-background/95 px-6 py-4 backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="max-w-3xl text-sm leading-6 text-muted">
-          AssetScore can count visits and product steps so we can see where people stop. These counts do not include
-          your name, email, portfolio, or payment details.{" "}
+          AssetScore can count visits, product steps, and Pro promotion views so we can see where people stop. These
+          counts do not include your name, email, portfolio, or payment details.{" "}
           <Link href="/privacy" className="text-foreground hover:text-accent">
             Privacy
           </Link>

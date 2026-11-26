@@ -1,6 +1,8 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { rememberStripeCustomer } from "@/lib/billing/stripe-sync";
 import { stripeClient, stripePriceId } from "@/lib/billing/stripe";
+import { isPromotionId } from "@/lib/promotions";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { createSupabaseServer } from "@/lib/supabase/server";
 
@@ -54,6 +56,8 @@ export async function POST(request: Request) {
   }
 
   const origin = new URL(request.url).origin;
+  const campaign = (await cookies()).get("promo_campaign")?.value ?? "";
+  const promoCampaign = isPromotionId(campaign) ? campaign : "";
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
     customer: customerId,
@@ -61,8 +65,8 @@ export async function POST(request: Request) {
     line_items: [{ price, quantity: 1 }],
     success_url: `${origin}/pricing?checkout=success`,
     cancel_url: `${origin}/pricing?checkout=cancel`,
-    metadata: { user_id: user.id },
-    subscription_data: { metadata: { user_id: user.id } },
+    metadata: { user_id: user.id, promo_campaign: promoCampaign },
+    subscription_data: { metadata: { user_id: user.id, promo_campaign: promoCampaign } },
   });
 
   return NextResponse.json({ url: session.url });

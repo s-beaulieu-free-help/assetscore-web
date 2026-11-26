@@ -30,7 +30,14 @@ export default function PrivacyPage() {
           </p>
           <p>
             When a paid plan starts or is canceled, AssetScore records that change against the account. That record is
-            part of operating the subscription. It does not include the card or the amount charged.
+            part of operating the subscription. It does not include the card or the amount charged. If you reached
+            checkout from a Pro promotion and allowed product counts, the campaign name can be stored with that
+            subscription event. The record does not include what you searched or which stocks you own.
+          </p>
+          <p>
+            Free accounts may see AssetScore&apos;s own Pro promotions. Trial and paid Pro accounts do not. Those
+            promotions are not from other companies. If you allow product counts, a view or a click stores the campaign,
+            the page area, the time, and your account id when you are signed in. It does not store your email.
           </p>
           <p>
             These counts are not sold. They are used to see where people stop between visiting, registering, and

@@ -1,5 +1,6 @@
 import type Stripe from "stripe";
 import { recordOperationalEvent } from "@/lib/analytics";
+import { isPromotionId } from "@/lib/promotions";
 import type { createSupabaseAdmin } from "@/lib/supabase/admin";
 
 type Admin = NonNullable<ReturnType<typeof createSupabaseAdmin>>;
@@ -87,7 +88,10 @@ export async function syncStripeSubscription(admin: Admin, subscription: Stripe.
   const becamePaid =
     (plan === "pro_monthly" || plan === "pro_annual") && existing?.plan !== "pro_monthly" && existing?.plan !== "pro_annual";
   if (becamePaid) {
-    await recordOperationalEvent(admin, userId, "subscription_started", plan === "pro_annual" ? "year" : "month");
+    const interval = plan === "pro_annual" ? "year" : "month";
+    const campaign = subscription.metadata.promo_campaign ?? "";
+    const detail = isPromotionId(campaign) ? `${interval}:${campaign}` : interval;
+    await recordOperationalEvent(admin, userId, "subscription_started", detail);
   }
   const canceledNow = subscription.cancel_at_period_end || subscription.status === "canceled";
   if (canceledNow && !existing?.cancel_at_period_end && (existing?.plan === "pro_monthly" || existing?.plan === "pro_annual" || plan === "pro_monthly" || plan === "pro_annual")) {

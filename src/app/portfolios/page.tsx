@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AdSlot } from "@/components/ad-slot";
+import { PromotionSlot } from "@/components/promotion-slot";
 import { loadAccess } from "@/lib/billing/access";
 import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
 import { CreatePortfolioForm } from "@/components/portfolio-editor";
@@ -73,7 +73,7 @@ export default async function PortfoliosPage() {
             . You can still browse stock scores without an account.
           </p>
         )}
-        {access.shouldDisplayAds ? <AdSlot /> : null}
+        <PromotionSlot placement="portfolio" enabled={access.shouldDisplayAds} />
       </main>
       <SiteFooter />
     </div>

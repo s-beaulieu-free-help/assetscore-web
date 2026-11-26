@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AdSlot } from "@/components/ad-slot";
+import { PromotionSlot } from "@/components/promotion-slot";
 import { FavoriteControl } from "@/components/favorite-control";
 import { LiveDataBadge, MarketDataSource } from "@/components/market-data-status";
 import { PriceChart } from "@/components/price-chart";
@@ -261,8 +261,8 @@ export function StockView({
           </section>
         )}
 
+        <PromotionSlot placement="stock" enabled={showAds} />
         <StockReviews ticker={stock.ticker} />
-        {showAds ? <AdSlot /> : null}
       </main>
       <SiteFooter />
     </div>

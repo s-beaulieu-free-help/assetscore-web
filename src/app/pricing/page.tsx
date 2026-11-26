@@ -82,7 +82,7 @@ export default async function PricingPage({
             </ul>
           </article>
 
-          <article className="rounded-2xl border border-line bg-card p-6">
+          <article id="monthly" className="scroll-mt-24 rounded-2xl border border-line bg-card p-6">
             <h2 className="text-lg font-medium">Pro Monthly</h2>
             <p className="mt-3 font-mono text-2xl">{PRO_MONTHLY_PRICE.label}</p>
             <p className="mt-2 text-xs leading-5 text-muted">
@@ -97,7 +97,7 @@ export default async function PricingPage({
             <div className="mt-6">{user ? <BillingActions showMonthly /> : <AuthLinks />}</div>
           </article>
 
-          <article className="rounded-2xl border border-accent/40 bg-card p-6">
+          <article id="annual" className="scroll-mt-24 rounded-2xl border border-accent/40 bg-card p-6">
             <h2 className="text-lg font-medium">Pro Annual</h2>
             <p className="mt-3 font-mono text-2xl">{PRO_ANNUAL_PRICE.label}</p>
             <p className="mt-2 text-sm text-foreground">Save approximately {savings}% with annual billing.</p>
