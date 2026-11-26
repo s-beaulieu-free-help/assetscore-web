@@ -92,7 +92,9 @@ export function CompareView({ left, right }: { left: StockPageData; right: Stock
           </Link>
         </div>
         <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
-          Both sides use the same quote, annual ratios, and score as the stock page. This is not a recommendation.
+          Both sides use the same quote, annual ratios, and score as the stock page. Annual figures are the latest
+          annual period returned. Prices are in US dollars. A dash means the figure was not returned. This is not a
+          forecast.
         </p>
 
         <div className="mt-8 grid gap-4 md:grid-cols-2">
@@ -150,6 +152,17 @@ export function CompareView({ left, right }: { left: StockPageData; right: Stock
                 </tr>
               </thead>
               <tbody>
+                <tr className="border-b border-line">
+                  <th className="px-5 py-4 text-sm font-normal text-muted sm:px-6">AssetScore</th>
+                  <td className="px-5 py-4 font-mono text-sm tabular-nums sm:px-6">
+                    {left.score ?? "—"}
+                    {left.band ? ` ${left.band}` : ""}
+                  </td>
+                  <td className="px-5 py-4 font-mono text-sm tabular-nums sm:px-6">
+                    {right.score ?? "—"}
+                    {right.band ? ` ${right.band}` : ""}
+                  </td>
+                </tr>
                 {left.metrics.map((metric, index) => (
                   <tr key={metric.label} className="border-b border-line last:border-b-0">
                     <th className="px-5 py-4 text-sm font-normal text-muted sm:px-6">

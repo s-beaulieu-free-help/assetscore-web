@@ -17,7 +17,7 @@ export function SiteFooter() {
               </span>
             </span>
           </Link>
-          <nav className="flex gap-6 text-[13px] text-muted">
+          <nav className="flex max-w-full flex-wrap gap-x-6 gap-y-3 text-[13px] text-muted">
             <Link href="/#top" className="transition-colors hover:text-foreground">
               Home
             </Link>
@@ -29,6 +29,9 @@ export function SiteFooter() {
             </Link>
             <Link href="/#faq" className="transition-colors hover:text-foreground">
               FAQ
+            </Link>
+            <Link href="/methodology" className="transition-colors hover:text-foreground">
+              Methodology
             </Link>
             <Link href="/about" className="transition-colors hover:text-foreground">
               About

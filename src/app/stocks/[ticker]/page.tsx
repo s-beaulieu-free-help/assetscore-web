@@ -6,6 +6,7 @@ import { loadAccess, recordStockEvaluation } from "@/lib/billing/access";
 import { FREE_EVALUATION_LIMIT_FALLBACK } from "@/lib/billing/plans";
 import { buildStockPage, FmpNotFoundError, getFmpSnapshot } from "@/lib/fmp";
 import { parseTicker } from "@/lib/stocks";
+import { loadViewer } from "@/lib/viewer";
 
 type StockPageProps = {
   params: Promise<{ ticker: string }>;
@@ -18,9 +19,12 @@ export async function generateMetadata({ params }: StockPageProps): Promise<Meta
 
   try {
     const snapshot = await getFmpSnapshot(ticker);
+    const title = `${snapshot.companyName} (${snapshot.symbol}) stock analysis`;
+    const description = `${snapshot.companyName} stock score, valuation, financial health, and growth. The AssetScore explains the latest reported figures. It is not a forecast of returns.`;
     return {
-      title: `${snapshot.symbol} · AssetScore`,
-      description: `${snapshot.companyName} market data and AssetScore. Score any investment in seconds.`,
+      title,
+      description,
+      openGraph: { title, description, url: `https://assetscore.net/stocks/${snapshot.symbol}` },
     };
   } catch {
     return {
@@ -35,7 +39,7 @@ export default async function StockPage({ params }: StockPageProps) {
   const ticker = parseTicker(raw);
   if (!ticker) notFound();
 
-  const access = await loadAccess();
+  const [{ user }, access] = await Promise.all([loadViewer(), loadAccess()]);
   if (access.isFree) {
     const gate = await recordStockEvaluation(ticker);
     if (!gate.allowed) {
@@ -58,5 +62,5 @@ export default async function StockPage({ params }: StockPageProps) {
 
   if (!snapshot) notFound();
 
-  return <StockView stock={buildStockPage(snapshot)} showAds={access.shouldDisplayAds} />;
+  return <StockView stock={buildStockPage(snapshot)} showAds={access.shouldDisplayAds} signedIn={Boolean(user)} />;
 }
