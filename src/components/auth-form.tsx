@@ -127,7 +127,7 @@ export function RegisterForm() {
     }
 
     await runAuth(setPending, setMessage, async () => {
-      const redirectTo = `${window.location.origin}/auth/callback?next=/`;
+      const redirectTo = `${window.location.origin}/auth/callback?next=/onboarding`;
       const { data, error } = await createSupabaseBrowser().auth.signUp({
         email,
         password,
@@ -138,7 +138,7 @@ export function RegisterForm() {
         return;
       }
       if (data.session) {
-        window.location.assign("/");
+        window.location.assign("/onboarding");
         return;
       }
       setDone(true);

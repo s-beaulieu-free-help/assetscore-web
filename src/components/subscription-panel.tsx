@@ -1,6 +1,6 @@
 import { BillingActions } from "@/components/billing-actions";
 import type { Access } from "@/lib/billing/entitlement";
-import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
+import { PRO_ANNUAL_PRICE, PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
 
 function planTitle(access: Access) {
   if (access.isTrialActive) return "Pro Trial";
@@ -9,67 +9,75 @@ function planTitle(access: Access) {
   return "Free";
 }
 
+function formatUtc(value: string) {
+  return `${new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(value))} UTC`;
+}
+
 export function SubscriptionPanel({ access }: { access: Access }) {
-  const renewal = access.currentPeriodEnd
-    ? new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(
-        new Date(access.currentPeriodEnd),
-      )
-    : null;
-  const trialEnd = access.trialEndsAt
-    ? new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(
-        new Date(access.trialEndsAt),
-      )
-    : null;
+  const renewal = access.currentPeriodEnd ? formatUtc(access.currentPeriodEnd) : null;
+  const trialEnd = access.trialEndsAt ? formatUtc(access.trialEndsAt) : null;
+  const trialStatus = access.isTrialActive
+    ? `Active, ${access.daysRemaining} ${access.daysRemaining === 1 ? "day" : "days"} remaining`
+    : access.trialEnded
+      ? "Ended. This account is on the Free plan until you subscribe."
+      : "No trial is recorded on this account.";
+  const paid = access.plan === "pro_monthly" || access.plan === "pro_annual";
 
   return (
     <section className="mt-10 rounded-2xl border border-line bg-card p-6">
       <h2 className="text-lg font-medium">Subscription</h2>
-      <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+      <dl className="mt-4 grid gap-4 text-sm sm:grid-cols-2">
         <div>
           <dt className="text-muted">Current plan</dt>
           <dd className="mt-1">{planTitle(access)}</dd>
         </div>
-        {access.isTrialActive ? (
-          <div>
-            <dt className="text-muted">Trial</dt>
-            <dd className="mt-1">
-              {access.daysRemaining} {access.daysRemaining === 1 ? "day" : "days"} remaining
-              {trialEnd ? `, through ${trialEnd} UTC` : ""}
-            </dd>
-          </div>
-        ) : null}
-        {access.billingLabel ? (
-          <div>
-            <dt className="text-muted">Price</dt>
-            <dd className="mt-1">{access.billingLabel}</dd>
-          </div>
-        ) : null}
-        {renewal && access.isPro && !access.isTrialActive ? (
-          <div>
-            <dt className="text-muted">{access.cancelAtPeriodEnd ? "Access through" : "Next billing date"}</dt>
-            <dd className="mt-1">{renewal} UTC</dd>
-          </div>
-        ) : null}
-        {access.cancelAtPeriodEnd ? (
-          <div>
-            <dt className="text-muted">Cancellation</dt>
-            <dd className="mt-1">Canceled. Pro stays on until the paid period ends.</dd>
-          </div>
-        ) : null}
+        <div>
+          <dt className="text-muted">Trial status</dt>
+          <dd className="mt-1">{trialStatus}</dd>
+        </div>
+        <div>
+          <dt className="text-muted">Trial expiration</dt>
+          <dd className="mt-1">{trialEnd ?? "None"}</dd>
+        </div>
+        <div>
+          <dt className="text-muted">Subscription price</dt>
+          <dd className="mt-1">{access.billingLabel ?? "No paid subscription"}</dd>
+        </div>
+        <div>
+          <dt className="text-muted">Next billing date</dt>
+          <dd className="mt-1">{paid && renewal ? renewal : "None until you subscribe"}</dd>
+        </div>
+        <div>
+          <dt className="text-muted">Cancellation</dt>
+          <dd className="mt-1">
+            {access.cancelAtPeriodEnd
+              ? `Canceled. Access continues until ${renewal ?? "the end of the paid period"}.`
+              : "Not canceled"}
+          </dd>
+        </div>
       </dl>
+      {access.isTrialActive && access.daysRemaining != null && access.daysRemaining <= 7 ? (
+        <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
+          Your Pro trial ends in {access.daysRemaining} {access.daysRemaining === 1 ? "day" : "days"}. Continue
+          enjoying unlimited stock analysis and portfolio management for {PRO_MONTHLY_PRICE.label}. Annual billing is{" "}
+          {PRO_ANNUAL_PRICE.label}. The trial will not charge a card.
+        </p>
+      ) : null}
       {access.trialEnded && access.isFree ? (
         <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
-          Your 30-day AssetScore Pro trial has ended. Your portfolios, favorites, and reviews are still here. Upgrade for just{" "}
-          {PRO_MONTHLY_PRICE.label} to continue unlimited stock analysis and complete portfolio management.
+          Your 30-day AssetScore Pro trial has ended. Your account is now on the Free plan. Upgrade to continue
+          enjoying unlimited stock analysis and full portfolio management. Saved portfolios and favorites remain
+          available under the Free plan&apos;s access rules. Nothing was deleted.
         </p>
       ) : (
         <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
-          The free trial does not charge a card when it ends. Pro continues only after you choose a paid plan.
+          The free trial does not charge a card when it ends. Pro continues only after you choose a paid plan. Monthly
+          is {PRO_MONTHLY_PRICE.label}. Annual is {PRO_ANNUAL_PRICE.label}.
         </p>
       )}
       <div className="mt-5">
-        {access.plan === "pro_monthly" || access.plan === "pro_annual" || access.status === "past_due" ? (
-          <BillingActions showPortal showMonthly={access.isFree} showAnnual={access.isFree} />
+        {paid || access.hasStripeSubscription ? (
+          <BillingActions showPortal showMonthly={!paid} showAnnual={!paid} />
         ) : (
           <BillingActions showMonthly showAnnual />
         )}

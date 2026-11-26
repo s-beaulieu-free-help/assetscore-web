@@ -33,6 +33,7 @@ export type Access = {
   cancelAtPeriodEnd: boolean;
   currentPeriodEnd: string | null;
   billingLabel: string | null;
+  hasStripeSubscription: boolean;
 };
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -76,6 +77,7 @@ function fullAccess(plan: Access["plan"], extra: Partial<Access> = {}): Access {
     cancelAtPeriodEnd: false,
     currentPeriodEnd: null,
     billingLabel: plan === "pro_monthly" ? PRO_MONTHLY_PRICE.label : plan === "pro_annual" ? PRO_ANNUAL_PRICE.label : null,
+    hasStripeSubscription: false,
     ...extra,
   };
 }
@@ -107,6 +109,8 @@ export function freeAccess(extra: Partial<Access> = {}): Access {
 export function entitlementFromRow(row: SubscriptionRow | null, now = Date.now()): Access {
   if (!row) return freeAccess();
 
+  const stripe = { hasStripeSubscription: Boolean(row.stripe_subscription_id) };
+
   if (paidActive(row, now)) {
     return fullAccess(row.plan as "pro_monthly" | "pro_annual", {
       status: row.status,
@@ -114,6 +118,7 @@ export function entitlementFromRow(row: SubscriptionRow | null, now = Date.now()
       currentPeriodEnd: row.current_period_end,
       trialEndsAt: row.trial_ends_at,
       trialEnded: Boolean(row.trial_ends_at) && !trialActive(row, now),
+      ...stripe,
     });
   }
 
@@ -122,6 +127,7 @@ export function entitlementFromRow(row: SubscriptionRow | null, now = Date.now()
       trialEndsAt: row.trial_ends_at,
       daysRemaining: trialDaysRemaining(row.trial_ends_at as string, now),
       status: "trialing",
+      ...stripe,
     });
   }
 
@@ -131,5 +137,6 @@ export function entitlementFromRow(row: SubscriptionRow | null, now = Date.now()
     status: row.status,
     cancelAtPeriodEnd: row.cancel_at_period_end,
     currentPeriodEnd: row.current_period_end,
+    ...stripe,
   });
 }

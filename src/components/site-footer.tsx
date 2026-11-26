@@ -36,6 +36,9 @@ export function SiteFooter() {
             <Link href="/about" className="transition-colors hover:text-foreground">
               About
             </Link>
+            <Link href="/privacy" className="transition-colors hover:text-foreground">
+              Privacy
+            </Link>
           </nav>
         </div>
         <p className="mt-12 max-w-md border-t border-line pt-6 text-xs leading-5 text-muted">

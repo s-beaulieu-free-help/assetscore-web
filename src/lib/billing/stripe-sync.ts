@@ -1,4 +1,5 @@
 import type Stripe from "stripe";
+import { recordOperationalEvent } from "@/lib/analytics";
 import type { createSupabaseAdmin } from "@/lib/supabase/admin";
 
 type Admin = NonNullable<ReturnType<typeof createSupabaseAdmin>>;
@@ -31,7 +32,7 @@ export async function syncStripeSubscription(admin: Admin, subscription: Stripe.
 
   const { data: existing } = await admin
     .from("subscriptions")
-    .select("plan, trial_ends_at, stripe_event_at")
+    .select("plan, trial_ends_at, stripe_event_at, cancel_at_period_end")
     .eq("user_id", userId)
     .maybeSingle();
 
@@ -82,6 +83,16 @@ export async function syncStripeSubscription(admin: Admin, subscription: Stripe.
     { onConflict: "user_id" },
   );
   if (error) throw new Error(error.message);
+
+  const becamePaid =
+    (plan === "pro_monthly" || plan === "pro_annual") && existing?.plan !== "pro_monthly" && existing?.plan !== "pro_annual";
+  if (becamePaid) {
+    await recordOperationalEvent(admin, userId, "subscription_started", plan === "pro_annual" ? "year" : "month");
+  }
+  const canceledNow = subscription.cancel_at_period_end || subscription.status === "canceled";
+  if (canceledNow && !existing?.cancel_at_period_end && (existing?.plan === "pro_monthly" || existing?.plan === "pro_annual" || plan === "pro_monthly" || plan === "pro_annual")) {
+    await recordOperationalEvent(admin, userId, "subscription_canceled", plan);
+  }
 }
 
 export async function rememberStripeCustomer(admin: Admin, userId: string, customerId: string) {

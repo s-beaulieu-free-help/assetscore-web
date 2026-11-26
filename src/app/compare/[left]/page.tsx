@@ -23,7 +23,7 @@ export default async function ComparePickPage({ params }: ComparePickProps) {
     return (
       <UpgradeNote
         title="Stock comparisons are a Pro feature"
-        copy="Free accounts can keep reading individual stock pages. Side-by-side comparison stays available on the Pro trial and on a paid plan."
+        copy="Side-by-side comparison stays available on the Pro trial and on a paid plan. Individual stock pages stay open on the Free plan."
       />
     );
   }

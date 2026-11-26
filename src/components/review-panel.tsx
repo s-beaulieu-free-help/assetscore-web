@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Stars } from "@/components/stars";
+import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
 import { reviewRejectionReason } from "@/lib/moderation";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 
@@ -234,7 +235,7 @@ export function ReviewPanel({
           </div>
         ) : signedIn ? (
           <p className="text-sm leading-6 text-muted">
-            Writing reviews is included with Pro. Approved reviews stay visible.{" "}
+            Writing reviews is included with Pro. Pro is {PRO_MONTHLY_PRICE.label}. Approved reviews stay visible.{" "}
             <Link href="/pricing" className="text-foreground hover:text-accent">
               Upgrade to Pro
             </Link>

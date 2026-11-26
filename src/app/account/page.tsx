@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { loadAccess } from "@/lib/billing/access";
+import { AccountActivity } from "@/components/account-activity";
 import { AccountSettings } from "@/components/account-settings";
 import { SubscriptionPanel } from "@/components/subscription-panel";
 import { SiteFooter } from "@/components/site-footer";
@@ -23,6 +24,7 @@ export default async function AccountPage() {
             <p className="mt-4 max-w-xl text-sm leading-6 text-muted">
               This name appears on your reviews. Your email is not shown publicly.
             </p>
+            <AccountActivity />
             <SubscriptionPanel access={access} />
             <AccountSettings
               userId={user.id}

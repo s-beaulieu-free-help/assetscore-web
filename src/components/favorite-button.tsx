@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
@@ -61,7 +62,7 @@ export function FavoriteButton({
           href="/pricing"
           className="inline-flex h-11 items-center rounded-full border border-line px-5 text-sm font-medium text-foreground transition hover:bg-white/5"
         >
-          Upgrade to save favorites
+          Unlock favorites with Pro · {PRO_MONTHLY_PRICE.label}
         </Link>
       ) : (
         <button

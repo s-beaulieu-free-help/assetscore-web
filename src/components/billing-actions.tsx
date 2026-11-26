@@ -54,7 +54,7 @@ export function BillingActions({
         ) : null}
         {showPortal ? (
           <button type="button" className={quietClass} disabled={Boolean(pending)} onClick={() => open("/api/stripe/portal", null, "portal")}>
-            {pending === "portal" ? "Opening billing…" : "Manage subscription"}
+            {pending === "portal" ? "Opening billing…" : "Manage Subscription"}
           </button>
         ) : null}
       </div>

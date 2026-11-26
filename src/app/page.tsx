@@ -10,6 +10,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { TopRatedLists } from "@/components/top-rated-lists";
 import { Trust } from "@/components/trust";
+import { recordDailyCount } from "@/lib/analytics";
 import { loadAccess } from "@/lib/billing/access";
 import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
 import { buildStockPage, getFmpSnapshot, type StockPageData } from "@/lib/fmp";
@@ -68,6 +69,7 @@ function exampleHolding(stock: StockPageData | null, ticker: string): ExampleHol
 }
 
 export default async function Home() {
+  await recordDailyCount("homepage_view");
   const [{ user, profile }, access, example, apple, microsoft, meta] = await Promise.all([
     loadViewer(),
     loadAccess(),

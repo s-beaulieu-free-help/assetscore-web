@@ -328,6 +328,11 @@ export function CreatePortfolioForm() {
       return;
     }
     form.reset();
+    void fetch("/api/analytics", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ event: "first_portfolio_created" }),
+    });
     router.push(`/portfolios/${data.id}`);
     router.refresh();
   }

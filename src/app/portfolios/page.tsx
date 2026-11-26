@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AdSlot } from "@/components/ad-slot";
 import { loadAccess } from "@/lib/billing/access";
+import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
 import { CreatePortfolioForm } from "@/components/portfolio-editor";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -35,9 +36,10 @@ export default async function PortfoliosPage() {
               <CreatePortfolioForm />
             ) : (
               <p className="mt-6 max-w-xl text-sm leading-6 text-muted">
-                Creating a portfolio is included with Pro. Portfolios you already saved stay available.{" "}
+                Unlock complete portfolio analysis with AssetScore Pro. Pro is {PRO_MONTHLY_PRICE.label}. Portfolios you
+                already saved stay available.{" "}
                 <Link href="/pricing" className="text-foreground hover:text-accent">
-                  Upgrade to Pro
+                  See Pro plans
                 </Link>
                 .
               </p>

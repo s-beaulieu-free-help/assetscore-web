@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { StockView } from "@/components/stock-view";
 import { UpgradeNote } from "@/components/upgrade-note";
+import { recordConsentedEvent } from "@/lib/analytics";
 import { loadAccess, recordStockEvaluation } from "@/lib/billing/access";
 import { FREE_EVALUATION_LIMIT_FALLBACK } from "@/lib/billing/plans";
 import { buildStockPage, FmpNotFoundError, getFmpSnapshot } from "@/lib/fmp";
@@ -46,8 +47,8 @@ export default async function StockPage({ params }: StockPageProps) {
       const limit = gate.limit ?? FREE_EVALUATION_LIMIT_FALLBACK;
       return (
         <UpgradeNote
-          title={`${ticker} is outside this month's free evaluations`}
-          copy={`The Free plan includes ${limit} stock evaluations each calendar month. Repeat visits to a stock you already opened this month do not count again. Upgrade to keep analyzing without a monthly cap.`}
+          title="You've reached your monthly free analysis limit"
+          copy={`You've reached your monthly free analysis limit of ${limit} stock evaluations. Upgrade to Pro for unlimited stock analysis. A stock you already opened this month does not count again.`}
         />
       );
     }
@@ -61,6 +62,11 @@ export default async function StockPage({ params }: StockPageProps) {
   }
 
   if (!snapshot) notFound();
+
+  if (user) {
+    await recordConsentedEvent("first_stock_evaluation");
+    if (access.isFree) await recordConsentedEvent("free_activity");
+  }
 
   return <StockView stock={buildStockPage(snapshot)} showAds={access.shouldDisplayAds} signedIn={Boolean(user)} />;
 }
