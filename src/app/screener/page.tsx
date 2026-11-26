@@ -101,7 +101,7 @@ function UpgradeCopy({ free }: { free: boolean }) {
       <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
         {free
           ? "Find stocks that match your investment criteria using AssetScore's financial scoring system and advanced screening filters."
-          : "The Stock Screener is included with an AssetScore Pro trial or a paid Pro plan. Results stay private and are not shown on this public page."}
+          : "The Stock Screener is included with an AssetScore Pro trial or a paid Pro plan."}
       </p>
       <p className="mt-4 text-sm text-foreground">
         {PRO_MONTHLY_PRICE.label}.
