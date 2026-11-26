@@ -172,8 +172,8 @@ export function ProductDemos({
           </h2>
           <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
             Registered users add the stocks they own and give each one a percentage of the portfolio. The portfolio
-            score is the allocation-weighted average of those AssetScores. This example is four live scores at 25%
-            each.
+            score is the allocation-weighted average of those AssetScores. This example is four live scores at 15%,
+            25%, 40%, and 20%.
           </p>
           <div className="mt-10 rounded-2xl border border-line bg-card p-5 sm:p-6">
             <div className="flex flex-col gap-6 sm:flex-row sm:items-center">

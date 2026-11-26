@@ -59,13 +59,13 @@ async function loadStock(symbol: string) {
   }
 }
 
-function exampleHolding(stock: StockPageData | null, ticker: string): ExampleHolding {
+function exampleHolding(stock: StockPageData | null, ticker: string, allocation: number): ExampleHolding {
   return {
     ticker: stock?.ticker ?? ticker,
     name: stock?.name ?? ticker,
     score: stock?.score ?? null,
     band: stock?.band ?? null,
-    allocation: 25,
+    allocation,
   };
 }
 
@@ -122,10 +122,10 @@ export default async function Home() {
           left={apple}
           right={microsoft}
           holdings={[
-            exampleHolding(example, "NVDA"),
-            exampleHolding(apple, "AAPL"),
-            exampleHolding(microsoft, "MSFT"),
-            exampleHolding(meta, "META"),
+            exampleHolding(example, "NVDA", 15),
+            exampleHolding(apple, "AAPL", 25),
+            exampleHolding(microsoft, "MSFT", 40),
+            exampleHolding(meta, "META", 20),
           ]}
         />
         <Pillars />
