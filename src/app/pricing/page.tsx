@@ -59,7 +59,7 @@ export default async function PricingPage({
           <article className="rounded-2xl border border-line bg-card p-6">
             <h2 className="text-lg font-medium">Pro Monthly</h2>
             <p className="mt-3 font-mono text-2xl">{PRO_MONTHLY_PRICE.label}</p>
-            <p className="mt-2 text-xs text-muted">Billed every month in Canadian dollars. Taxes are shown on the Stripe payment page.</p>
+            <p className="mt-2 text-xs text-muted">Billed every month in US dollars. Taxes are shown on the Stripe payment page.</p>
             <ul className="mt-6 space-y-2 text-sm leading-6 text-muted">
               <li>Unlimited stock analysis</li>
               <li>Complete portfolio management</li>
@@ -78,7 +78,7 @@ export default async function PricingPage({
             <h2 className="text-lg font-medium">Pro Annual</h2>
             <p className="mt-3 font-mono text-2xl">{PRO_ANNUAL_PRICE.label}</p>
             <p className="mt-2 text-xs text-muted">
-              One payment of $49.99 CAD each year, instead of twelve monthly payments. Taxes are shown on the Stripe payment page.
+              One payment of $49.99 US each year, instead of twelve monthly payments. Taxes are shown on the Stripe payment page.
             </p>
             <ul className="mt-6 space-y-2 text-sm leading-6 text-muted">
               <li>All Pro Monthly features</li>

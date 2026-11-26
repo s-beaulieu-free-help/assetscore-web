@@ -1,5 +1,6 @@
 import { BillingActions } from "@/components/billing-actions";
 import type { Access } from "@/lib/billing/entitlement";
+import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
 
 function planTitle(access: Access) {
   if (access.isTrialActive) return "Pro Trial";
@@ -58,8 +59,8 @@ export function SubscriptionPanel({ access }: { access: Access }) {
       </dl>
       {access.trialEnded && access.isFree ? (
         <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
-          Your 30-day AssetScore Pro trial has ended. Your portfolios, favorites, and reviews are still here. Upgrade for just $5.99
-          CAD/month to continue unlimited stock analysis and complete portfolio management.
+          Your 30-day AssetScore Pro trial has ended. Your portfolios, favorites, and reviews are still here. Upgrade for just{" "}
+          {PRO_MONTHLY_PRICE.label} to continue unlimited stock analysis and complete portfolio management.
         </p>
       ) : (
         <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
