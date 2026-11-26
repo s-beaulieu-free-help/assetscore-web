@@ -17,6 +17,9 @@ export function SiteHeaderBar({ name, notice = null }: { name: string | null; no
           <Link href="/#top" className="transition-colors hover:text-foreground">
             Home
           </Link>
+          <Link href="/#top-rated" className="transition-colors hover:text-foreground">
+            Top Rated
+          </Link>
           <Link href="/#features" className="transition-colors hover:text-foreground">
             Features
           </Link>
@@ -25,6 +28,9 @@ export function SiteHeaderBar({ name, notice = null }: { name: string | null; no
           </Link>
         </nav>
         <div className="flex items-center gap-3">
+          <Link href="/#top-rated" className="text-[13px] text-muted transition-colors hover:text-foreground md:hidden">
+            Top Rated
+          </Link>
           <AccountNav name={name} notice={notice} />
           <Link
             href="/#analyze"

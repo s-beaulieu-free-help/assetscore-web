@@ -3,6 +3,7 @@ import { Features } from "@/components/features";
 import { Hero } from "@/components/hero";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { TopRatedLists } from "@/components/top-rated-lists";
 import { Trust } from "@/components/trust";
 import { loadAccess } from "@/lib/billing/access";
 import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
@@ -38,6 +39,7 @@ export default async function Home() {
           </span>
         </p>
         <Hero />
+        <TopRatedLists />
         <Trust />
         <Features />
       </main>
