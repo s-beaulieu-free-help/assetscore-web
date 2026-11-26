@@ -60,15 +60,15 @@ export function SubscriptionPanel({ access }: { access: Access }) {
       </dl>
       {access.isTrialActive && access.daysRemaining != null && access.daysRemaining <= 7 ? (
         <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
-          Your Pro trial ends in {access.daysRemaining} {access.daysRemaining === 1 ? "day" : "days"}. Continue
-          enjoying unlimited stock analysis and portfolio management for {PRO_MONTHLY_PRICE.label}. The trial will
+          Your Pro trial ends in {access.daysRemaining} {access.daysRemaining === 1 ? "day" : "days"}. Keep
+          unlimited stock evaluations, the Stock Screener, new portfolios, and stock comparisons for {PRO_MONTHLY_PRICE.label}. The trial will
           not charge a card.
         </p>
       ) : null}
       {access.trialEnded && access.isFree ? (
         <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
-          Your 30-day AssetScore Pro trial has ended. Your account is now on the Free plan. Upgrade to continue
-          enjoying unlimited stock analysis and full portfolio management. Saved portfolios and favorites remain
+          Your 30-day AssetScore Pro trial has ended. Your account is now on the Free plan. Upgrade to keep
+          unlimited stock evaluations, the Stock Screener, new portfolios, and stock comparisons. Saved portfolios and favorites remain
           available under the Free plan&apos;s access rules. Nothing was deleted.
         </p>
       ) : (

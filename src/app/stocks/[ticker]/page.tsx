@@ -51,7 +51,7 @@ export default async function StockPage({ params }: StockPageProps) {
       return (
         <UpgradeNote
           title="You've reached your monthly free analysis limit"
-          copy={`You've reached your monthly free analysis limit of ${limit} stock evaluations. Upgrade to Pro for unlimited stock analysis. A stock you already opened this month does not count again.`}
+          copy={`You've reached your monthly free analysis limit of ${limit} stock evaluations. Pro includes unlimited stock evaluations, the Stock Screener, new portfolios, and stock comparisons. A stock you already opened this month does not count again.`}
         />
       );
     }

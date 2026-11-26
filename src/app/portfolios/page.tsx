@@ -38,7 +38,7 @@ export default async function PortfoliosPage() {
               <CreatePortfolioForm />
             ) : (
               <p className="mt-6 max-w-xl text-sm leading-6 text-muted">
-                Unlock complete portfolio analysis with AssetScore Pro. Pro is {PRO_MONTHLY_PRICE.label}. Portfolios you
+                New portfolios and allocation-weighted scores are included with AssetScore Pro. Pro is {PRO_MONTHLY_PRICE.label}. Portfolios you
                 already saved stay available.{" "}
                 <Link href="/pricing" className="text-foreground hover:text-accent">
                   See Pro plans

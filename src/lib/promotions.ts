@@ -37,7 +37,7 @@ export const PROMOTIONS: PromotionCampaign[] = [
     name: "Portfolio Management",
     headline: "Your Investments Deserve More",
     description:
-      "Take your investment research further with AssetScore Pro portfolio tools. You can create portfolios, set allocations, and see the weighted portfolio score.",
+      "Create portfolios, set allocations, and see the allocation-weighted AssetScore. New portfolios are included with Pro.",
     cta: "Unlock Portfolio Tools",
     href: "/pricing",
     placements: ["portfolio"],
@@ -63,7 +63,7 @@ export const PROMOTIONS: PromotionCampaign[] = [
     id: "monthly-pro",
     name: "Monthly Subscription",
     headline: "Unlock More With Pro",
-    description: `Get the stock screener and portfolio tools for ${PRO_MONTHLY_PRICE.label}.`,
+    description: `Get unlimited stock evaluations, the Stock Screener, new portfolios, and stock comparisons for ${PRO_MONTHLY_PRICE.label}.`,
     cta: "Explore Pro",
     href: "/pricing#monthly",
     placements: ["stock", "account"],

@@ -100,7 +100,7 @@ export default async function Home() {
               <span className="text-foreground">
                 Welcome {name}
                 {access.trialEnded && access.isFree
-                  ? `. Your 30-day AssetScore Pro trial has ended. Upgrade for just ${PRO_MONTHLY_PRICE.label} to continue enjoying unlimited stock analysis and complete portfolio management.`
+                  ? `. Your 30-day AssetScore Pro trial has ended. Upgrade for just ${PRO_MONTHLY_PRICE.label} to keep unlimited stock evaluations, the Stock Screener, new portfolios, and stock comparisons.`
                   : ""}
               </span>
             ) : (
@@ -108,7 +108,7 @@ export default async function Home() {
                 <Link href="/register" className="text-foreground hover:text-accent">
                   Create your free account
                 </Link>{" "}
-                and unlock stock screener and portfolio tools for 30 days. No credit card is required, and the trial
+                and use unlimited stock evaluations, the Stock Screener, portfolios, and stock comparisons for 30 days. No credit card is required, and the trial
                 does not charge you when it ends.
               </>
             )}

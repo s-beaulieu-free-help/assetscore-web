@@ -6,7 +6,8 @@ import { safeAppPath } from "@/lib/safe-path";
 
 export const metadata: Metadata = {
   title: "Register · AssetScore",
-  description: "Create a free AssetScore account and unlock unlimited stock analysis and portfolio tools for 30 days.",
+  description:
+    "Create a free AssetScore account. The 30-day trial includes unlimited stock evaluations, the Stock Screener, portfolios, and stock comparisons.",
 };
 
 export default async function RegisterPage({
@@ -21,14 +22,14 @@ export default async function RegisterPage({
     <AuthScreen
       kicker="Account"
       title="Create an account"
-      copy="Take control of your investments. Create your free account and unlock unlimited stock analysis and portfolio tools for 30 days."
+      copy="Create your free account. For 30 days you can run unlimited stock evaluations, use the Stock Screener, create portfolios, and compare stocks."
       points={[
         "Unlimited stock evaluations.",
-        "Full portfolio analysis.",
+        "Stock Screener for the S&P 500, Nasdaq 100, and Dow Jones.",
+        "New portfolios and allocation-weighted scores.",
         "Stock comparisons.",
-        "Advanced financial analysis.",
-        "No advertisements during the trial.",
-        "Full access. No credit card required. No automatic charge.",
+        "New favorites and reviews.",
+        "No AssetScore ads during the trial. No credit card. No automatic charge.",
       ]}
     >
       <RegisterForm nextPath={nextPath} />

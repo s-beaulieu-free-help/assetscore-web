@@ -42,7 +42,11 @@ export function Hero({ signedIn = false }: { signedIn?: boolean }) {
               Explore Stock Analysis
             </Link>
           </div>
-          {signedIn ? null : <p className="mt-4 text-sm leading-6 text-muted">30 days of full access. No credit card required.</p>}
+          {signedIn ? null : (
+            <p className="mt-4 text-sm leading-6 text-muted">
+              30 days of unlimited stock evaluations, the Stock Screener, portfolios, and comparisons. No credit card required.
+            </p>
+          )}
           <div className="rise mt-10" style={{ animationDelay: "200ms" }}>
             <SearchWidget />
           </div>

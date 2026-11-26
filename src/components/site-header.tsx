@@ -13,9 +13,9 @@ export async function SiteHeader() {
       : null;
   const endingSoon = access.isTrialActive && access.daysRemaining != null && access.daysRemaining <= 7;
   const banner = endingSoon
-    ? `Your Pro trial ends in ${access.daysRemaining} ${access.daysRemaining === 1 ? "day" : "days"}. Continue enjoying unlimited stock analysis and portfolio management for ${PRO_MONTHLY_PRICE.label}.`
+    ? `Your Pro trial ends in ${access.daysRemaining} ${access.daysRemaining === 1 ? "day" : "days"}. Keep unlimited stock evaluations, the Stock Screener, new portfolios, and stock comparisons for ${PRO_MONTHLY_PRICE.label}.`
     : access.trialEnded && access.isFree
-      ? "Your 30-day AssetScore Pro trial has ended. Your account is now on the Free plan. Upgrade to continue enjoying unlimited stock analysis and full portfolio management. Saved portfolios and favorites remain available."
+      ? "Your 30-day AssetScore Pro trial has ended. Your account is now on the Free plan. Upgrade to keep unlimited stock evaluations, the Stock Screener, new portfolios, and stock comparisons. Saved portfolios and favorites remain available."
       : null;
 
   return (

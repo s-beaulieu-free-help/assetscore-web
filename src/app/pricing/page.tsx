@@ -60,7 +60,7 @@ export default async function PricingPage({
         {access.trialEnded && access.isFree ? (
           <p className="mt-6 max-w-2xl text-sm leading-6 text-foreground">
             Your 30-day AssetScore Pro trial has ended. Your account is now on the Free plan. Upgrade to continue
-            enjoying unlimited stock analysis and full portfolio management. Saved portfolios and favorites stay in the
+            keeping unlimited stock evaluations, the Stock Screener, new portfolios, and stock comparisons. Saved portfolios and favorites stay in the
             account, under the Free plan&apos;s access rules.
           </p>
         ) : null}

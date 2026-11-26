@@ -2,10 +2,10 @@ import Link from "next/link";
 import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
 
 const points = [
-  "Free registration",
-  "30 days of full access",
-  "No credit card required",
-  "No automatic charge after the trial",
+  "Unlimited stock evaluations",
+  "Stock Screener",
+  "Portfolios and stock comparisons",
+  "No credit card, and no automatic charge",
 ];
 
 export function HomeCta() {
@@ -16,7 +16,7 @@ export function HomeCta() {
           Take control of your investments.
         </h2>
         <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
-          Create your free account and unlock unlimited stock analysis and portfolio tools for 30 days.
+          Create your free account. For 30 days you can run unlimited stock evaluations, use the Stock Screener, create portfolios, and compare stocks.
         </p>
         <ul className="mt-8 grid gap-3 sm:grid-cols-2">
           {points.map((point) => (

@@ -28,7 +28,7 @@ export const homeFaqs = [
   },
   {
     question: "What happens after my 30-day free trial?",
-    answer: `The trial ends without a charge. The account moves to the Free plan: ${FREE_EVALUATION_LIMIT_FALLBACK} stock evaluations per calendar month, basic results, and advertisements. New portfolios, comparisons, favorites, and reviews require Pro. Portfolios, favorites, and reviews you already saved stay in the account. Pro is ${PRO_MONTHLY_PRICE.label} only if you choose a paid plan.`,
+    answer: `The trial ends without a charge. The account moves to the Free plan: ${FREE_EVALUATION_LIMIT_FALLBACK} stock evaluations per calendar month, the same stock scores, and AssetScore ads. New portfolios, comparisons, favorites, reviews, and the Stock Screener require Pro. Portfolios, favorites, and reviews you already saved stay in the account. Pro is ${PRO_MONTHLY_PRICE.label} only if you choose a paid plan.`,
   },
   {
     question: "Can I cancel my subscription at any time?",
@@ -38,7 +38,7 @@ export const homeFaqs = [
   {
     question: "Can I use AssetScore without subscribing?",
     answer:
-      "Yes. You can open stock scores without an account. Creating an account is free and includes 30 days of full access after you confirm your email. After that trial, the Free plan still lets you evaluate a limited number of stocks each month. Comparison and portfolio tools stay on the trial and on Pro.",
+      "Yes. You can open stock scores without an account. Creating an account is free. After you confirm your email, 30 days include unlimited stock evaluations, the Stock Screener, new portfolios, and stock comparisons. After that trial, the Free plan still lets you evaluate a limited number of stocks each month.",
   },
 ];
 
