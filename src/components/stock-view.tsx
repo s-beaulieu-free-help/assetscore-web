@@ -247,17 +247,25 @@ export function StockView({
 
         {signedIn ? null : (
           <section className="mt-8 rounded-2xl border border-line bg-card px-6 py-6">
-            <h2 className="text-xl font-medium tracking-[-0.03em]">Track this stock</h2>
+            <h2 className="text-xl font-medium tracking-[-0.03em]">Evaluate more stocks</h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
-              Want to track this stock and analyze your portfolio? Create a free account and unlock 30 days of full
-              AssetScore Pro access. No credit card is required, and the trial does not charge you when it ends.
+              Want to evaluate more stocks? Create your free AssetScore account and explore the full platform for 30
+              days. No credit card is required, and the trial does not charge you when it ends.
             </p>
-            <Link
-              href="/register"
-              className="mt-5 inline-flex h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-ink transition hover:brightness-110"
-            >
-              Start Your 30-Day Free Trial
-            </Link>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <Link
+                href={`/register?next=${encodeURIComponent(`/stocks/${stock.ticker}`)}`}
+                className="inline-flex h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-ink transition hover:brightness-110"
+              >
+                Create a free account
+              </Link>
+              <Link
+                href={`/compare/${stock.ticker}`}
+                className="inline-flex h-11 items-center rounded-full border border-line px-5 text-sm"
+              >
+                Compare {stock.ticker} with another company
+              </Link>
+            </div>
           </section>
         )}
 

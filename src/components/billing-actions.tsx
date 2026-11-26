@@ -16,6 +16,13 @@ export function BillingActions({
   const [pending, setPending] = useState("");
 
   async function open(path: string, body: Record<string, string> | null, key: string) {
+    if (key === "month") {
+      void fetch("/api/analytics", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ event: "upgrade_click" }),
+      });
+    }
     setPending(key);
     setMessage("");
     try {

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import { AnalyticsConsent } from "@/components/analytics-consent";
+import { VisitBeacon } from "@/components/visit-beacon";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -23,7 +24,7 @@ const instrument = Instrument_Serif({
 export const metadata: Metadata = {
   metadataBase: new URL("https://assetscore.net"),
   title: "AssetScore",
-  description: "Score any investment in seconds.",
+  description: "Stock analysis and scoring for individual investors.",
   applicationName: "AssetScore",
   icons: {
     icon: [
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "AssetScore",
-    description: "Score any investment in seconds.",
+    description: "Stock analysis and scoring for individual investors.",
     url: "https://assetscore.net",
     siteName: "AssetScore",
     type: "website",
@@ -51,7 +52,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary",
     title: "AssetScore",
-    description: "Score any investment in seconds.",
+    description: "Stock analysis and scoring for individual investors.",
     images: ["/logo.png"],
   },
 };
@@ -74,6 +75,7 @@ export default function RootLayout({
     >
       <body className="min-h-full bg-background text-foreground">
         {children}
+        <VisitBeacon />
         <AnalyticsConsent />
       </body>
     </html>

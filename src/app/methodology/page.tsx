@@ -5,10 +5,16 @@ import { SiteHeader } from "@/components/site-header";
 import { PILLAR_COPY } from "@/lib/pillar-copy";
 import { bandFor, type PillarLabel } from "@/lib/score";
 
+const title = "Stock scoring methodology";
+const description =
+  "How AssetScore turns annual figures and the latest quote into a 0–100 stock score, how missing financial data is handled, and why a high score is not a forecast.";
+
 export const metadata: Metadata = {
-  title: "How AssetScore is calculated",
-  description:
-    "How AssetScore turns annual figures and the latest quote into a 0–100 score, how missing data is handled, and why a high score is not a forecast.",
+  title,
+  description,
+  alternates: { canonical: "/methodology" },
+  openGraph: { title, description, url: "https://assetscore.net/methodology", type: "website" },
+  twitter: { card: "summary", title, description },
 };
 
 const ORDER: PillarLabel[] = ["Value", "Growth", "Quality", "Financial Health", "Momentum"];
@@ -66,6 +72,46 @@ export default function MethodologyPage() {
               </article>
             );
           })}
+        </section>
+
+        <section className="mt-12">
+          <h2 className="text-2xl font-medium tracking-[-0.03em]">How Financial Metrics Become Scores</h2>
+          <p className="mt-4 text-sm leading-7 text-muted">
+            Each pillar starts from a figure that Financial Modeling Prep returned. The mapping below is the one the
+            stock page uses. There is no industry adjustment and no extra metric hiding behind a pillar.
+          </p>
+          <ul className="mt-4 space-y-3 text-sm leading-7 text-muted">
+            <li>Value uses the annual price-to-earnings ratio. A lower positive multiple scores higher. Negative earnings keep Value low.</li>
+            <li>Growth uses year-over-year revenue growth. Faster growth scores higher. A decline scores lower.</li>
+            <li>Quality uses the annual net profit margin. A wider margin scores higher. A loss scores lower.</li>
+            <li>
+              Financial Health uses the annual current ratio and debt compared with equity. A higher current ratio raises
+              that part of the score. More debt relative to equity lowers the other part. When both figures exist, the
+              pillar is their average. When only one exists, that one is the pillar.
+            </li>
+            <li>
+              Momentum uses the latest price compared with the 52-week low and high. A price near the high scores higher.
+              A price near the low scores lower. If that range is missing and enough closing prices exist, Momentum uses
+              the change versus an earlier close.
+            </li>
+          </ul>
+          <p className="mt-4 text-sm leading-7 text-muted">
+            The five pillar scores contribute equally to the overall AssetScore. The headline number is the rounded
+            average of the pillars that have a score. A company can outrank another because its earnings multiple,
+            revenue change, profit margin, balance sheet, or price position is different. One strong pillar does not
+            erase a weak one when both have data.
+          </p>
+          <p className="mt-4 text-sm leading-7 text-muted">
+            A high score means the available pillars average higher. A low score means they average lower. On a stock
+            page, the explanation names that company&apos;s own strongest and softest pillars, so two companies are not
+            described with the same sentence.
+          </p>
+          <p className="mt-4 text-sm leading-7 text-muted">
+            Quantitative scoring has limits. It does not include dividends, analyst opinions, or a target price. Annual
+            statements and the quote can come from different periods. A missing figure narrows the average instead of
+            filling in a guess. The result describes the latest available inputs. It is not a prediction of the share
+            price and it is not investment advice.
+          </p>
         </section>
 
         <section className="mt-12">

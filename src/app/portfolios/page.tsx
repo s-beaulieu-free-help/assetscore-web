@@ -8,7 +8,11 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { loadViewer } from "@/lib/viewer";
 
-export const metadata: Metadata = { title: "Portfolios · AssetScore" };
+export const metadata: Metadata = {
+  title: "Portfolio analysis · AssetScore",
+  description: "Score an investment portfolio from the allocation-weighted average of each holding's AssetScore.",
+  robots: { index: false, follow: false },
+};
 
 export default async function PortfoliosPage() {
   const [{ supabase, user }, access] = await Promise.all([loadViewer(), loadAccess()]);

@@ -30,9 +30,14 @@ export async function generateMetadata({ params }: ComparePageProps): Promise<Me
   const { left, right } = await params;
   const pair = await loadPair(left, right);
   if (!pair) return { title: "Compare · AssetScore" };
+  const title = `Compare ${pair.left.name} and ${pair.right.name}`;
+  const description = `Stock comparison of ${pair.left.name} and ${pair.right.name}: AssetScore, pillar scores, and the same reported fundamentals.`;
   return {
-    title: `${pair.left.ticker} vs ${pair.right.ticker} · AssetScore`,
-    description: `Compare ${pair.left.name} and ${pair.right.name} on the same AssetScore inputs.`,
+    title,
+    description,
+    alternates: { canonical: `/compare/${pair.left.ticker}/${pair.right.ticker}` },
+    openGraph: { title, description, type: "website" },
+    twitter: { card: "summary", title, description },
   };
 }
 

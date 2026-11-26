@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { StockView } from "@/components/stock-view";
 import { UpgradeNote } from "@/components/upgrade-note";
-import { recordConsentedEvent } from "@/lib/analytics";
+import { recordConsentedEvent, recordDailyCount } from "@/lib/analytics";
 import { loadAccess, recordStockEvaluation } from "@/lib/billing/access";
 import { FREE_EVALUATION_LIMIT_FALLBACK } from "@/lib/billing/plans";
 import { buildStockPage, FmpNotFoundError, getFmpSnapshot } from "@/lib/fmp";
@@ -21,16 +21,19 @@ export async function generateMetadata({ params }: StockPageProps): Promise<Meta
   try {
     const snapshot = await getFmpSnapshot(ticker);
     const title = `${snapshot.companyName} (${snapshot.symbol}) stock analysis`;
-    const description = `${snapshot.companyName} stock score, valuation, financial health, and growth. The AssetScore explains the latest reported figures. It is not a forecast of returns.`;
+    const description = `${snapshot.companyName} stock analysis: AssetScore, valuation, growth, quality, financial health, and momentum. The score explains the latest reported figures. It is not a forecast of returns.`;
+    const path = `/stocks/${snapshot.symbol}`;
     return {
       title,
       description,
-      openGraph: { title, description, url: `https://assetscore.net/stocks/${snapshot.symbol}` },
+      alternates: { canonical: path },
+      openGraph: { title, description, url: `https://assetscore.net${path}`, type: "website" },
+      twitter: { card: "summary", title, description },
     };
   } catch {
     return {
       title: `${ticker} · AssetScore`,
-      description: "Score any investment in seconds.",
+      description: "Stock analysis and scoring for individual investors.",
     };
   }
 }
@@ -63,6 +66,7 @@ export default async function StockPage({ params }: StockPageProps) {
 
   if (!snapshot) notFound();
 
+  await recordDailyCount("stock_page_view");
   if (user) {
     await recordConsentedEvent("first_stock_evaluation");
     if (access.isFree) await recordConsentedEvent("free_activity");

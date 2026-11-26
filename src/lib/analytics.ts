@@ -2,14 +2,24 @@ import { cookies } from "next/headers";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { loadViewer } from "@/lib/viewer";
 
-const DAILY_EVENTS = ["homepage_view", "registration_page_view"] as const;
+const DAILY_EVENTS = [
+  "site_view",
+  "homepage_view",
+  "registration_page_view",
+  "stock_page_view",
+  "screener_page_view",
+  "pricing_page_view",
+  "upgrade_click",
+] as const;
 const CONSENT_EVENTS = [
   "registration_completed",
   "first_stock_evaluation",
   "first_portfolio_created",
   "free_activity",
+  "trial_started",
+  "upgrade_clicked",
 ] as const;
-const OPERATIONAL_EVENTS = ["subscription_started", "subscription_canceled"] as const;
+const OPERATIONAL_EVENTS = ["checkout_started", "subscription_started", "subscription_canceled"] as const;
 
 export type DailyEvent = (typeof DAILY_EVENTS)[number];
 export type ConsentEvent = (typeof CONSENT_EVENTS)[number];
@@ -76,7 +86,7 @@ export async function recordOperationalEvent(
     event_name: event,
     detail,
   });
-  if (error && !/product_events|schema cache|does not exist/i.test(error.message)) {
+  if (error && !/product_events|schema cache|does not exist|check constraint|23514/i.test(error.message)) {
     throw new Error(error.message);
   }
 }

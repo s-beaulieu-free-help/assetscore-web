@@ -7,7 +7,12 @@ import { getIndexSeries, type IndexSeries } from "@/lib/fmp";
 import { formatChange, formatMoney } from "@/lib/stocks";
 import { loadViewer } from "@/lib/viewer";
 
-export const metadata: Metadata = { title: "Markets · AssetScore" };
+export const metadata: Metadata = {
+  title: "Markets · AssetScore",
+  description: "US index levels for signed-in accounts. Stock rankings and company scores stay on the public ranking pages.",
+  alternates: { canonical: "/markets" },
+  robots: { index: false, follow: true },
+};
 
 const INDEXES = [
   { symbol: "^GSPC", label: "SP500" },

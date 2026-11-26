@@ -20,7 +20,17 @@ export function AnalyticsConsent() {
   function choose(value: "granted" | "denied") {
     document.cookie = `analytics_consent=${value}; path=/; max-age=31536000; samesite=lax`;
     setVisible(false);
-    if (value === "granted") router.refresh();
+    if (value === "granted") {
+      if (!sessionStorage.getItem("assetscore_site_view")) {
+        sessionStorage.setItem("assetscore_site_view", "1");
+        void fetch("/api/analytics", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ event: "site_view" }),
+        });
+      }
+      router.refresh();
+    }
   }
 
   if (!visible) return null;

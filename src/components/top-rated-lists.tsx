@@ -56,7 +56,17 @@ export function TopRatedLists() {
         <div className="mt-12 grid gap-6 lg:grid-cols-3">
           {lists.map((list) => (
             <article key={list.id} className="rounded-2xl border border-line bg-card px-6 py-7">
-              <h3 className="text-xl font-medium tracking-[-0.03em]">{list.name}</h3>
+              <div className="flex items-baseline justify-between gap-3">
+                <h3 className="text-xl font-medium tracking-[-0.03em]">{list.name}</h3>
+                {list.id === "sp500" || list.id === "nasdaq100" || list.id === "dow" ? (
+                  <Link
+                    href={list.id === "dow" ? "/rankings/dow-jones" : `/rankings/${list.id}`}
+                    className="text-xs text-muted hover:text-accent"
+                  >
+                    Full ranking
+                  </Link>
+                ) : null}
+              </div>
               {list.entries.length === 0 ? (
                 <p className="mt-4 text-sm leading-6 text-muted">No ranking has been published yet.</p>
               ) : (

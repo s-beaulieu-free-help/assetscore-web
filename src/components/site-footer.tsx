@@ -30,6 +30,18 @@ export function SiteFooter() {
             <Link href="/#faq" className="transition-colors hover:text-foreground">
               FAQ
             </Link>
+            <Link href="/rankings/sp500" className="transition-colors hover:text-foreground">
+              S&P 500 rankings
+            </Link>
+            <Link href="/rankings/nasdaq100" className="transition-colors hover:text-foreground">
+              Nasdaq 100 rankings
+            </Link>
+            <Link href="/rankings/dow-jones" className="transition-colors hover:text-foreground">
+              Dow Jones rankings
+            </Link>
+            <Link href="/screener" className="transition-colors hover:text-foreground">
+              Stock Screener
+            </Link>
             <Link href="/methodology" className="transition-colors hover:text-foreground">
               Methodology
             </Link>

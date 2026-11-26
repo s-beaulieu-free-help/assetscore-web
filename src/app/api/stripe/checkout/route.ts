@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { recordOperationalEvent } from "@/lib/analytics";
 import { rememberStripeCustomer } from "@/lib/billing/stripe-sync";
 import { stripeClient, stripePriceId } from "@/lib/billing/stripe";
 import { isPromotionId } from "@/lib/promotions";
@@ -55,6 +56,7 @@ export async function POST(request: Request) {
   }
 
   const origin = new URL(request.url).origin;
+  await recordOperationalEvent(admin, user.id, "checkout_started", "month");
   const campaign = (await cookies()).get("promo_campaign")?.value ?? "";
   const promoCampaign = isPromotionId(campaign) ? campaign : "";
   const session = await stripe.checkout.sessions.create({

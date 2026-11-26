@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
+import { recordConsentedEvent } from "@/lib/analytics";
+import { loadAccess } from "@/lib/billing/access";
+import { safeAppPath } from "@/lib/safe-path";
 import { createSupabaseServer } from "@/lib/supabase/server";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const next = url.searchParams.get("next") || "/account";
-  const safeNext = next.startsWith("/") && !next.startsWith("//") ? next : "/account";
+  const safeNext = safeAppPath(url.searchParams.get("next") || undefined, "/account");
   const supabase = await createSupabaseServer();
 
   if (supabase) {
@@ -18,6 +20,11 @@ export async function GET(request: Request) {
         token_hash: tokenHash,
         type: type as "signup" | "recovery" | "email" | "email_change",
       });
+    }
+    if (url.searchParams.get("signup") === "1") {
+      await recordConsentedEvent("registration_completed");
+      const access = await loadAccess();
+      if (access.isTrialActive) await recordConsentedEvent("trial_started");
     }
   }
 

@@ -14,7 +14,17 @@ type ComparePickProps = {
 
 export async function generateMetadata({ params }: ComparePickProps): Promise<Metadata> {
   const ticker = parseTicker((await params).left);
-  return { title: ticker ? `Compare ${ticker} · AssetScore` : "Compare · AssetScore" };
+  const title = ticker ? `Compare ${ticker} stock fundamentals · AssetScore` : "Compare stocks · AssetScore";
+  const description = ticker
+    ? `Compare ${ticker} with another company using the same AssetScore, pillar scores, and reported figures.`
+    : "Compare two companies on the same AssetScore fundamentals.";
+  return {
+    title,
+    description,
+    alternates: ticker ? { canonical: `/compare/${ticker}` } : undefined,
+    openGraph: { title, description, type: "website" },
+    twitter: { card: "summary", title, description },
+  };
 }
 
 export default async function ComparePickPage({ params }: ComparePickProps) {

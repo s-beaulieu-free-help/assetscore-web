@@ -4,6 +4,7 @@ import { FavoriteButton } from "@/components/favorite-button";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { deleteScreen, saveScreen } from "@/app/screener/actions";
+import { recordDailyCount } from "@/lib/analytics";
 import { loadAccess } from "@/lib/billing/access";
 import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
 import {
@@ -27,9 +28,9 @@ import { loadViewer } from "@/lib/viewer";
 
 export const dynamic = "force-dynamic";
 
-const title = "Stock Screener — Find Stocks by Financial Health and AssetScore";
+const title = "Stock Screener — screen stocks by financial metrics";
 const description =
-  "Discover stocks using AssetScore's five financial pillars, valuation metrics, growth indicators, and financial health filters.";
+  "A financial stock screener for S&P 500, Nasdaq 100, and Dow Jones companies. Filter by AssetScore, pillar scores, price-to-earnings, and the other figures in the daily dataset.";
 
 const notices: Record<string, string> = {
   saved: "Screen saved.",
@@ -47,6 +48,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title,
     description,
+    alternates: { canonical: "/screener" },
+    openGraph: { title, description, url: "https://assetscore.net/screener", type: "website" },
+    twitter: { card: "summary", title, description },
     robots: canUseScreener(access) ? { index: false, follow: false } : { index: true, follow: true },
   };
 }
@@ -71,6 +75,7 @@ export default async function ScreenerPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const params = await searchParams;
+  await recordDailyCount("screener_page_view");
   const [{ user }, access] = await Promise.all([loadViewer(), loadAccess()]);
   const allowed = canUseScreener(access);
   const noticeKey = typeof params.notice === "string" ? params.notice : "";

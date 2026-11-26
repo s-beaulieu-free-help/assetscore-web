@@ -8,11 +8,19 @@ export const metadata: Metadata = {
   title: "About AssetScore",
   description:
     "Learn how AssetScore transforms complex financial data into simple scores that help investors evaluate opportunities faster.",
+  alternates: { canonical: "/about" },
   openGraph: {
     title: "About AssetScore",
     description:
       "Learn how AssetScore transforms complex financial data into simple scores that help investors evaluate opportunities faster.",
     url: "https://assetscore.net/about",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "About AssetScore",
+    description:
+      "Learn how AssetScore transforms complex financial data into simple scores that help investors evaluate opportunities faster.",
   },
 };
 

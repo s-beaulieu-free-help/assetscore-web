@@ -100,7 +100,7 @@ export function LoginForm() {
   );
 }
 
-export function RegisterForm() {
+export function RegisterForm({ nextPath = "/onboarding" }: { nextPath?: string }) {
   const [message, setMessage] = useState("");
   const [done, setDone] = useState(false);
   const [pending, setPending] = useState(false);
@@ -127,7 +127,8 @@ export function RegisterForm() {
     }
 
     await runAuth(setPending, setMessage, async () => {
-      const redirectTo = `${window.location.origin}/auth/callback?next=/onboarding`;
+      const next = nextPath.startsWith("/") && !nextPath.startsWith("//") ? nextPath : "/onboarding";
+      const redirectTo = `${window.location.origin}/auth/callback?signup=1&next=${encodeURIComponent(next)}`;
       const { data, error } = await createSupabaseBrowser().auth.signUp({
         email,
         password,
@@ -138,7 +139,12 @@ export function RegisterForm() {
         return;
       }
       if (data.session) {
-        window.location.assign("/onboarding");
+        void fetch("/api/analytics", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ event: "registration_completed" }),
+        });
+        window.location.assign(next);
         return;
       }
       setDone(true);

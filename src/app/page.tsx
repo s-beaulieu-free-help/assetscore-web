@@ -6,6 +6,7 @@ import { HomeCta } from "@/components/home-cta";
 import { HomeFaq, homeFaqs } from "@/components/home-faq";
 import { Pillars } from "@/components/pillars";
 import { ProductDemos, type ExampleHolding } from "@/components/product-demos";
+import { ScreenerShowcase } from "@/components/screener-showcase";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { TopRatedLists } from "@/components/top-rated-lists";
@@ -18,9 +19,9 @@ import { loadViewer, viewerName } from "@/lib/viewer";
 
 export const dynamic = "force-dynamic";
 
-const title = "AssetScore · Stock analysis for individual investors";
+const title = "AssetScore · Stock analysis, evaluation, and scoring";
 const description =
-  "Evaluate a stock with a 0–100 score for value, growth, quality, financial health, and momentum. Compare companies and review a portfolio. New accounts get 30 days free, with no credit card.";
+  "A stock analysis platform for individual investors. Evaluate a company with a 0–100 AssetScore for value, growth, quality, financial health, and momentum. New accounts get 30 days of Pro, with no credit card.";
 
 export const metadata: Metadata = {
   title,
@@ -115,6 +116,7 @@ export default async function Home() {
         </p>
         <Hero signedIn={Boolean(user)} />
         <TopRatedLists />
+        <ScreenerShowcase />
         <ProductDemos
           example={example}
           left={apple}

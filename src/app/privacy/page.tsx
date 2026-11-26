@@ -26,14 +26,16 @@ export default function PrivacyPage() {
             message to reply. It is not published on the site.
           </p>
           <p>
-            If you allow product counts, AssetScore records a daily total of homepage and registration-page visits, and
-            a small set of steps tied to your account: completed registration, first stock evaluation, first portfolio,
+            If you allow product counts, AssetScore records daily totals for site, homepage, registration, stock
+            analysis, Stock Screener, pricing, and upgrade-button visits. It also records a small set of steps tied to
+            your account: completed registration, trial start, first stock evaluation, first portfolio, an upgrade click,
             and a once-a-day note that a Free account was active. Those records do not include stock symbols, portfolio
             holdings, or payment amounts. Visit totals are not tied to a name. You can decline, and the site still
             works.
           </p>
           <p>
-            When a paid plan starts or is canceled, AssetScore records that change against the account. That record is
+            When checkout starts, a paid plan starts, or a paid plan is canceled, AssetScore records that change against
+            the account. That record is
             part of operating the subscription. It does not include the card or the amount charged. If you reached
             checkout from a Pro promotion and allowed product counts, the campaign name can be stored with that
             subscription event. The record does not include what you searched or which stocks you own.

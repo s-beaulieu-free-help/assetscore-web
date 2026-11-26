@@ -9,7 +9,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { loadViewer, viewerName } from "@/lib/viewer";
 
-export const metadata: Metadata = { title: "Account · AssetScore" };
+export const metadata: Metadata = { title: "Account · AssetScore", robots: { index: false, follow: false } };
 
 export default async function AccountPage() {
   const [{ user, profile }, access] = await Promise.all([loadViewer(), loadAccess()]);
