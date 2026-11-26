@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ScoreCard } from "@/components/score-card";
 import { SearchWidget } from "@/components/search-widget";
 
@@ -15,19 +16,32 @@ export function Hero() {
       <div className="relative mx-auto grid w-full max-w-6xl items-center gap-16 px-6 pt-20 pb-24 lg:grid-cols-[minmax(0,1.05fr)_minmax(340px,0.9fr)] lg:gap-20 lg:pt-28 lg:pb-32">
         <div>
           <h1 className="rise max-w-[12ch] text-[2.75rem] leading-[0.98] font-medium tracking-[-0.045em] text-balance sm:text-6xl lg:text-[4.25rem]">
-            Score any investment{" "}
-            <span className="font-serif font-normal tracking-[-0.03em] text-accent">
-              in seconds
-            </span>
+            Know what{" "}
+            <span className="font-serif font-normal tracking-[-0.03em] text-accent">you own.</span>
           </h1>
-          <p
-            className="rise mt-7 max-w-[34rem] text-[17px] leading-8 text-muted"
-            style={{ animationDelay: "80ms" }}
-          >
-            AssetScore transforms complex financial data into a simple score that
-            helps investors identify opportunities faster.
+          <p className="rise mt-7 max-w-[34rem] text-[17px] leading-8 text-foreground" style={{ animationDelay: "80ms" }}>
+            Evaluate stocks. Compare companies. Understand your portfolio.
           </p>
-          <div className="rise mt-10" style={{ animationDelay: "140ms" }}>
+          <p className="rise mt-4 max-w-[34rem] text-[17px] leading-8 text-muted" style={{ animationDelay: "120ms" }}>
+            AssetScore transforms complex financial data into clear, understandable scores so you can evaluate the
+            quality and financial health of your investments.
+          </p>
+          <div className="rise mt-8 flex flex-col gap-3 sm:flex-row" style={{ animationDelay: "160ms" }}>
+            <Link
+              href="/register"
+              className="inline-flex h-11 items-center justify-center rounded-full bg-accent px-5 text-sm font-medium text-ink transition hover:brightness-110"
+            >
+              Start Your 30-Day Free Trial
+            </Link>
+            <Link
+              href="/#evaluate"
+              className="inline-flex h-11 items-center justify-center rounded-full border border-line px-5 text-sm font-medium transition hover:bg-white/5"
+            >
+              Explore Stock Analysis
+            </Link>
+          </div>
+          <p className="mt-4 text-sm leading-6 text-muted">30 days of full access. No credit card required.</p>
+          <div className="rise mt-10" style={{ animationDelay: "200ms" }}>
             <SearchWidget />
           </div>
         </div>
