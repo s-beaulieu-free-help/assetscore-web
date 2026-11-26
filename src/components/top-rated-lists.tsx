@@ -9,7 +9,7 @@ export function TopRatedLists() {
           Top Rated
         </h2>
         <p className="mt-4 max-w-xl text-sm leading-6 text-muted">
-          These lists are published from the daily ranking. They are not calculated when the page loads.
+          These lists are published from the daily ranking.
         </p>
         <div className="mt-12 grid gap-6 lg:grid-cols-3">
           {lists.map((list) => (
