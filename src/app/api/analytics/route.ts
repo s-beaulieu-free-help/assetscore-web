@@ -9,6 +9,7 @@ const daily = new Set<DailyEvent>([
   "screener_page_view",
   "pricing_page_view",
   "upgrade_click",
+  "portfolio_page_view",
 ]);
 
 const consented = new Set<ConsentEvent>([

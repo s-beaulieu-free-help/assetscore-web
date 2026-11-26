@@ -53,7 +53,21 @@ export type ScreenerFilters = {
   marketCapMin: number | null;
 };
 
-export type ScreenerSort = "score" | "symbol" | "name" | "price" | "marketCap";
+export const SCREENER_SORTS = [
+  "score",
+  "symbol",
+  "name",
+  "price",
+  "marketCap",
+  "value",
+  "growth",
+  "quality",
+  "health",
+  "momentum",
+  "pe",
+] as const;
+
+export type ScreenerSort = (typeof SCREENER_SORTS)[number];
 
 export const SCREENER_PRESETS: Array<{
   id: string;
@@ -64,7 +78,7 @@ export const SCREENER_PRESETS: Array<{
 }> = [
   {
     id: "high-quality",
-    name: "High Quality Stocks",
+    name: "Highest Quality Stocks",
     description: "Overall score above 75, Quality above 80, and Financial Health above 70.",
     requires: ["score", "quality", "health"],
     filters: { scoreMin: 75, qualityMin: 80, healthMin: 70 },
@@ -78,24 +92,38 @@ export const SCREENER_PRESETS: Array<{
   },
   {
     id: "undervalued",
-    name: "Undervalued Companies",
+    name: "Best Value Stocks",
     description: "Value above 75 and an overall score above 70.",
     requires: ["score", "value"],
     filters: { valueMin: 75, scoreMin: 70 },
   },
   {
     id: "healthy",
-    name: "Financially Healthy Companies",
+    name: "Strong Financial Health",
     description: "Financial Health above 85.",
     requires: ["health"],
     filters: { healthMin: 85 },
   },
   {
     id: "high-overall",
-    name: "High Overall Scores",
+    name: "High Overall AssetScore",
     description: "Overall AssetScore above 85.",
     requires: ["score"],
     filters: { scoreMin: 85 },
+  },
+  {
+    id: "strong-profitability",
+    name: "Strong Profitability",
+    description: "Quality above 80, using the annual net profit margin score.",
+    requires: ["quality"],
+    filters: { qualityMin: 80 },
+  },
+  {
+    id: "low-pe",
+    name: "Low P/E Stocks",
+    description: "Annual price-to-earnings at or below 20. This is a screen setting, not a separate score.",
+    requires: ["pe"],
+    filters: { peMax: 20 },
   },
 ];
 

@@ -20,8 +20,8 @@ export async function generateMetadata({ params }: StockPageProps): Promise<Meta
 
   try {
     const snapshot = await getFmpSnapshot(ticker);
-    const title = `${snapshot.companyName} (${snapshot.symbol}) stock analysis`;
-    const description = `${snapshot.companyName} stock analysis: AssetScore, valuation, growth, quality, financial health, and momentum. The score explains the latest reported figures. It is not a forecast of returns.`;
+    const title = `${snapshot.companyName} Stock Analysis & Financial Health Score | AssetScore`;
+    const description = `Explore ${snapshot.companyName} (${snapshot.symbol}) AssetScore, financial health, profitability, growth, and valuation. See the company's financial strengths and weaknesses. This is research, not a forecast.`;
     const path = `/stocks/${snapshot.symbol}`;
     return {
       title,

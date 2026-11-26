@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { ScoreGauge } from "@/components/score-gauge";
-import { allocationTotal, weightedPortfolioScore } from "@/lib/portfolio-score";
+import { allocationTotal, portfolioObservations, weightedPortfolioScore } from "@/lib/portfolio-score";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { parseTicker } from "@/lib/stocks";
 
@@ -38,6 +38,7 @@ export function PortfolioEditor({
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
   const total = allocationTotal(holdings.map((holding) => holding.allocation));
+  const observations = portfolioObservations(holdings);
   const remaining = Math.max(0, Math.round((100 - total) * 10000) / 10000);
   const weighted = weightedPortfolioScore(holdings);
   const locked = status === "complete";
@@ -148,6 +149,31 @@ export function PortfolioEditor({
           </p>
         </div>
       </section>
+
+      {holdings.length > 0 ? (
+        <section className="mt-4 rounded-2xl border border-line bg-card p-6">
+          <h3 className="text-lg font-medium">What the portfolio shows</h3>
+          <p className="mt-2 text-sm leading-6 text-muted">
+            Pillar averages weight each holding by its allocation. A missing pillar is left out of that average. These
+            notes describe the mix. They are not instructions to buy or sell.
+          </p>
+          <dl className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            {observations.averages.map((pillar) => (
+              <div key={pillar.label}>
+                <dt className="text-xs text-muted">{pillar.label}</dt>
+                <dd className="mt-1 font-mono text-lg tabular-nums">{pillar.score ?? "—"}</dd>
+              </div>
+            ))}
+          </dl>
+          {observations.notes.length > 0 ? (
+            <ul className="mt-4 space-y-2 text-sm leading-6 text-muted">
+              {observations.notes.map((note) => (
+                <li key={note}>{note}</li>
+              ))}
+            </ul>
+          ) : null}
+        </section>
+      ) : null}
 
       <ul className="mt-4 divide-y divide-line overflow-hidden rounded-2xl border border-line bg-card">
         {holdings.length === 0 ? (

@@ -47,9 +47,10 @@ export default function PrivacyPage() {
           </p>
           <p>
             These counts are not sold. They are used to see where people stop between visiting, registering, and
-            subscribing. This notice is written for users in Canada, including Quebec&apos;s privacy requirements. You
-            can review the events attached to your account by asking from the address on your profile, and deleting the
-            account removes them.
+            subscribing. This notice describes the practices above for users in Canada, including Quebec. It is not a
+            claim that every legal obligation has been independently certified. There is no delete button in the
+            account page. To ask for access, correction, or deletion of the account, use the contact form on the About
+            page. Deletion depends on removing the authentication account and the rows tied to it.
           </p>
           <p>
             <Link href="/account" className="text-foreground hover:text-accent">

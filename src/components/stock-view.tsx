@@ -102,9 +102,24 @@ export function StockView({
               The score is the rounded average of Value, Growth, Quality, Financial Health, and Momentum when those
               inputs are present. It describes the latest figures. It does not predict future returns.
             </p>
-            <Link href="/methodology" className="mt-4 inline-flex text-sm text-foreground hover:text-accent">
-              How this score is calculated
-            </Link>
+            <p className="mt-4 max-w-xl text-sm leading-6 text-muted">
+              Each pillar has equal weight. A high overall score does not mean every pillar is strong.
+            </p>
+            <p className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+              <Link href="/methodology" className="text-foreground hover:text-accent">
+                How this score is calculated
+              </Link>
+              <Link href="/rankings/sp500" className="text-foreground hover:text-accent">
+                S&amp;P 500 rankings
+              </Link>
+              <Link href={`/compare/${stock.ticker}`} className="text-foreground hover:text-accent">
+                Compare {stock.ticker}
+              </Link>
+            </p>
+            <p className="mt-3 max-w-xl text-xs leading-5 text-muted">
+              AssetScore provides financial research and informational tools. It does not provide individualized
+              investment advice.
+            </p>
           </div>
         </section>
 

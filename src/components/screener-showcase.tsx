@@ -170,7 +170,7 @@ export function ScreenerShowcase() {
             </table>
           </div>
           <p className="border-t border-line px-4 py-3 text-xs leading-5 text-muted">
-            Preview of the Pro screener. High Quality Stocks is filled in: overall score above 75, Quality above 80, and
+            Preview of the Pro screener. Highest Quality Stocks is filled in: overall score above 75, Quality above 80, and
             Financial Health above 70. The rows are companies from the published dataset that meet those filters.
           </p>
         </div>

@@ -10,6 +10,7 @@ import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
 import {
   SCREENER_INDEXES,
   SCREENER_PRESETS,
+  SCREENER_SORTS,
   applyScreener,
   canUseScreener,
   filtersFromSearch,
@@ -137,9 +138,7 @@ async function ScreenerTool({
   const dataset = loadScreenerDataset();
   const presetId = typeof params.preset === "string" ? params.preset : null;
   const filters = filtersFromSearch(params, presetId);
-  const sort = (["score", "symbol", "name", "price", "marketCap"] as const).includes(params.sort as ScreenerSort)
-    ? (params.sort as ScreenerSort)
-    : "score";
+  const sort = SCREENER_SORTS.includes(params.sort as ScreenerSort) ? (params.sort as ScreenerSort) : "score";
   const direction = params.dir === "asc" ? "asc" : "desc";
   const filtered = sortScreener(applyScreener(dataset.rows, filters, dataset.available), sort, direction);
   const page = pageScreener(filtered, Number(typeof params.page === "string" ? params.page : "1"));
@@ -155,7 +154,6 @@ async function ScreenerTool({
       }).format(new Date(dataset.publishedAt))
     : null;
   const screens = await loadScreens(userId);
-  const showPillars = ["value", "growth", "quality", "health", "momentum"].some((field) => dataset.available.has(field as "value"));
   const query = screenerQuery(filters, { sort, dir: direction });
 
   return (
@@ -164,7 +162,10 @@ async function ScreenerTool({
         AssetScore Stock Screener helps you discover companies matching your investment criteria. Screening results are
         based on the latest available daily dataset and are not investment recommendations.
       </p>
-      <p className="mt-3 text-sm text-muted">{updated ? `Data last updated: ${updated}` : "No published dataset is available yet."}</p>
+      <p className="mt-3 text-sm text-muted">
+        {updated ? `Market data last updated: ${updated}.` : "No published dataset is available yet."} The screener reads
+        the daily published dataset. Changing a filter does not request a new market-data update.
+      </p>
       {dataset.fullUniverse ? null : (
         <p className="mt-3 max-w-3xl text-sm leading-6 text-muted">
           This published snapshot includes the top-rated names from each index and their overall AssetScore. Pillar,
@@ -285,21 +286,54 @@ async function ScreenerTool({
           <thead className="border-b border-line text-muted">
             <tr>
               <th className="px-4 py-3 font-normal">
-                <Link href={`/screener?${screenerQuery(filters, { sort: "symbol", dir: sort === "symbol" && direction === "asc" ? "desc" : "asc" })}`}>Company</Link>
+                <SortHeading label="Company" column="symbol" sort={sort} direction={direction} filters={filters} />
               </th>
               <th className="px-4 py-3 font-normal">Indexes</th>
               <th className="px-4 py-3 font-normal">
-                <Link href={`/screener?${screenerQuery(filters, { sort: "score", dir: sort === "score" && direction === "desc" ? "asc" : "desc" })}`}>AssetScore</Link>
+                <SortHeading label="AssetScore" column="score" sort={sort} direction={direction} filters={filters} />
               </th>
-              {showPillars ? <th className="px-4 py-3 font-normal">Pillars</th> : null}
-              {dataset.available.has("price") ? <th className="px-4 py-3 font-normal">Price</th> : null}
+              {dataset.available.has("value") ? (
+                <th className="px-4 py-3 font-normal">
+                  <SortHeading label="Value" column="value" sort={sort} direction={direction} filters={filters} />
+                </th>
+              ) : null}
+              {dataset.available.has("growth") ? (
+                <th className="px-4 py-3 font-normal">
+                  <SortHeading label="Growth" column="growth" sort={sort} direction={direction} filters={filters} />
+                </th>
+              ) : null}
+              {dataset.available.has("quality") ? (
+                <th className="px-4 py-3 font-normal">
+                  <SortHeading label="Quality" column="quality" sort={sort} direction={direction} filters={filters} />
+                </th>
+              ) : null}
+              {dataset.available.has("health") ? (
+                <th className="px-4 py-3 font-normal">
+                  <SortHeading label="Health" column="health" sort={sort} direction={direction} filters={filters} />
+                </th>
+              ) : null}
+              {dataset.available.has("momentum") ? (
+                <th className="px-4 py-3 font-normal">
+                  <SortHeading label="Momentum" column="momentum" sort={sort} direction={direction} filters={filters} />
+                </th>
+              ) : null}
+              {dataset.available.has("pe") ? (
+                <th className="px-4 py-3 font-normal">
+                  <SortHeading label="P/E" column="pe" sort={sort} direction={direction} filters={filters} />
+                </th>
+              ) : null}
+              {dataset.available.has("price") ? (
+                <th className="px-4 py-3 font-normal">
+                  <SortHeading label="Price" column="price" sort={sort} direction={direction} filters={filters} />
+                </th>
+              ) : null}
               <th className="px-4 py-3 font-normal"> </th>
             </tr>
           </thead>
           <tbody>
             {page.rows.length === 0 ? (
               <tr>
-                <td className="px-4 py-5 text-muted" colSpan={6}>
+                <td className="px-4 py-5 text-muted" colSpan={12}>
                   No companies in the published dataset match these filters.
                 </td>
               </tr>
@@ -319,19 +353,12 @@ async function ScreenerTool({
                     <span className="font-mono tabular-nums">{row.score}</span>
                     <span className="mt-1 block text-xs text-muted">{row.band}</span>
                   </td>
-                  {showPillars ? (
-                    <td className="px-4 py-3 text-xs text-muted">
-                      {[
-                        ["Value", row.value],
-                        ["Growth", row.growth],
-                        ["Quality", row.quality],
-                        ["Health", row.health],
-                        ["Momentum", row.momentum],
-                      ]
-                        .map(([label, value]) => `${label} ${value == null ? "—" : value}`)
-                        .join(" · ")}
-                    </td>
-                  ) : null}
+                  {dataset.available.has("value") ? <td className="px-4 py-3 font-mono tabular-nums">{row.value ?? "—"}</td> : null}
+                  {dataset.available.has("growth") ? <td className="px-4 py-3 font-mono tabular-nums">{row.growth ?? "—"}</td> : null}
+                  {dataset.available.has("quality") ? <td className="px-4 py-3 font-mono tabular-nums">{row.quality ?? "—"}</td> : null}
+                  {dataset.available.has("health") ? <td className="px-4 py-3 font-mono tabular-nums">{row.health ?? "—"}</td> : null}
+                  {dataset.available.has("momentum") ? <td className="px-4 py-3 font-mono tabular-nums">{row.momentum ?? "—"}</td> : null}
+                  {dataset.available.has("pe") ? <td className="px-4 py-3 font-mono tabular-nums">{row.pe ?? "—"}</td> : null}
                   {dataset.available.has("price") ? (
                     <td className="px-4 py-3 font-mono tabular-nums">{row.price == null ? "—" : formatMoney(row.price)}</td>
                   ) : null}
@@ -354,6 +381,30 @@ async function ScreenerTool({
         </div>
       </div>
     </>
+  );
+}
+
+function SortHeading({
+  label,
+  column,
+  sort,
+  direction,
+  filters,
+}: {
+  label: string;
+  column: ScreenerSort;
+  sort: ScreenerSort;
+  direction: "asc" | "desc";
+  filters: ScreenerFilters;
+}) {
+  const active = sort === column;
+  const next = active && direction === "desc" ? "asc" : "desc";
+  const mark = active ? (direction === "asc" ? " ↑" : " ↓") : "";
+  return (
+    <Link href={`/screener?${screenerQuery(filters, { sort: column, dir: next })}`} aria-sort={active ? (direction === "asc" ? "ascending" : "descending") : "none"}>
+      {label}
+      {mark}
+    </Link>
   );
 }
 

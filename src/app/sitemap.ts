@@ -3,7 +3,7 @@ import { RANKING_PAGES, rankingSymbols } from "@/lib/rankings";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
-  const pages = ["", "/pricing", "/methodology", "/about", "/privacy", "/screener"];
+  const pages = ["", "/pricing", "/methodology", "/about", "/privacy", "/terms", "/learn", "/screener"];
   return [
     ...pages.map((path) => ({
       url: `https://assetscore.net${path || "/"}`,

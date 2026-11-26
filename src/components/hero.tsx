@@ -19,13 +19,17 @@ export function Hero({ signedIn = false }: { signedIn?: boolean }) {
             Know what{" "}
             <span className="font-serif font-normal tracking-[-0.03em] text-accent">you own.</span>
           </h1>
-          <p className="rise mt-7 max-w-[34rem] text-[17px] leading-8 text-foreground" style={{ animationDelay: "80ms" }}>
-            Evaluate stocks. Compare companies. Understand your portfolio.
+          <p className="rise mt-7 max-w-[36rem] text-[17px] leading-8 text-foreground" style={{ animationDelay: "80ms" }}>
+            Evaluate stocks, discover investment opportunities, and understand your portfolio with a unified financial
+            analysis platform.
           </p>
-          <p className="rise mt-4 max-w-[34rem] text-[17px] leading-8 text-muted" style={{ animationDelay: "120ms" }}>
-            AssetScore transforms complex financial data into clear, understandable scores so you can evaluate the
-            quality and financial health of your investments.
-          </p>
+          <nav className="rise mt-5 flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted" style={{ animationDelay: "100ms" }} aria-label="AssetScore tools">
+            <Link href="/#evaluate" className="hover:text-foreground">Stock Analysis</Link>
+            <Link href="/#portfolio" className="hover:text-foreground">Portfolio Analysis</Link>
+            <Link href="/#compare" className="hover:text-foreground">Stock Comparison</Link>
+            <Link href="/screener" className="hover:text-foreground">Stock Screener</Link>
+            <Link href="/rankings/sp500" className="hover:text-foreground">Financial Quality Rankings</Link>
+          </nav>
           <div className="rise mt-8 flex flex-col gap-3 sm:flex-row" style={{ animationDelay: "160ms" }}>
             {signedIn ? null : (
               <Link
@@ -44,7 +48,7 @@ export function Hero({ signedIn = false }: { signedIn?: boolean }) {
           </div>
           {signedIn ? null : (
             <p className="mt-4 text-sm leading-6 text-muted">
-              30 days of unlimited stock evaluations, the Stock Screener, portfolios, and comparisons. No credit card required.
+              30 days of unlimited stock evaluations, the Stock Screener, portfolios, and comparisons. No credit card is required, and the trial does not charge you when it ends. The account then moves to the Free plan.
             </p>
           )}
           <div className="rise mt-10" style={{ animationDelay: "200ms" }}>

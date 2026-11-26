@@ -10,6 +10,7 @@ const DAILY_EVENTS = [
   "screener_page_view",
   "pricing_page_view",
   "upgrade_click",
+  "portfolio_page_view",
 ] as const;
 const CONSENT_EVENTS = [
   "registration_completed",

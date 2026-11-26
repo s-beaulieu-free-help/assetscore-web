@@ -48,8 +48,14 @@ export function SiteFooter() {
             <Link href="/about" className="transition-colors hover:text-foreground">
               About
             </Link>
+            <Link href="/learn" className="transition-colors hover:text-foreground">
+              Learn
+            </Link>
             <Link href="/privacy" className="transition-colors hover:text-foreground">
               Privacy
+            </Link>
+            <Link href="/terms" className="transition-colors hover:text-foreground">
+              Terms
             </Link>
           </nav>
         </div>

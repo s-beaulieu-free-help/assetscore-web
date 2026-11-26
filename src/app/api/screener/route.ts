@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { loadAccess } from "@/lib/billing/access";
 import {
+  SCREENER_SORTS,
   applyScreener,
   canUseScreener,
   filtersFromSearch,
@@ -22,9 +23,7 @@ export async function GET(request: Request) {
   const params = Object.fromEntries(url.searchParams.entries());
   const dataset = loadScreenerDataset();
   const filters = filtersFromSearch(params, params.preset);
-  const sort = (["score", "symbol", "name", "price", "marketCap"] as const).includes(params.sort as ScreenerSort)
-    ? (params.sort as ScreenerSort)
-    : "score";
+  const sort = SCREENER_SORTS.includes(params.sort as ScreenerSort) ? (params.sort as ScreenerSort) : "score";
   const direction = params.dir === "asc" ? "asc" : "desc";
   const filtered = sortScreener(applyScreener(dataset.rows, filters, dataset.available), sort, direction);
   const page = pageScreener(filtered, Number(params.page ?? "1"));

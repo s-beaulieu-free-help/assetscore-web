@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { recordDailyCount } from "@/lib/analytics";
 import { loadAccess } from "@/lib/billing/access";
 import { DeletePortfolioButton, PortfolioEditor, type HoldingView } from "@/components/portfolio-editor";
 import { SiteFooter } from "@/components/site-footer";
@@ -12,13 +13,13 @@ type PortfolioPageProps = {
   params: Promise<{ id: string }>;
 };
 
-export async function generateMetadata({ params }: PortfolioPageProps): Promise<Metadata> {
-  const { id } = await params;
-  return { title: `Portfolio · AssetScore`, description: `Portfolio ${id}` };
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: "Portfolio analysis · AssetScore", robots: { index: false, follow: false } };
 }
 
 export default async function PortfolioPage({ params }: PortfolioPageProps) {
   const { id } = await params;
+  await recordDailyCount("portfolio_page_view");
   const [{ supabase, user }, access] = await Promise.all([loadViewer(), loadAccess()]);
   if (!supabase) notFound();
 

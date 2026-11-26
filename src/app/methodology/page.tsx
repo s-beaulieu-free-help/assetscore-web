@@ -43,8 +43,9 @@ export default function MethodologyPage() {
           <h2 className="text-2xl font-medium tracking-[-0.03em]">The overall score</h2>
           <p className="mt-4 text-sm leading-7 text-muted">
             Five pillars are scored from 0 to 100. The headline score is the rounded average of the pillars that have
-            data. Each included pillar has the same weight. A pillar with no input is left out of the average. It is
-            not replaced with zero.
+            data. Each included pillar has the same weight. A high overall score does not mean every pillar is strong.
+            For example, scores of 80, 60, 90, 70, and 50 average to 70, which is the Solid band. The 90 does not erase
+            the 50. A pillar with no input is left out of the average. It is not replaced with zero.
           </p>
           <ul className="mt-6 divide-y divide-line overflow-hidden rounded-2xl border border-line">
             {bands.map((band) => (
