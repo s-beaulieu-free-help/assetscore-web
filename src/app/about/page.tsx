@@ -57,13 +57,46 @@ const principles = [
   },
 ];
 
-const roadmap = [
-  "Stocks Analysis",
-  "ETF Scores",
-  "Crypto Scores",
-  "Portfolio Tracking",
-  "Watchlists",
-  "Market Rankings",
+const available = [
+  {
+    title: "US stock analysis",
+    body: "A 0–100 AssetScore from value, growth, quality, financial health, and momentum. Missing inputs are left out of the average.",
+  },
+  {
+    title: "Stock comparison",
+    body: "Two US-listed companies side by side, using the same pillars and scores as the stock page.",
+  },
+  {
+    title: "Portfolios",
+    body: "Add holdings and allocations. The portfolio score is the allocation-weighted average of those AssetScores.",
+  },
+  {
+    title: "Favorites",
+    body: "Save stocks to return to them from the account.",
+  },
+  {
+    title: "Top Rated lists",
+    body: "The S&P 500, Nasdaq 100, and Dow Jones lists are published once a day from the same scoring run.",
+  },
+  {
+    title: "Stock Screener",
+    body: "Screen that daily universe by index and AssetScore. Included with the 30-day Pro trial and with Pro at $5.99 US/month.",
+  },
+];
+
+const planned = [
+  {
+    title: "ETF scores",
+    body: "The same style of score for exchange-traded funds.",
+  },
+  {
+    title: "Crypto scores",
+    body: "A score for crypto assets, using a methodology written for that market.",
+  },
+  {
+    title: "Historical score tracking",
+    body: "A record of how an AssetScore changes over time.",
+  },
 ];
 
 const disclaimer = [
@@ -175,22 +208,36 @@ export default function AboutPage() {
         <section className="border-t border-line">
           <div className="mx-auto w-full max-w-6xl px-6 py-20 lg:py-28">
             <p className="font-mono text-[11px] tracking-[0.2em] text-muted uppercase">Roadmap</p>
-            <h2 className="mt-4 text-3xl font-medium tracking-[-0.035em] sm:text-4xl">
-              What&apos;s Next
+            <h2 className="mt-4 max-w-2xl text-3xl font-medium tracking-[-0.035em] sm:text-4xl">
+              Available now and planned
             </h2>
-            <ol className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {roadmap.map((item, index) => (
-                <li
-                  key={item}
-                  className="flex items-center justify-between gap-4 rounded-2xl border border-line bg-card px-5 py-5"
-                >
-                  <span className="text-[15px] font-medium tracking-[-0.02em]">{item}</span>
-                  <span className="font-mono text-[11px] text-muted tabular-nums">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                </li>
-              ))}
-            </ol>
+            <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
+              Available features are in the product today. Planned features are on the roadmap.
+            </p>
+            <div className="mt-12 grid gap-10 lg:grid-cols-2">
+              <div>
+                <h3 className="font-mono text-[11px] tracking-[0.16em] text-accent uppercase">Available now</h3>
+                <ul className="mt-4 space-y-3">
+                  {available.map((item) => (
+                    <li key={item.title} className="rounded-2xl border border-line bg-card px-5 py-5">
+                      <p className="text-[15px] font-medium tracking-[-0.02em]">{item.title}</p>
+                      <p className="mt-2 text-sm leading-6 text-muted">{item.body}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 className="font-mono text-[11px] tracking-[0.16em] text-muted uppercase">Planned</h3>
+                <ul className="mt-4 space-y-3">
+                  {planned.map((item) => (
+                    <li key={item.title} className="rounded-2xl border border-dashed border-line px-5 py-5">
+                      <p className="text-[15px] font-medium tracking-[-0.02em]">{item.title}</p>
+                      <p className="mt-2 text-sm leading-6 text-muted">{item.body}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
         </section>
 
