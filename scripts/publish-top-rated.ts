@@ -15,6 +15,7 @@ type Quote = {
   symbol?: string;
   name?: string;
   price?: number;
+  marketCap?: number;
   yearLow?: number;
   yearHigh?: number;
 };
@@ -146,7 +147,40 @@ async function main() {
   const symbols = [...bySymbol.keys()].map(marketSymbol);
   console.log(`Unique symbols: ${symbols.length}`);
 
-  const scored = new Map<string, { symbol: string; name: string; score: number; band: string }>();
+  const nameByMarket = new Map<string, string>();
+  const indexesByMarket = new Map<string, string[]>();
+  for (const list of lists) {
+    for (const member of list.members) {
+      const key = marketSymbol(member.symbol);
+      if (!nameByMarket.has(key)) nameByMarket.set(key, member.name);
+      const membership = indexesByMarket.get(key) ?? [];
+      if (!membership.includes(list.id)) membership.push(list.id);
+      indexesByMarket.set(key, membership);
+    }
+  }
+
+  const scored = new Map<
+    string,
+    {
+      symbol: string;
+      name: string;
+      score: number;
+      band: string;
+      indexes: string[];
+      price: number | null;
+      marketCap: number | null;
+      pe: number | null;
+      revenueGrowth: number | null;
+      netMargin: number | null;
+      currentRatio: number | null;
+      debtToEquity: number | null;
+      value: number | null;
+      growth: number | null;
+      quality: number | null;
+      health: number | null;
+      momentum: number | null;
+    }
+  >();
   let index = 0;
   for (const symbol of symbols) {
     index += 1;
@@ -173,11 +207,25 @@ async function main() {
       history: [],
     });
     if (result.score != null && result.band) {
+      const pillar = (label: string) => result.pillars.find((item) => item.label === label)?.score ?? null;
       scored.set(symbol, {
         symbol,
-        name: bySymbol.get(symbol)?.name || quote?.name || symbol,
+        name: nameByMarket.get(symbol) || quote.name || symbol,
         score: result.score,
         band: result.band,
+        indexes: indexesByMarket.get(symbol) ?? [],
+        price,
+        marketCap: finite(quote.marketCap),
+        pe: finite(ratios?.priceToEarningsRatio),
+        revenueGrowth: finite(growth?.growthRevenue),
+        netMargin: finite(ratios?.netProfitMargin),
+        currentRatio: finite(ratios?.currentRatio),
+        debtToEquity: finite(ratios?.debtToEquityRatio),
+        value: pillar("Value"),
+        growth: pillar("Growth"),
+        quality: pillar("Quality"),
+        health: pillar("Financial Health"),
+        momentum: pillar("Momentum"),
       });
     }
     if (index % 25 === 0) console.log(`${index}/${symbols.length} scored ${scored.size}`);
@@ -193,9 +241,16 @@ async function main() {
         })
         .sort((left, right) => right.score - left.score || left.symbol.localeCompare(right.symbol))
         .slice(0, TOP_COUNT)
-        .map((row, position) => ({ rank: position + 1, ...row }));
+        .map((row, position) => ({
+          rank: position + 1,
+          symbol: row.symbol,
+          name: row.name,
+          score: row.score,
+          band: row.band,
+        }));
       return { id: list.id, name: list.name, entries };
     }),
+    universe: [...scored.values()],
   };
 
   const destination = path.join(process.cwd(), "src", "data", "top-rated.json");
