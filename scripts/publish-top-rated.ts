@@ -1,6 +1,9 @@
+import { readFileSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { scoreSnapshot } from "../src/lib/score";
+
+const REFRESH_GAP_MS = 20 * 60 * 60 * 1000;
 
 const BASE = "https://financialmodelingprep.com/stable";
 const TOP_COUNT = 8;
@@ -128,7 +131,21 @@ async function optionalRows<T>(endpoint: string, params: Record<string, string>)
   }
 }
 
+function datasetIsCurrent() {
+  try {
+    const raw = readFileSync(path.join(process.cwd(), "src", "data", "top-rated.json"), "utf8");
+    const publishedAt = Date.parse((JSON.parse(raw) as { publishedAt?: string }).publishedAt ?? "");
+    return Number.isFinite(publishedAt) && Date.now() - publishedAt < REFRESH_GAP_MS;
+  } catch {
+    return false;
+  }
+}
+
 async function main() {
+  if (!process.argv.includes("--probe") && datasetIsCurrent() && !process.argv.includes("--force")) {
+    console.log("The daily dataset is already current. Top Rated and the Stock Screener share the nightly publish.");
+    return;
+  }
   const lists = [];
   for (const list of LISTS) {
     const members = await membersOf(list);
