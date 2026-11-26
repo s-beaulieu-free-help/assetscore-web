@@ -22,6 +22,10 @@ export default function PrivacyPage() {
             features your account can use. Card numbers are handled by Stripe and are not stored by AssetScore.
           </p>
           <p>
+            A message sent from the About page includes the email address and the text you type. AssetScore uses that
+            message to reply. It is not published on the site.
+          </p>
+          <p>
             If you allow product counts, AssetScore records a daily total of homepage and registration-page visits, and
             a small set of steps tied to your account: completed registration, first stock evaluation, first portfolio,
             and a once-a-day note that a Free account was active. Those records do not include stock symbols, portfolio

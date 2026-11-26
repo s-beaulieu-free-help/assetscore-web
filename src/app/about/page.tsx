@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ContactForm } from "@/components/contact-form";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
@@ -250,6 +251,17 @@ export default function AboutPage() {
             >
               Analyze Stocks
             </Link>
+          </div>
+        </section>
+
+        <section className="border-t border-line">
+          <div className="mx-auto w-full max-w-6xl px-6 py-20 lg:py-24">
+            <p className="font-mono text-[11px] tracking-[0.2em] text-muted uppercase">Contact</p>
+            <h2 className="mt-4 text-3xl font-medium tracking-[-0.035em] sm:text-4xl">Contact us</h2>
+            <p className="mt-4 max-w-xl text-sm leading-6 text-muted">
+              Send a message to AssetScore. Include the email address where you want a reply.
+            </p>
+            <ContactForm />
           </div>
         </section>
       </main>
