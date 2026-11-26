@@ -107,8 +107,8 @@ export default async function Home() {
                 <Link href="/register" className="text-foreground hover:text-accent">
                   Create your free account
                 </Link>{" "}
-                and unlock unlimited stock analysis and portfolio tools for 30 days. No credit card is required, and
-                the trial does not charge you when it ends.
+                and unlock stock screener and portfolio tools for 30 days. No credit card is required, and the trial
+                does not charge you when it ends.
               </>
             )}
           </span>
