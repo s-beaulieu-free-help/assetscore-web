@@ -113,7 +113,7 @@ export default async function Home() {
             )}
           </span>
         </p>
-        <Hero />
+        <Hero signedIn={Boolean(user)} />
         <TopRatedLists />
         <ProductDemos
           example={example}
@@ -129,7 +129,7 @@ export default async function Home() {
         <Pillars />
         <Trust />
         <Features />
-        <HomeCta />
+        {user ? null : <HomeCta />}
         <HomeFaq />
       </main>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ScoreCard } from "@/components/score-card";
 import { SearchWidget } from "@/components/search-widget";
 
-export function Hero() {
+export function Hero({ signedIn = false }: { signedIn?: boolean }) {
   return (
     <section className="relative overflow-hidden">
       <div
@@ -27,20 +27,22 @@ export function Hero() {
             quality and financial health of your investments.
           </p>
           <div className="rise mt-8 flex flex-col gap-3 sm:flex-row" style={{ animationDelay: "160ms" }}>
-            <Link
-              href="/register"
-              className="inline-flex h-11 items-center justify-center rounded-full bg-accent px-5 text-sm font-medium text-ink transition hover:brightness-110"
-            >
-              Start Your 30-Day Free Trial
-            </Link>
+            {signedIn ? null : (
+              <Link
+                href="/register"
+                className="inline-flex h-11 items-center justify-center rounded-full bg-accent px-5 text-sm font-medium text-ink transition hover:brightness-110"
+              >
+                Start Your 30-Day Free Trial
+              </Link>
+            )}
             <Link
               href="/#evaluate"
-              className="inline-flex h-11 items-center justify-center rounded-full border border-line px-5 text-sm font-medium transition hover:bg-white/5"
+              className={`inline-flex h-11 items-center justify-center rounded-full px-5 text-sm font-medium transition ${signedIn ? "bg-accent text-ink hover:brightness-110" : "border border-line hover:bg-white/5"}`}
             >
               Explore Stock Analysis
             </Link>
           </div>
-          <p className="mt-4 text-sm leading-6 text-muted">30 days of full access. No credit card required.</p>
+          {signedIn ? null : <p className="mt-4 text-sm leading-6 text-muted">30 days of full access. No credit card required.</p>}
           <div className="rise mt-10" style={{ animationDelay: "200ms" }}>
             <SearchWidget />
           </div>
