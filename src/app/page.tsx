@@ -5,14 +5,14 @@ import { Hero } from "@/components/hero";
 import { HomeCta } from "@/components/home-cta";
 import { HomeFaq, homeFaqs } from "@/components/home-faq";
 import { Pillars } from "@/components/pillars";
-import { ProductDemos } from "@/components/product-demos";
+import { ProductDemos, type ExampleHolding } from "@/components/product-demos";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { TopRatedLists } from "@/components/top-rated-lists";
 import { Trust } from "@/components/trust";
 import { loadAccess } from "@/lib/billing/access";
 import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
-import { buildStockPage, getFmpSnapshot } from "@/lib/fmp";
+import { buildStockPage, getFmpSnapshot, type StockPageData } from "@/lib/fmp";
 import { loadViewer, viewerName } from "@/lib/viewer";
 
 export const dynamic = "force-dynamic";
@@ -57,13 +57,24 @@ async function loadStock(symbol: string) {
   }
 }
 
+function exampleHolding(stock: StockPageData | null, ticker: string): ExampleHolding {
+  return {
+    ticker: stock?.ticker ?? ticker,
+    name: stock?.name ?? ticker,
+    score: stock?.score ?? null,
+    band: stock?.band ?? null,
+    allocation: 25,
+  };
+}
+
 export default async function Home() {
-  const [{ user, profile }, access, example, apple, microsoft] = await Promise.all([
+  const [{ user, profile }, access, example, apple, microsoft, meta] = await Promise.all([
     loadViewer(),
     loadAccess(),
     loadStock("NVDA"),
     loadStock("AAPL"),
     loadStock("MSFT"),
+    loadStock("META"),
   ]);
   const name = user ? viewerName(profile) : null;
   const faqSchema = {
@@ -102,7 +113,17 @@ export default async function Home() {
         </p>
         <Hero />
         <TopRatedLists />
-        <ProductDemos example={example} left={apple} right={microsoft} />
+        <ProductDemos
+          example={example}
+          left={apple}
+          right={microsoft}
+          holdings={[
+            exampleHolding(example, "NVDA"),
+            exampleHolding(apple, "AAPL"),
+            exampleHolding(microsoft, "MSFT"),
+            exampleHolding(meta, "META"),
+          ]}
+        />
         <Pillars />
         <Trust />
         <Features />
