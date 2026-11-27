@@ -6,6 +6,7 @@ import { UpgradeNote } from "@/components/upgrade-note";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { FmpNotFoundError, getFmpSnapshot } from "@/lib/fmp";
+import { shareMetadata } from "@/lib/seo";
 import { parseTicker } from "@/lib/stocks";
 
 type ComparePickProps = {
@@ -18,13 +19,11 @@ export async function generateMetadata({ params }: ComparePickProps): Promise<Me
   const description = ticker
     ? `Compare ${ticker} with another company using the same AssetScore, pillar scores, and reported figures.`
     : "Compare two companies on the same AssetScore fundamentals.";
-  return {
+  return shareMetadata({
     title,
     description,
-    alternates: ticker ? { canonical: `/compare/${ticker}` } : undefined,
-    openGraph: { title, description, type: "website" },
-    twitter: { card: "summary", title, description },
-  };
+    path: ticker ? `/compare/${ticker}` : "/compare",
+  });
 }
 
 export default async function ComparePickPage({ params }: ComparePickProps) {

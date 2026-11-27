@@ -7,6 +7,7 @@ import { UpgradeNote } from "@/components/upgrade-note";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { buildStockPage, FmpNotFoundError, getFmpSnapshot } from "@/lib/fmp";
+import { shareMetadata } from "@/lib/seo";
 import { parseTicker } from "@/lib/stocks";
 
 type ComparePageProps = {
@@ -29,24 +30,30 @@ async function loadPair(leftRaw: string, rightRaw: string) {
 export async function generateMetadata({ params }: ComparePageProps): Promise<Metadata> {
   const access = await loadAccess();
   if (access.isFree) {
-    return {
-      title: "Compare · AssetScore",
-      description: "Side-by-side stock comparison is included with the trial and with Pro.",
+    return shareMetadata({
+      title: "Compare stocks · AssetScore",
+      description: "Side-by-side stock comparison is included with the 30-day trial and with Pro.",
+      path: "/compare",
       robots: { index: false, follow: false },
-    };
+    });
   }
   const { left, right } = await params;
   const pair = await loadPair(left, right);
-  if (!pair) return { title: "Compare · AssetScore" };
-  const title = `Compare ${pair.left.name} and ${pair.right.name}`;
+  if (!pair) {
+    return shareMetadata({
+      title: "Compare stocks · AssetScore",
+      description: "Compare two US-listed companies on the same AssetScore and five pillars.",
+      path: "/compare",
+      robots: { index: false, follow: false },
+    });
+  }
+  const title = `Compare ${pair.left.name} and ${pair.right.name} · AssetScore`;
   const description = `Stock comparison of ${pair.left.name} and ${pair.right.name}: AssetScore, pillar scores, and the same reported fundamentals.`;
-  return {
+  return shareMetadata({
     title,
     description,
-    alternates: { canonical: `/compare/${pair.left.ticker}/${pair.right.ticker}` },
-    openGraph: { title, description, type: "website" },
-    twitter: { card: "summary", title, description },
-  };
+    path: `/compare/${pair.left.ticker}/${pair.right.ticker}`,
+  });
 }
 
 export default async function ComparePage({ params }: ComparePageProps) {

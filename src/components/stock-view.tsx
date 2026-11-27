@@ -149,6 +149,34 @@ export function StockView({
           </div>
         </section>
 
+        <section className="mt-4 rounded-2xl border border-line bg-card px-6 py-6">
+          <h2 className="text-xl font-medium tracking-[-0.03em]">What to do next</h2>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
+            {signedIn
+              ? `Compare ${stock.ticker} with another company, or open a daily ranking built from the same scores.`
+              : `Create a free account and keep evaluating stocks for 30 days. No credit card is required, and the trial does not charge you when it ends. You can also compare ${stock.ticker} or open a public ranking.`}
+          </p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            {signedIn ? null : (
+              <Link
+                href={`/register?next=${encodeURIComponent(`/stocks/${stock.ticker}`)}`}
+                className="inline-flex h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-ink transition hover:brightness-110"
+              >
+                Create a free account
+              </Link>
+            )}
+            <Link
+              href={`/compare/${stock.ticker}`}
+              className={`inline-flex h-11 items-center rounded-full px-5 text-sm font-medium ${signedIn ? "bg-accent text-ink transition hover:brightness-110" : "border border-line"}`}
+            >
+              Compare {stock.ticker}
+            </Link>
+            <Link href="/rankings/sp500" className="inline-flex h-11 items-center rounded-full border border-line px-5 text-sm">
+              S&P 500 rankings
+            </Link>
+          </div>
+        </section>
+
         <section className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5" aria-label="Scoring categories">
           {stock.pillars.map((pillar) => (
             <article key={pillar.label} className="rounded-2xl border border-line bg-card p-5">

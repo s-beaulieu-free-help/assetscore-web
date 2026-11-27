@@ -3,26 +3,17 @@ import Link from "next/link";
 import { ContactForm } from "@/components/contact-form";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { shareMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "About AssetScore",
-  description:
-    "Learn how AssetScore transforms complex financial data into simple scores that help investors evaluate opportunities faster.",
-  alternates: { canonical: "/about" },
-  openGraph: {
-    title: "About AssetScore",
-    description:
-      "Learn how AssetScore transforms complex financial data into simple scores that help investors evaluate opportunities faster.",
-    url: "https://assetscore.net/about",
-    type: "website",
-  },
-  twitter: {
-    card: "summary",
-    title: "About AssetScore",
-    description:
-      "Learn how AssetScore transforms complex financial data into simple scores that help investors evaluate opportunities faster.",
-  },
-};
+const aboutTitle = "About AssetScore";
+const aboutDescription =
+  "Learn how AssetScore turns US-listed company data into a 0–100 score for value, growth, quality, financial health, and momentum.";
+
+export const metadata: Metadata = shareMetadata({
+  title: aboutTitle,
+  description: aboutDescription,
+  path: "/about",
+});
 
 const steps = [
   {

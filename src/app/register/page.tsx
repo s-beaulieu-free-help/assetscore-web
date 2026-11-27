@@ -3,12 +3,14 @@ import { AuthScreen } from "@/components/auth-screen";
 import { RegisterForm } from "@/components/auth-form";
 import { recordDailyCount } from "@/lib/analytics";
 import { safeAppPath } from "@/lib/safe-path";
+import { shareMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Register · AssetScore",
+export const metadata: Metadata = shareMetadata({
+  title: "Create a free account · AssetScore",
   description:
-    "Create a free AssetScore account. The 30-day trial includes unlimited stock evaluations, the Stock Screener, portfolios, and stock comparisons.",
-};
+    "Create a free AssetScore account. The 30-day trial includes unlimited stock evaluations, the Stock Screener, portfolios, and stock comparisons. No credit card.",
+  path: "/register",
+});
 
 export default async function RegisterPage({
   searchParams,

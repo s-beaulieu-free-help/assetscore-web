@@ -7,6 +7,7 @@ import { loadAccess, recordStockEvaluation } from "@/lib/billing/access";
 import { FREE_EVALUATION_LIMIT_FALLBACK } from "@/lib/billing/plans";
 import { buildStockPage, FmpNotFoundError, getFmpSnapshot } from "@/lib/fmp";
 import { historyForSymbol } from "@/lib/score-history";
+import { shareMetadata } from "@/lib/seo";
 import { parseTicker } from "@/lib/stocks";
 import { loadViewer } from "@/lib/viewer";
 
@@ -23,19 +24,13 @@ export async function generateMetadata({ params }: StockPageProps): Promise<Meta
     const snapshot = await getFmpSnapshot(ticker);
     const title = `${snapshot.companyName} Stock Analysis & Financial Health Score | AssetScore`;
     const description = `Explore ${snapshot.companyName} (${snapshot.symbol}) AssetScore, financial health, profitability, growth, and valuation. See the company's financial strengths and weaknesses. This is research, not a forecast.`;
-    const path = `/stocks/${snapshot.symbol}`;
-    return {
-      title,
-      description,
-      alternates: { canonical: path },
-      openGraph: { title, description, url: `https://assetscore.net${path}`, type: "website" },
-      twitter: { card: "summary", title, description },
-    };
+    return shareMetadata({ title, description, path: `/stocks/${snapshot.symbol}` });
   } catch {
-    return {
+    return shareMetadata({
       title: `${ticker} · AssetScore`,
-      description: "Stock analysis and scoring for individual investors.",
-    };
+      description: `AssetScore research for ${ticker}: the 0–100 score, five pillars, and the latest reported figures.`,
+      path: `/stocks/${ticker}`,
+    });
   }
 }
 

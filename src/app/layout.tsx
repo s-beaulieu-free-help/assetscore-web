@@ -23,8 +23,12 @@ const instrument = Instrument_Serif({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://assetscore.net"),
-  title: "AssetScore",
-  description: "Stock analysis and scoring for individual investors.",
+  title: {
+    default: "AssetScore · Stock analysis, evaluation, and scoring",
+    template: "%s",
+  },
+  description:
+    "A stock analysis platform for individual investors. Evaluate a US-listed company with a 0–100 AssetScore for value, growth, quality, financial health, and momentum.",
   applicationName: "AssetScore",
   icons: {
     icon: [
@@ -34,8 +38,9 @@ export const metadata: Metadata = {
     apple: [{ url: "/brand/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
   openGraph: {
-    title: "AssetScore",
-    description: "Stock analysis and scoring for individual investors.",
+    title: "AssetScore · Stock analysis, evaluation, and scoring",
+    description:
+      "A stock analysis platform for individual investors. Evaluate a US-listed company with a 0–100 AssetScore for value, growth, quality, financial health, and momentum.",
     url: "https://assetscore.net",
     siteName: "AssetScore",
     type: "website",
@@ -44,15 +49,16 @@ export const metadata: Metadata = {
         url: "/logo.png",
         width: 1353,
         height: 1353,
-        alt: "AssetScore",
+        alt: "AssetScore logo",
         type: "image/png",
       },
     ],
   },
   twitter: {
     card: "summary",
-    title: "AssetScore",
-    description: "Stock analysis and scoring for individual investors.",
+    title: "AssetScore · Stock analysis, evaluation, and scoring",
+    description:
+      "A stock analysis platform for individual investors. Evaluate a US-listed company with a 0–100 AssetScore for value, growth, quality, financial health, and momentum.",
     images: ["/logo.png"],
   },
 };

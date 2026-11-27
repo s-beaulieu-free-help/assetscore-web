@@ -6,19 +6,14 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { freeEvaluationLimit, loadAccess } from "@/lib/billing/access";
 import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
+import { shareMetadata } from "@/lib/seo";
 import { loadViewer } from "@/lib/viewer";
 
 const title = "AssetScore Pro — $5.99 US/month";
 const description =
   "Compare Free and Pro. The 30-day trial includes the Stock Screener, portfolios, and comparisons. No credit card and no automatic charge. Pro is $5.99 US/month.";
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: "/pricing" },
-  openGraph: { title, description, url: "https://assetscore.net/pricing", type: "website" },
-  twitter: { card: "summary", title, description },
-};
+export const metadata: Metadata = shareMetadata({ title, description, path: "/pricing" });
 
 export default async function PricingPage({
   searchParams,

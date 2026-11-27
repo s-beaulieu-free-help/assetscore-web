@@ -5,14 +5,15 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getIndexSeries, type IndexSeries } from "@/lib/fmp";
 import { formatChange, formatMoney } from "@/lib/stocks";
+import { shareMetadata } from "@/lib/seo";
 import { loadViewer } from "@/lib/viewer";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = shareMetadata({
   title: "Markets · AssetScore",
-  description: "US index levels for signed-in accounts. Stock rankings and company scores stay on the public ranking pages.",
-  alternates: { canonical: "/markets" },
+  description: "US index levels for signed-in accounts. Public stock rankings and company scores stay on the ranking pages.",
+  path: "/markets",
   robots: { index: false, follow: true },
-};
+});
 
 const INDEXES = [
   { symbol: "^GSPC", label: "SP500" },

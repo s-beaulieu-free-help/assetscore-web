@@ -3,16 +3,12 @@ import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
+import { shareMetadata } from "@/lib/seo";
 
 const title = "Terms · AssetScore";
 const description = "The terms for using AssetScore research tools, the free trial, and the monthly Pro plan.";
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: "/terms" },
-  openGraph: { title, description, url: "https://assetscore.net/terms", type: "website" },
-};
+export const metadata: Metadata = shareMetadata({ title, description, path: "/terms" });
 
 export default function TermsPage() {
   return (

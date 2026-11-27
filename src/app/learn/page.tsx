@@ -2,18 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { shareMetadata } from "@/lib/seo";
 
 const title = "How to read a stock score · AssetScore";
 const description =
   "Short explanations of financial health, stock comparison, the price-to-earnings ratio, profitability, and what a high price multiple means.";
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: "/learn" },
-  openGraph: { title, description, url: "https://assetscore.net/learn", type: "website" },
-  twitter: { card: "summary", title, description },
-};
+export const metadata: Metadata = shareMetadata({ title, description, path: "/learn" });
 
 const articles = [
   {

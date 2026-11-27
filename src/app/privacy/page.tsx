@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { shareMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = shareMetadata({
   title: "Privacy · AssetScore",
-  description: "What AssetScore stores about accounts, subscriptions, and product counts.",
-};
+  description: "What AssetScore stores about accounts, subscriptions, and product counts, and how visit totals are kept.",
+  path: "/privacy",
+});
 
 export default function PrivacyPage() {
   return (

@@ -23,6 +23,7 @@ import {
   type ScreenerFilters,
   type ScreenerSort,
 } from "@/lib/screener";
+import { shareMetadata } from "@/lib/seo";
 import { formatMoney } from "@/lib/stocks";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { loadViewer } from "@/lib/viewer";
@@ -46,14 +47,12 @@ const notices: Record<string, string> = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const access = await loadAccess();
-  return {
+  return shareMetadata({
     title,
     description,
-    alternates: { canonical: "/screener" },
-    openGraph: { title, description, url: "https://assetscore.net/screener", type: "website" },
-    twitter: { card: "summary", title, description },
+    path: "/screener",
     robots: canUseScreener(access) ? { index: false, follow: false } : { index: true, follow: true },
-  };
+  });
 }
 
 function numberInput(name: keyof ScreenerFilters, label: string, value: number | null) {

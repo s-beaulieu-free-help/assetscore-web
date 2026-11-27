@@ -15,6 +15,7 @@ import { recordDailyCount } from "@/lib/analytics";
 import { loadAccess } from "@/lib/billing/access";
 import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
 import { buildStockPage, getFmpSnapshot, type StockPageData } from "@/lib/fmp";
+import { shareMetadata } from "@/lib/seo";
 import { loadViewer, viewerName } from "@/lib/viewer";
 
 export const dynamic = "force-dynamic";
@@ -23,33 +24,7 @@ const title = "AssetScore · Stock analysis, evaluation, and scoring";
 const description =
   "A stock analysis platform for individual investors. Evaluate a company with a 0–100 AssetScore for value, growth, quality, financial health, and momentum. New accounts get 30 days of Pro, with no credit card.";
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: "/" },
-  openGraph: {
-    title,
-    description,
-    url: "https://assetscore.net",
-    siteName: "AssetScore",
-    type: "website",
-    images: [
-      {
-        url: "/logo.png",
-        width: 1353,
-        height: 1353,
-        alt: "AssetScore logo",
-        type: "image/png",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary",
-    title,
-    description,
-    images: ["/logo.png"],
-  },
-};
+export const metadata: Metadata = shareMetadata({ title, description, path: "/" });
 
 async function loadStock(symbol: string) {
   try {

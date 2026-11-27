@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { rankedIndex, rankingPage, RANKING_PAGES } from "@/lib/rankings";
+import { shareMetadata } from "@/lib/seo";
 
 type RankingPageProps = {
   params: Promise<{ slug: string }>;
@@ -16,14 +17,11 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: RankingPageProps): Promise<Metadata> {
   const page = rankingPage((await params).slug);
   if (!page) return { title: "Rankings · AssetScore" };
-  const path = `/rankings/${page.slug}`;
-  return {
+  return shareMetadata({
     title: `${page.title} · AssetScore`,
     description: page.description,
-    alternates: { canonical: path },
-    openGraph: { title: page.title, description: page.description, url: `https://assetscore.net${path}`, type: "website" },
-    twitter: { card: "summary", title: page.title, description: page.description },
-  };
+    path: `/rankings/${page.slug}`,
+  });
 }
 
 export default async function RankingPage({ params }: RankingPageProps) {

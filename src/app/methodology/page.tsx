@@ -4,18 +4,13 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { PILLAR_COPY } from "@/lib/pillar-copy";
 import { bandFor, type PillarLabel } from "@/lib/score";
+import { shareMetadata } from "@/lib/seo";
 
-const title = "Stock scoring methodology";
+const title = "Stock scoring methodology · AssetScore";
 const description =
   "How AssetScore turns annual figures and the latest quote into a 0–100 stock score, how missing financial data is handled, and why a high score is not a forecast.";
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: "/methodology" },
-  openGraph: { title, description, url: "https://assetscore.net/methodology", type: "website" },
-  twitter: { card: "summary", title, description },
-};
+export const metadata: Metadata = shareMetadata({ title, description, path: "/methodology" });
 
 const ORDER: PillarLabel[] = ["Value", "Growth", "Quality", "Financial Health", "Momentum"];
 
