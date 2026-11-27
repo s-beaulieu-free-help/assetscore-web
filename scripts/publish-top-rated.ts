@@ -33,6 +33,7 @@ type Growth = { growthRevenue?: number | null };
 type Profile = { sector?: string; industry?: string };
 
 const key = process.env.FMP_API_KEY;
+let fmpCalls = 0;
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -42,7 +43,20 @@ async function fmp<T>(endpoint: string, params: Record<string, string> = {}): Pr
   const url = new URL(`${BASE}/${endpoint}`);
   for (const [name, value] of Object.entries(params)) url.searchParams.set(name, value);
   for (let attempt = 0; attempt < 4; attempt += 1) {
-    const response = await fetch(url, { headers: { apikey: key as string } });
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 20_000);
+    let response: Response;
+    try {
+      fmpCalls += 1;
+      response = await fetch(url, { headers: { apikey: key as string }, signal: controller.signal });
+    } catch {
+      clearTimeout(timer);
+      if (attempt === 3) throw new Error(`${endpoint} could not be reached.`);
+      await sleep(2000);
+      continue;
+    } finally {
+      clearTimeout(timer);
+    }
     if (response.status === 429) {
       const retryAfter = Number(response.headers.get("retry-after"));
       const wait = Number.isFinite(retryAfter) && retryAfter > 0 ? Math.min(retryAfter * 1000, 120_000) : 15_000;
@@ -161,6 +175,17 @@ async function main() {
   for (const list of lists) {
     for (const member of list.members) {
       if (!bySymbol.has(member.symbol)) bySymbol.set(member.symbol, member);
+    }
+  }
+  const expected: Record<string, [number, number]> = {
+    sp500: [450, 520],
+    nasdaq100: [90, 110],
+    dow: [25, 35],
+  };
+  for (const list of lists) {
+    const [min, max] = expected[list.id];
+    if (list.members.length < min || list.members.length > max) {
+      throw new Error(`${list.name} has ${list.members.length} constituents, outside ${min}-${max}. The previous dataset was left in place.`);
     }
   }
   const symbols = [...bySymbol.keys()].map(marketSymbol);
@@ -316,9 +341,51 @@ async function main() {
     });
   }
   writeFileSync(historyDestination, `${JSON.stringify({ observations }, null, 2)}\n`);
+  const today = observations.filter((row) => row.asOf === asOf && row.methodologyVersion === "2");
+  await upsertSnapshots(today, asOf).catch((error: unknown) => {
+    console.error(error instanceof Error ? error.message : "Snapshot upsert failed. The JSON files were still written.");
+  });
   for (const list of published.lists) {
     console.log(`${list.name}: published ${list.entries.length}`);
   }
+  console.log(`FMP calls this run: ${fmpCalls}. Published at ${published.publishedAt}.`);
+}
+
+async function upsertSnapshots(rows: ScoreObservation[], asOf: string) {
+  const url = process.env.SUPABASE_URL?.replace(/\/$/, "");
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !serviceKey) {
+    console.log("Supabase snapshot upsert skipped. Score history is in the JSON file.");
+    return;
+  }
+  const payload = rows.map((row) => ({
+    symbol: row.symbol,
+    as_of: asOf,
+    methodology_version: "2",
+    company_name: row.name,
+    industry_group: row.industryGroup,
+    score: row.score,
+    value_score: row.value,
+    growth_score: row.growth,
+    quality_score: row.quality,
+    health_score: row.health,
+    momentum_score: row.momentum,
+  }));
+  for (let index = 0; index < payload.length; index += 200) {
+    const chunk = payload.slice(index, index + 200);
+    const response = await fetch(`${url}/rest/v1/score_snapshots?on_conflict=symbol,as_of,methodology_version`, {
+      method: "POST",
+      headers: {
+        apikey: serviceKey,
+        Authorization: `Bearer ${serviceKey}`,
+        "Content-Type": "application/json",
+        Prefer: "resolution=merge-duplicates",
+      },
+      body: JSON.stringify(chunk),
+    });
+    if (!response.ok) throw new Error(`Snapshot upsert returned ${response.status}.`);
+  }
+  console.log(`Upserted ${payload.length} score snapshots.`);
 }
 
 main().catch((error: unknown) => {

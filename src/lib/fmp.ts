@@ -1,5 +1,8 @@
+import { headers } from "next/headers";
 import { cache } from "react";
+import { tooManyRequests } from "@/lib/rate-limit";
 import { scoreSnapshot, type Pillar } from "@/lib/score";
+import { loadScreenerDataset } from "@/lib/screener";
 import { formatMoney } from "@/lib/stocks";
 
 const FMP_BASE = "https://financialmodelingprep.com/stable";
@@ -137,32 +140,50 @@ function endpoint(path: string, params: Record<string, string>) {
   return url;
 }
 
-const successCache = new Map<string, { at: number; data: unknown }>();
-const SUCCESS_TTL_MS = 300_000;
+const QUOTE_TTL_MS = 300_000;
+const RESEARCH_TTL_MS = 86_400_000;
+const successCache = new Map<string, { at: number; ttl: number; data: unknown }>();
 let limitedUntil = 0;
 
-async function fmpGet<T>(path: string, symbol: string, extra?: Record<string, string>): Promise<T> {
-  return fmpQuery<T>(path, { symbol, ...extra });
+function publishedFundamentals(symbol: string) {
+  const row = loadScreenerDataset().rows.find((item) => item.symbol === symbol);
+  if (!row) return null;
+  return {
+    pe: row.pe,
+    revenueGrowth: row.revenueGrowth,
+    netMargin: row.netMargin,
+    currentRatio: row.currentRatio,
+    debtToEquity: row.debtToEquity,
+  };
 }
 
-async function fmpQuery<T>(path: string, params: Record<string, string>): Promise<T> {
+async function fmpGet<T>(path: string, symbol: string, extra?: Record<string, string>, ttlMs = QUOTE_TTL_MS): Promise<T> {
+  return fmpQuery<T>(path, { symbol, ...extra }, ttlMs);
+}
+
+async function fmpQuery<T>(path: string, params: Record<string, string>, ttlMs: number): Promise<T> {
   const url = endpoint(path, params);
-  const cacheKey = url.toString();
+  const cacheKey = `${ttlMs}:${url.toString()}`;
   const cached = successCache.get(cacheKey);
-  if (cached && Date.now() - cached.at < SUCCESS_TTL_MS) return cached.data as T;
+  if (cached && Date.now() - cached.at < cached.ttl) return cached.data as T;
 
   if (Date.now() < limitedUntil) {
     throw new FmpError("Financial Modeling Prep returned status 429.", 429);
   }
 
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 8000);
   let response: Response;
   try {
     response = await fetch(url, {
       headers: { apikey: apiKey() },
-      next: { revalidate: 300 },
+      signal: controller.signal,
+      next: { revalidate: Math.round(ttlMs / 1000) },
     });
   } catch {
     throw new FmpError("Financial Modeling Prep could not be reached.", 503);
+  } finally {
+    clearTimeout(timer);
   }
 
   if (response.status === 429) {
@@ -181,8 +202,27 @@ async function fmpQuery<T>(path: string, params: Record<string, string>): Promis
   }
 
   const data = (await response.json()) as T;
-  successCache.set(cacheKey, { at: Date.now(), data });
+  if (successCache.size > 400) {
+    const now = Date.now();
+    for (const [key, entry] of successCache) {
+      if (now - entry.at >= entry.ttl) successCache.delete(key);
+    }
+  }
+  successCache.set(cacheKey, { at: Date.now(), ttl: ttlMs, data });
   return data;
+}
+
+async function requestBudget() {
+  try {
+    const requestHeaders = await headers();
+    const forwarded = requestHeaders.get("x-forwarded-for")?.split(",")[0]?.trim();
+    const ip = forwarded || requestHeaders.get("x-real-ip") || "local";
+    if (tooManyRequests(`fmp:${ip}`, 240, 60_000)) {
+      throw new FmpError("Too many stock pages were opened in a short time. Wait a minute and try again.", 429);
+    }
+  } catch (error) {
+    if (error instanceof FmpError) throw error;
+  }
 }
 
 async function optional<T>(request: Promise<T>): Promise<{ data: T | null; rateLimited: boolean }> {
@@ -242,18 +282,26 @@ function formatGrowth(value: number) {
 }
 
 export const getFmpSnapshot = cache(async (symbol: string): Promise<FmpSnapshot> => {
+  await requestBudget();
   const window = historyWindow();
+  const published = publishedFundamentals(symbol);
   const [profileResult, quoteResult, incomeResult, ratioResult, growthResult, historyResult] = await Promise.all([
-    optional(fmpGet<Profile[]>("profile", symbol)),
-    optional(fmpGet<Quote[]>("quote", symbol)),
-    optional(fmpGet<IncomeStatement[]>("income-statement", symbol, { limit: "1", period: "annual" })),
-    optional(fmpGet<Ratios[]>("ratios", symbol, { limit: "1", period: "annual" })),
-    optional(fmpGet<IncomeGrowth[]>("income-statement-growth", symbol, { limit: "1", period: "annual" })),
-    optional(fmpGet<LightBar[]>("historical-price-eod/light", symbol, window)),
+    optional(fmpGet<Profile[]>("profile", symbol, undefined, RESEARCH_TTL_MS)),
+    optional(fmpGet<Quote[]>("quote", symbol, undefined, QUOTE_TTL_MS)),
+    optional(fmpGet<IncomeStatement[]>("income-statement", symbol, { limit: "1", period: "annual" }, RESEARCH_TTL_MS)),
+    published
+      ? Promise.resolve({ data: null as Ratios[] | null, rateLimited: false })
+      : optional(fmpGet<Ratios[]>("ratios", symbol, { limit: "1", period: "annual" }, RESEARCH_TTL_MS)),
+    published
+      ? Promise.resolve({ data: null as IncomeGrowth[] | null, rateLimited: false })
+      : optional(fmpGet<IncomeGrowth[]>("income-statement-growth", symbol, { limit: "1", period: "annual" }, RESEARCH_TTL_MS)),
+    optional(fmpGet<LightBar[]>("historical-price-eod/light", symbol, window, RESEARCH_TTL_MS)),
   ]);
 
   const profile = first(profileResult.data);
   const quote = first(quoteResult.data);
+  const scoreInputsLimited = [profileResult, quoteResult, ratioResult, growthResult].some((result) => result.rateLimited);
+  if (scoreInputsLimited) throw new FmpError("Financial Modeling Prep returned status 429.", 429);
   const rateLimited = [profileResult, quoteResult, incomeResult, ratioResult, growthResult, historyResult].some(
     (result) => result.rateLimited,
   );
@@ -282,12 +330,12 @@ export const getFmpSnapshot = cache(async (symbol: string): Promise<FmpSnapshot>
         ? price - quote.previousClose
         : (quote?.change ?? profile?.change ?? 0),
     marketCap: quote?.marketCap ?? profile?.marketCap ?? null,
-    pe: ratios?.priceToEarningsRatio ?? null,
+    pe: published ? published.pe : (ratios?.priceToEarningsRatio ?? null),
     revenue: income?.revenue ?? null,
-    revenueGrowth: growth?.growthRevenue ?? null,
-    netMargin: ratios?.netProfitMargin ?? null,
-    currentRatio: ratios?.currentRatio ?? null,
-    debtToEquity: ratios?.debtToEquityRatio ?? null,
+    revenueGrowth: published ? published.revenueGrowth : (growth?.growthRevenue ?? null),
+    netMargin: published ? published.netMargin : (ratios?.netProfitMargin ?? null),
+    currentRatio: published ? published.currentRatio : (ratios?.currentRatio ?? null),
+    debtToEquity: published ? published.debtToEquity : (ratios?.debtToEquityRatio ?? null),
     volume: quote?.volume ?? null,
     yearLow: quote?.yearLow ?? null,
     yearHigh: quote?.yearHigh ?? null,
@@ -311,8 +359,8 @@ export type IndexSeries = {
 export const getIndexSeries = cache(async (symbol: string): Promise<IndexSeries | null> => {
   const window = historyWindow();
   const [quoteResult, historyResult] = await Promise.all([
-    optional(fmpGet<Quote[]>("quote", symbol)),
-    optional(fmpGet<LightBar[]>("historical-price-eod/light", symbol, window)),
+    optional(fmpGet<Quote[]>("quote", symbol, undefined, QUOTE_TTL_MS)),
+    optional(fmpGet<LightBar[]>("historical-price-eod/light", symbol, window, RESEARCH_TTL_MS)),
   ]);
   const quote = first(quoteResult.data);
   const price = quote?.price;

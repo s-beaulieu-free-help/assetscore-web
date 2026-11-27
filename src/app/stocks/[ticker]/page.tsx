@@ -7,7 +7,7 @@ import { loadAccess, recordStockEvaluation } from "@/lib/billing/access";
 import { FREE_EVALUATION_LIMIT_FALLBACK } from "@/lib/billing/plans";
 import { buildStockPage, FmpNotFoundError, getFmpSnapshot } from "@/lib/fmp";
 import { ranksForSymbol } from "@/lib/rankings";
-import { historyForSymbol } from "@/lib/score-history";
+import { historyForSymbolResolved } from "@/lib/score-history";
 import { shareMetadata } from "@/lib/seo";
 import { parseTicker } from "@/lib/stocks";
 import { loadViewer } from "@/lib/viewer";
@@ -77,7 +77,7 @@ export default async function StockPage({ params }: StockPageProps) {
     <StockView
       stock={buildStockPage(snapshot)}
       ranks={ranksForSymbol(snapshot.symbol)}
-      scoreHistory={historyForSymbol(snapshot.symbol)}
+      scoreHistory={await historyForSymbolResolved(snapshot.symbol)}
       showAds={access.shouldDisplayAds}
       signedIn={Boolean(user)}
     />

@@ -15,7 +15,7 @@ import { recordDailyCount } from "@/lib/analytics";
 import { loadAccess } from "@/lib/billing/access";
 import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
 import { buildStockPage, getFmpSnapshot, type StockPageData } from "@/lib/fmp";
-import { shareMetadata } from "@/lib/seo";
+import { jsonLd, shareMetadata } from "@/lib/seo";
 import { loadViewer, viewerName } from "@/lib/viewer";
 
 export const dynamic = "force-dynamic";
@@ -113,7 +113,7 @@ export default async function Home() {
         {user ? null : <HomeCta />}
         <HomeFaq />
       </main>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(faqSchema) }} />
       <SiteFooter />
     </div>
   );

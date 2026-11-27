@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { shareMetadata } from "@/lib/seo";
+import { jsonLd, shareMetadata } from "@/lib/seo";
 import { TOPIC_PAGES, topicPage, topicRows } from "@/lib/topics";
 
 type TopicProps = {
@@ -121,7 +121,7 @@ export default async function TopicPage({ params }: TopicProps) {
           </div>
         )}
       </main>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(schema) }} />
       <SiteFooter />
     </div>
   );

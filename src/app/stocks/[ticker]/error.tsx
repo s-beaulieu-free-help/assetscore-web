@@ -11,7 +11,7 @@ export default function StockError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const leaked = /apikey|financialmodelingprep\.com/i.test(error.message);
+  const leaked = /apikey|financialmodelingprep\.com|financial modeling prep/i.test(error.message);
   const message = leaked || !error.message ? "Market data could not be loaded." : error.message;
   return (
     <div>

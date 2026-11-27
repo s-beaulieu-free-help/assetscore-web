@@ -12,6 +12,7 @@ import type { StockPageData } from "@/lib/fmp";
 import { PILLAR_COPY } from "@/lib/pillar-copy";
 import type { ScoreObservation } from "@/lib/score-history";
 import { industryGroupLabel, type IndustryGroup } from "@/lib/score";
+import { jsonLd } from "@/lib/seo";
 import { scoreStory } from "@/lib/score-story";
 import { formatChange, formatMoney } from "@/lib/stocks";
 
@@ -451,7 +452,7 @@ export function StockView({
         <PromotionSlot placement="stock" enabled={showAds} />
         <StockReviews ticker={stock.ticker} />
       </main>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(schema) }} />
       <SiteFooter />
     </div>
   );

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { LEARN_ARTICLES, learnArticle } from "@/lib/learn-articles";
-import { shareMetadata } from "@/lib/seo";
+import { jsonLd, shareMetadata } from "@/lib/seo";
 
 type LearnArticleProps = {
   params: Promise<{ slug: string }>;
@@ -76,7 +76,7 @@ export default async function LearnArticlePage({ params }: LearnArticleProps) {
           </Link>
         </nav>
       </main>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(schema) }} />
       <SiteFooter />
     </div>
   );

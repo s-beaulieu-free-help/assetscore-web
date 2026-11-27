@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import type { Access } from "@/lib/billing/entitlement";
 
@@ -257,10 +257,17 @@ export function datasetFromPublished(published: PublishedFile) {
   };
 }
 
+let publishedMemo: { mtimeMs: number; dataset: ReturnType<typeof datasetFromPublished> } | null = null;
+
 export function loadScreenerDataset() {
   try {
-    const raw = readFileSync(path.join(process.cwd(), "src", "data", "top-rated.json"), "utf8");
-    return datasetFromPublished(JSON.parse(raw) as PublishedFile);
+    const file = path.join(process.cwd(), "src", "data", "top-rated.json");
+    const mtimeMs = statSync(file).mtimeMs;
+    if (publishedMemo && publishedMemo.mtimeMs === mtimeMs) return publishedMemo.dataset;
+    const raw = readFileSync(file, "utf8");
+    const dataset = datasetFromPublished(JSON.parse(raw) as PublishedFile);
+    publishedMemo = { mtimeMs, dataset };
+    return dataset;
   } catch {
     return { publishedAt: null, rows: [] as ScreenerRow[], available: new Set<keyof ScreenerRow>(), fullUniverse: false };
   }

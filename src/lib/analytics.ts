@@ -31,11 +31,19 @@ async function consentGranted() {
   return jar.get("analytics_consent")?.value === "granted";
 }
 
+function previewWritesDisabled() {
+  return process.env.VERCEL_ENV === "preview";
+}
+
 export async function recordDailyCount(event: DailyEvent) {
+  if (previewWritesDisabled()) return;
   if (!(await consentGranted())) return;
   const admin = createSupabaseAdmin();
   if (!admin) return;
   const day = new Date().toISOString().slice(0, 10);
+  const incremented = await admin.rpc("increment_daily_count", { p_day: day, p_event: event });
+  if (!incremented.error) return;
+  if (!/increment_daily_count|schema cache|does not exist|could not find/i.test(incremented.error.message)) return;
   const { data, error } = await admin
     .from("product_daily_counts")
     .select("total")
@@ -55,6 +63,7 @@ export async function recordDailyCount(event: DailyEvent) {
 }
 
 export async function recordConsentedEvent(event: ConsentEvent, detail?: string) {
+  if (previewWritesDisabled()) return;
   if (!(await consentGranted())) return;
   const admin = createSupabaseAdmin();
   if (!admin) return;

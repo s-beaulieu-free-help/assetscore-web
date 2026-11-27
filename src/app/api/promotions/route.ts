@@ -26,6 +26,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false }, { status: 400 });
   }
 
+  if (process.env.VERCEL_ENV === "preview") return NextResponse.json({ ok: true });
   const admin = createSupabaseAdmin();
   if (!admin) return NextResponse.json({ ok: true });
   const { user } = await loadViewer();

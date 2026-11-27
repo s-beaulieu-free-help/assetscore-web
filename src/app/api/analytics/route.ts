@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { recordConsentedEvent, recordDailyCount, type ConsentEvent, type DailyEvent } from "@/lib/analytics";
+import { tooManyRequests } from "@/lib/rate-limit";
 
 const daily = new Set<DailyEvent>([
   "site_view",
@@ -22,6 +23,8 @@ const consented = new Set<ConsentEvent>([
 ]);
 
 export async function POST(request: Request) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
+  if (tooManyRequests(`analytics:${ip}`, 60, 60_000)) return NextResponse.json({ ok: true });
   const body = (await request.json().catch(() => null)) as { event?: string } | null;
   const event = body?.event;
   if (!event) return NextResponse.json({ ok: false }, { status: 400 });

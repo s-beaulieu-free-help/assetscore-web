@@ -27,10 +27,12 @@ jobs:
       - name: Publish Top Rated and the Stock Screener
         env:
           FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: npx tsx scripts/publish-top-rated.ts
       - name: Save the dataset when it changes
         run: |
-          git add src/data/top-rated.json
+          git add src/data/top-rated.json src/data/score-history.json
           if git diff --cached --quiet; then
             echo "Dataset unchanged."
             exit 0

@@ -5,7 +5,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { LEARN_ARTICLES } from "@/lib/learn-articles";
 import { RANKING_FAQS, rankedIndex, rankingPage, RANKING_PAGES } from "@/lib/rankings";
-import { shareMetadata } from "@/lib/seo";
+import { jsonLd, shareMetadata } from "@/lib/seo";
 import { TOPIC_PAGES } from "@/lib/topics";
 
 type RankingPageProps = {
@@ -167,7 +167,7 @@ export default async function RankingPage({ params }: RankingPageProps) {
           </dl>
         </section>
       </main>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(schema) }} />
       <SiteFooter />
     </div>
   );
