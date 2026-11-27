@@ -1,6 +1,6 @@
 "use client";
 
-import { LiveDataBadge, MarketDataSource } from "@/components/market-data-status";
+import { MarketDataSource } from "@/components/market-data-status";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeaderBar } from "@/components/site-header-bar";
 
@@ -17,7 +17,6 @@ export default function StockError({
     <div>
       <SiteHeaderBar name={null} />
       <main className="mx-auto flex min-h-[60vh] w-full max-w-6xl flex-col justify-center px-6 py-24">
-        <LiveDataBadge live={false} />
         <MarketDataSource fetchedAt={null} />
         <h1 className="mt-6 max-w-xl text-4xl font-medium tracking-[-0.04em]">
           Market data could not be loaded.

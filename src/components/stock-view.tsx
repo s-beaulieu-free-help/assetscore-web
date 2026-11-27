@@ -2,7 +2,7 @@ import Link from "next/link";
 import { HowItsScored } from "@/components/how-its-scored";
 import { PromotionSlot } from "@/components/promotion-slot";
 import { FavoriteControl } from "@/components/favorite-control";
-import { formatFetchedAt, LiveDataBadge, MarketDataSource } from "@/components/market-data-status";
+import { formatFetchedAt, MarketDataSource } from "@/components/market-data-status";
 import { PriceChart } from "@/components/price-chart";
 import { ScoreGauge } from "@/components/score-gauge";
 import { SiteFooter } from "@/components/site-footer";
@@ -89,7 +89,6 @@ export function StockView({
             <span className="px-2 text-white/20">/</span>
             Stocks
           </p>
-          <LiveDataBadge live />
         </div>
 
         <div className="mt-6 flex flex-col justify-between gap-6 sm:flex-row sm:items-end">

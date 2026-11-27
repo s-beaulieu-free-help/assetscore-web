@@ -88,18 +88,6 @@ body {
   animation: gauge-draw 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.live-ping {
-  animation: live-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
-}
-
-@keyframes live-ping {
-  75%,
-  100% {
-    transform: scale(2.4);
-    opacity: 0;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -107,8 +95,7 @@ body {
 
   .rise,
   .bar-fill,
-  .gauge-arc,
-  .live-ping {
+  .gauge-arc {
     animation: none;
   }
 }
