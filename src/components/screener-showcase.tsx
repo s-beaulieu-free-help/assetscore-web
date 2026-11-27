@@ -45,7 +45,14 @@ function exampleFilters(presetFilters: Partial<ScreenerFilters>): ScreenerFilter
     debtToEquityMax: null,
     currentRatioMin: null,
     marginMin: null,
+    marginMax: null,
     marketCapMin: null,
+    marketCapMax: null,
+    priceMin: null,
+    priceMax: null,
+    revenueGrowthMax: null,
+    debtToEquityMin: null,
+    currentRatioMax: null,
     ...presetFilters,
   };
 }

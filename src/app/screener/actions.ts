@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { loadAccess } from "@/lib/billing/access";
-import { canUseScreener, filtersFromSearch, screenerQuery } from "@/lib/screener";
+import { SCREENER_SORTS, canUseScreener, filtersFromSearch, screenerQuery, type ScreenerSort } from "@/lib/screener";
 import { createSupabaseServer } from "@/lib/supabase/server";
 
 function filtersFromForm(form: FormData) {
@@ -32,7 +32,10 @@ export async function saveScreen(form: FormData) {
   const name = String(form.get("name") ?? "").trim();
   if (name.length < 1 || name.length > 60) redirect(`/screener?${query}&notice=name`);
   const screenId = String(form.get("screenId") ?? "");
-  const payload = { name, filters, updated_at: new Date().toISOString() };
+  const requestedSort = String(form.get("sort") ?? "");
+  const sort = SCREENER_SORTS.includes(requestedSort as ScreenerSort) ? requestedSort : "score";
+  const dir = form.get("dir") === "asc" ? "asc" : "desc";
+  const payload = { name, filters: { ...filters, sort, dir }, updated_at: new Date().toISOString() };
   const result = screenId
     ? await supabase.from("saved_screens").update(payload).eq("id", screenId).eq("user_id", user.id)
     : await supabase.from("saved_screens").insert({ ...payload, user_id: user.id });

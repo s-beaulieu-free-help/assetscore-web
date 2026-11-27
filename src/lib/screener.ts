@@ -50,7 +50,14 @@ export type ScreenerFilters = {
   debtToEquityMax: number | null;
   currentRatioMin: number | null;
   marginMin: number | null;
+  marginMax: number | null;
   marketCapMin: number | null;
+  marketCapMax: number | null;
+  priceMin: number | null;
+  priceMax: number | null;
+  revenueGrowthMax: number | null;
+  debtToEquityMin: number | null;
+  currentRatioMax: number | null;
 };
 
 export const SCREENER_SORTS = [
@@ -65,6 +72,10 @@ export const SCREENER_SORTS = [
   "health",
   "momentum",
   "pe",
+  "revenueGrowth",
+  "netMargin",
+  "debtToEquity",
+  "currentRatio",
 ] as const;
 
 export type ScreenerSort = (typeof SCREENER_SORTS)[number];
@@ -73,20 +84,71 @@ export const SCREENER_PRESETS: Array<{
   id: string;
   name: string;
   description: string;
+  criteria: string;
+  featured: boolean;
   requires: Array<keyof ScreenerRow>;
   filters: Partial<ScreenerFilters>;
 }> = [
   {
     id: "high-quality",
-    name: "Highest Quality Stocks",
-    description: "Overall score above 75, Quality above 80, and Financial Health above 70.",
+    name: "High quality stocks",
+    description: "Companies with a strong overall AssetScore, strong profitability, and strong financial health.",
+    criteria: "AssetScore at least 75, Quality at least 80, and Financial Health at least 70. A missing score is left out.",
+    featured: true,
     requires: ["score", "quality", "health"],
     filters: { scoreMin: 75, qualityMin: 80, healthMin: 70 },
+  },
+  {
+    id: "growth-leaders",
+    name: "Growth leaders",
+    description: "Companies with a high Growth score and annual revenue growth of at least 10%.",
+    criteria: "Growth at least 80 and revenue growth at least 10%. Earnings growth is not in the published dataset, so it is not used.",
+    featured: true,
+    requires: ["growth", "revenueGrowth"],
+    filters: { growthMin: 80, revenueGrowthMin: 0.1 },
+  },
+  {
+    id: "financially-healthy",
+    name: "Financially healthy companies",
+    description: "Companies with a strong Financial Health score, a current ratio of at least 1.2, and debt-to-equity of at most 1.5.",
+    criteria: "Financial Health at least 80, current ratio at least 1.2, and debt-to-equity at most 1.5. Cash flow is not in the published dataset.",
+    featured: true,
+    requires: ["health", "currentRatio", "debtToEquity"],
+    filters: { healthMin: 80, currentRatioMin: 1.2, debtToEquityMax: 1.5 },
+  },
+  {
+    id: "profitability-leaders",
+    name: "Profitability leaders",
+    description: "Companies with a high Quality score and an annual net margin of at least 15%.",
+    criteria: "Quality at least 80 and net profit margin at least 15%. Operating margin, return on equity, and return on assets are not in the published dataset.",
+    featured: true,
+    requires: ["quality", "netMargin"],
+    filters: { qualityMin: 80, marginMin: 0.15 },
+  },
+  {
+    id: "momentum-leaders",
+    name: "Momentum leaders",
+    description: "Companies whose existing Momentum score is high.",
+    criteria: "Momentum at least 80. The published dataset does not include a separate multi-period price return.",
+    featured: true,
+    requires: ["momentum"],
+    filters: { momentumMin: 80 },
+  },
+  {
+    id: "quality-price",
+    name: "Quality at a reasonable price",
+    description: "Companies with a strong AssetScore, solid profitability, a P/E of 25 or less, and a Growth score that is not weak.",
+    criteria: "AssetScore at least 75, Quality at least 70, annual P/E at most 25, and Growth at least 50.",
+    featured: true,
+    requires: ["score", "quality", "pe", "growth"],
+    filters: { scoreMin: 75, qualityMin: 70, peMax: 25, growthMin: 50 },
   },
   {
     id: "strong-growth",
     name: "Strong Growth Stocks",
     description: "Growth above 80 and an overall score above 70.",
+    criteria: "Growth at least 80 and AssetScore at least 70.",
+    featured: false,
     requires: ["score", "growth"],
     filters: { growthMin: 80, scoreMin: 70 },
   },
@@ -94,6 +156,8 @@ export const SCREENER_PRESETS: Array<{
     id: "undervalued",
     name: "Best Value Stocks",
     description: "Value above 75 and an overall score above 70.",
+    criteria: "Value at least 75 and AssetScore at least 70.",
+    featured: false,
     requires: ["score", "value"],
     filters: { valueMin: 75, scoreMin: 70 },
   },
@@ -101,6 +165,8 @@ export const SCREENER_PRESETS: Array<{
     id: "healthy",
     name: "Strong Financial Health",
     description: "Financial Health above 85.",
+    criteria: "Financial Health at least 85.",
+    featured: false,
     requires: ["health"],
     filters: { healthMin: 85 },
   },
@@ -108,6 +174,8 @@ export const SCREENER_PRESETS: Array<{
     id: "high-overall",
     name: "High Overall AssetScore",
     description: "Overall AssetScore above 85.",
+    criteria: "AssetScore at least 85.",
+    featured: false,
     requires: ["score"],
     filters: { scoreMin: 85 },
   },
@@ -115,6 +183,8 @@ export const SCREENER_PRESETS: Array<{
     id: "strong-profitability",
     name: "Strong Profitability",
     description: "Quality above 80, using the annual net profit margin score.",
+    criteria: "Quality at least 80.",
+    featured: false,
     requires: ["quality"],
     filters: { qualityMin: 80 },
   },
@@ -122,6 +192,8 @@ export const SCREENER_PRESETS: Array<{
     id: "low-pe",
     name: "Low P/E Stocks",
     description: "Annual price-to-earnings at or below 20. This is a screen setting, not a separate score.",
+    criteria: "Annual P/E at most 20.",
+    featured: false,
     requires: ["pe"],
     filters: { peMax: 20 },
   },
@@ -160,7 +232,14 @@ function emptyFilters(indexes: ScreenerIndexId[] = SCREENER_INDEXES.map((item) =
     debtToEquityMax: null,
     currentRatioMin: null,
     marginMin: null,
+    marginMax: null,
     marketCapMin: null,
+    marketCapMax: null,
+    priceMin: null,
+    priceMax: null,
+    revenueGrowthMax: null,
+    debtToEquityMin: null,
+    currentRatioMax: null,
   };
 }
 
@@ -312,10 +391,17 @@ export function filtersFromSearch(params: Record<string, string | string[] | und
   read("peMin", -1000, 1000);
   read("peMax", -1000, 1000);
   read("revenueGrowthMin", -5, 20);
+  read("revenueGrowthMax", -5, 20);
   read("debtToEquityMax", 0, 100);
+  read("debtToEquityMin", 0, 100);
   read("currentRatioMin", 0, 100);
+  read("currentRatioMax", 0, 100);
   read("marginMin", -5, 5);
+  read("marginMax", -5, 5);
   read("marketCapMin", 0, Number.MAX_SAFE_INTEGER);
+  read("marketCapMax", 0, Number.MAX_SAFE_INTEGER);
+  read("priceMin", 0, 100000);
+  read("priceMax", 0, 100000);
   return filters;
 }
 
@@ -327,29 +413,37 @@ function passesRange(value: number | null, min: number | null, max: number | nul
   return true;
 }
 
+const RANGE_FILTERS: Array<[keyof ScreenerRow, keyof ScreenerFilters, keyof ScreenerFilters]> = [
+  ["score", "scoreMin", "scoreMax"],
+  ["value", "valueMin", "valueMax"],
+  ["growth", "growthMin", "growthMax"],
+  ["quality", "qualityMin", "qualityMax"],
+  ["health", "healthMin", "healthMax"],
+  ["momentum", "momentumMin", "momentumMax"],
+  ["pe", "peMin", "peMax"],
+  ["revenueGrowth", "revenueGrowthMin", "revenueGrowthMax"],
+  ["debtToEquity", "debtToEquityMin", "debtToEquityMax"],
+  ["currentRatio", "currentRatioMin", "currentRatioMax"],
+  ["netMargin", "marginMin", "marginMax"],
+  ["marketCap", "marketCapMin", "marketCapMax"],
+  ["price", "priceMin", "priceMax"],
+];
+
 export function applyScreener(rows: ScreenerRow[], filters: ScreenerFilters, available: Set<keyof ScreenerRow>) {
   return rows.filter((row) => {
-    if (!filters.indexes.some((index) => row.indexes.includes(index))) return false;
-    if (!passesRange(row.score, filters.scoreMin, filters.scoreMax)) return false;
-    if (available.has("value") && !passesRange(row.value, filters.valueMin, filters.valueMax)) return false;
-    if (available.has("growth") && !passesRange(row.growth, filters.growthMin, filters.growthMax)) return false;
-    if (available.has("quality") && !passesRange(row.quality, filters.qualityMin, filters.qualityMax)) return false;
-    if (available.has("health") && !passesRange(row.health, filters.healthMin, filters.healthMax)) return false;
-    if (available.has("momentum") && !passesRange(row.momentum, filters.momentumMin, filters.momentumMax)) return false;
-    if (available.has("pe") && !passesRange(row.pe, filters.peMin, filters.peMax)) return false;
-    if (available.has("revenueGrowth") && filters.revenueGrowthMin != null && (row.revenueGrowth == null || row.revenueGrowth < filters.revenueGrowthMin)) {
-      return false;
-    }
-    if (available.has("debtToEquity") && filters.debtToEquityMax != null && (row.debtToEquity == null || row.debtToEquity > filters.debtToEquityMax)) {
-      return false;
-    }
-    if (available.has("currentRatio") && filters.currentRatioMin != null && (row.currentRatio == null || row.currentRatio < filters.currentRatioMin)) {
-      return false;
-    }
-    if (available.has("netMargin") && filters.marginMin != null && (row.netMargin == null || row.netMargin < filters.marginMin)) return false;
-    if (available.has("marketCap") && filters.marketCapMin != null && (row.marketCap == null || row.marketCap < filters.marketCapMin)) return false;
-    return true;
+    if (filters.indexes.length === 0 || !filters.indexes.some((index) => row.indexes.includes(index))) return false;
+    return RANGE_FILTERS.every(([field, minKey, maxKey]) => {
+      if (field !== "score" && !available.has(field)) return true;
+      const value = row[field];
+      return passesRange(typeof value === "number" ? value : null, filters[minKey] as number | null, filters[maxKey] as number | null);
+    });
   });
+}
+
+export function searchScreener(rows: ScreenerRow[], query: string) {
+  const text = query.trim().toLowerCase();
+  if (!text) return rows;
+  return rows.filter((row) => row.symbol.toLowerCase().includes(text) || row.name.toLowerCase().includes(text));
 }
 
 export function sortScreener(rows: ScreenerRow[], sort: ScreenerSort, direction: "asc" | "desc") {
@@ -391,31 +485,40 @@ export function filtersFromStored(value: unknown) {
   return filtersFromSearch(params);
 }
 
+export const SCREENER_NUMERIC_KEYS = [
+  "scoreMin",
+  "scoreMax",
+  "valueMin",
+  "valueMax",
+  "growthMin",
+  "growthMax",
+  "qualityMin",
+  "qualityMax",
+  "healthMin",
+  "healthMax",
+  "momentumMin",
+  "momentumMax",
+  "peMin",
+  "peMax",
+  "revenueGrowthMin",
+  "revenueGrowthMax",
+  "debtToEquityMin",
+  "debtToEquityMax",
+  "currentRatioMin",
+  "currentRatioMax",
+  "marginMin",
+  "marginMax",
+  "marketCapMin",
+  "marketCapMax",
+  "priceMin",
+  "priceMax",
+] as const satisfies ReadonlyArray<keyof ScreenerFilters>;
+
 export function screenerQuery(filters: ScreenerFilters, extra: Record<string, string> = {}) {
   const params = new URLSearchParams();
   params.set("indexesSet", "1");
   if (filters.indexes.length > 0) params.set("indexes", filters.indexes.join(","));
-  const numericKeys: Array<keyof ScreenerFilters> = [
-    "scoreMin",
-    "scoreMax",
-    "valueMin",
-    "valueMax",
-    "growthMin",
-    "growthMax",
-    "qualityMin",
-    "qualityMax",
-    "healthMin",
-    "healthMax",
-    "momentumMin",
-    "momentumMax",
-    "peMin",
-    "peMax",
-    "revenueGrowthMin",
-    "debtToEquityMax",
-    "currentRatioMin",
-    "marginMin",
-    "marketCapMin",
-  ];
+  const numericKeys = SCREENER_NUMERIC_KEYS;
   for (const key of numericKeys) {
     const value = filters[key];
     if (typeof value === "number") params.set(key, String(value));
@@ -423,3 +526,65 @@ export function screenerQuery(filters: ScreenerFilters, extra: Record<string, st
   for (const [key, value] of Object.entries(extra)) params.set(key, value);
   return params.toString();
 }
+
+export const SCREENER_VIEWS = ["quick", "filters", "rankings", "matrix", "discovery"] as const;
+export type ScreenerView = (typeof SCREENER_VIEWS)[number];
+
+export function screenerView(value: unknown): ScreenerView {
+  return SCREENER_VIEWS.includes(value as ScreenerView) ? (value as ScreenerView) : "quick";
+}
+
+export const RESULT_COLUMNS = [
+  { id: "value", label: "Value", field: "value" },
+  { id: "growth", label: "Growth", field: "growth" },
+  { id: "quality", label: "Quality", field: "quality" },
+  { id: "health", label: "Financial Health", field: "health" },
+  { id: "momentum", label: "Momentum", field: "momentum" },
+  { id: "marketCap", label: "Market cap", field: "marketCap" },
+  { id: "indexes", label: "Indexes", field: "indexes" },
+  { id: "pe", label: "P/E", field: "pe" },
+  { id: "revenueGrowth", label: "Revenue growth", field: "revenueGrowth" },
+  { id: "netMargin", label: "Net margin", field: "netMargin" },
+  { id: "debtToEquity", label: "Debt to equity", field: "debtToEquity" },
+  { id: "currentRatio", label: "Current ratio", field: "currentRatio" },
+  { id: "price", label: "Price", field: "price" },
+] as const;
+
+export type ResultColumnId = (typeof RESULT_COLUMNS)[number]["id"];
+
+export const DEFAULT_COLUMNS: ResultColumnId[] = ["growth", "health", "quality", "momentum", "marketCap", "indexes"];
+
+export function columnsFromSearch(params: Record<string, string | string[] | undefined>): ResultColumnId[] {
+  const raw = params.cols;
+  const text = Array.isArray(raw) ? raw.join(",") : raw;
+  if (!text) return DEFAULT_COLUMNS;
+  const allowed = new Set(RESULT_COLUMNS.map((column) => column.id));
+  const chosen = text
+    .split(",")
+    .map((item) => item.trim())
+    .filter((item): item is ResultColumnId => allowed.has(item as ResultColumnId));
+  return chosen.length > 0 ? [...new Set(chosen)] : DEFAULT_COLUMNS;
+}
+
+export function sortFromStored(value: unknown) {
+  const record = value && typeof value === "object" ? (value as Record<string, unknown>) : {};
+  const sort = SCREENER_SORTS.includes(record.sort as ScreenerSort) ? (record.sort as ScreenerSort) : "score";
+  const direction = record.dir === "asc" ? "asc" : "desc";
+  return { sort, direction };
+}
+
+export const FILTER_HELP = {
+  score: "Measures the overall quality of a company using AssetScore's existing evaluation. It is not a forecast.",
+  growth: "The existing Growth score. It is based on year-over-year revenue growth.",
+  health: "The existing Financial Health score. It uses the current ratio and debt compared with equity.",
+  quality: "The existing Quality score. It is based on the annual net profit margin.",
+  momentum: "The existing Momentum score. It places the latest price in the 52-week range.",
+  value: "The existing Value score. It is based on the annual price-to-earnings ratio.",
+  revenueGrowth: "How much annual revenue changed from the prior year.",
+  debtToEquity: "Debt compared with equity from the latest annual figures. A higher number means more debt.",
+  currentRatio: "Short-term assets compared with short-term liabilities.",
+  netMargin: "Annual profit as a share of revenue.",
+  pe: "The annual price-to-earnings ratio. A lower positive number means a lower price relative to earnings.",
+  marketCap: "The company value from the quote stored in the daily dataset.",
+  price: "The share price stored in the daily dataset. It is not a live quote.",
+} as const;

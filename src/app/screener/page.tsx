@@ -7,21 +7,34 @@ import { deleteScreen, saveScreen } from "@/app/screener/actions";
 import { recordDailyCount } from "@/lib/analytics";
 import { loadAccess } from "@/lib/billing/access";
 import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
+import { QUADRANTS, discoverStocks, matrixPoints, quadrantFor, type QuadrantId } from "@/lib/screener-discovery";
+import { loadScoreHistory } from "@/lib/score-history";
 import {
+  FILTER_HELP,
+  RESULT_COLUMNS,
   SCREENER_INDEXES,
+  SCREENER_NUMERIC_KEYS,
   SCREENER_PRESETS,
   SCREENER_SORTS,
+  SCREENER_VIEWS,
   applyScreener,
   canUseScreener,
+  columnsFromSearch,
   filtersFromSearch,
   filtersFromStored,
   loadScreenerDataset,
   pageScreener,
   presetAvailable,
   screenerQuery,
+  screenerView,
+  searchScreener,
+  sortFromStored,
   sortScreener,
+  type ResultColumnId,
   type ScreenerFilters,
+  type ScreenerRow,
   type ScreenerSort,
+  type ScreenerView,
 } from "@/lib/screener";
 import { shareMetadata } from "@/lib/seo";
 import { formatMoney } from "@/lib/stocks";
@@ -45,6 +58,14 @@ const notices: Record<string, string> = {
   locked: "The screener is included with AssetScore Pro.",
 };
 
+const viewLabels: Record<ScreenerView, string> = {
+  quick: "Quick Screening",
+  filters: "Advanced Filters",
+  rankings: "AssetScore Rankings",
+  matrix: "Quality vs. Momentum",
+  discovery: "Stock Discovery",
+};
+
 export async function generateMetadata(): Promise<Metadata> {
   const access = await loadAccess();
   return shareMetadata({
@@ -53,20 +74,6 @@ export async function generateMetadata(): Promise<Metadata> {
     path: "/screener",
     robots: canUseScreener(access) ? { index: false, follow: false } : { index: true, follow: true },
   });
-}
-
-function numberInput(name: keyof ScreenerFilters, label: string, value: number | null) {
-  return (
-    <label className="block text-xs text-muted">
-      {label}
-      <input
-        name={name}
-        type="number"
-        defaultValue={value ?? ""}
-        className="mt-1 h-10 w-full rounded-xl border border-line bg-white/[0.03] px-3 text-sm text-foreground"
-      />
-    </label>
-  );
 }
 
 export default async function ScreenerPage({
@@ -79,68 +86,7 @@ export default async function ScreenerPage({
   const [{ user }, access] = await Promise.all([loadViewer(), loadAccess()]);
   const allowed = canUseScreener(access);
   const noticeKey = typeof params.notice === "string" ? params.notice : "";
-  const notice = notices[noticeKey] ?? "";
-
-  return (
-    <div>
-      <SiteHeader />
-      <main className="mx-auto w-full max-w-6xl px-6 pt-16 pb-24">
-        <p className="font-mono text-[11px] tracking-[0.2em] text-muted uppercase">Pro</p>
-        <h1 className="mt-4 max-w-3xl text-4xl font-medium tracking-[-0.045em] sm:text-5xl">
-          {allowed ? "Stock Screener" : access.isFree ? "Discover Your Next Investment" : "Stock Screener"}
-        </h1>
-        {allowed ? (
-          <ScreenerTool params={params} userId={user?.id ?? null} notice={notice} />
-        ) : (
-          <UpgradeCopy free={access.isFree} />
-        )}
-      </main>
-      <SiteFooter />
-    </div>
-  );
-}
-
-function UpgradeCopy({ free }: { free: boolean }) {
-  return (
-    <>
-      <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
-        {free
-          ? "Filter the daily S&P 500, Nasdaq 100, and Dow Jones dataset by AssetScore, pillar scores, and price-to-earnings."
-          : "The Stock Screener is included with an AssetScore Pro trial or a paid Pro plan."}
-      </p>
-      <p className="mt-4 text-sm text-foreground">
-        {PRO_MONTHLY_PRICE.label}.
-      </p>
-      <div className="mt-8 flex flex-wrap gap-3">
-        <Link href="/pricing" className="inline-flex h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-ink">
-          Unlock AssetScore Pro
-        </Link>
-        {free ? null : (
-          <Link href="/register" className="inline-flex h-11 items-center rounded-full border border-line px-5 text-sm">
-            Create a free account
-          </Link>
-        )}
-      </div>
-    </>
-  );
-}
-
-async function ScreenerTool({
-  params,
-  userId,
-  notice,
-}: {
-  params: Record<string, string | string[] | undefined>;
-  userId: string | null;
-  notice: string;
-}) {
   const dataset = loadScreenerDataset();
-  const presetId = typeof params.preset === "string" ? params.preset : null;
-  const filters = filtersFromSearch(params, presetId);
-  const sort = SCREENER_SORTS.includes(params.sort as ScreenerSort) ? (params.sort as ScreenerSort) : "score";
-  const direction = params.dir === "asc" ? "asc" : "desc";
-  const filtered = sortScreener(applyScreener(dataset.rows, filters, dataset.available), sort, direction);
-  const page = pageScreener(filtered, Number(typeof params.page === "string" ? params.page : "1"));
   const updated = dataset.publishedAt
     ? new Intl.DateTimeFormat("en-US", {
         month: "short",
@@ -152,217 +98,502 @@ async function ScreenerTool({
         timeZoneName: "short",
       }).format(new Date(dataset.publishedAt))
     : null;
-  const screens = await loadScreens(userId);
-  const query = screenerQuery(filters, { sort, dir: direction });
+
+  return (
+    <div>
+      <SiteHeader />
+      <main className="mx-auto w-full max-w-6xl px-6 pt-16 pb-24">
+        <p className="font-mono text-[11px] tracking-[0.2em] text-muted uppercase">Pro</p>
+        <h1 className="mt-4 max-w-3xl text-4xl font-medium tracking-[-0.045em] sm:text-5xl">Stock Screener</h1>
+        <p className="mt-4 max-w-3xl text-sm leading-6 text-muted">
+          Find companies in the daily S&amp;P 500, Nasdaq 100, and Dow Jones dataset. These screens describe published
+          figures. They are not investment recommendations, and they are not a live quote.
+        </p>
+        <p className="mt-3 text-sm text-muted">
+          {updated ? `Last published update: ${updated}.` : "No published dataset is available yet."} Opening or filtering
+          the screener does not request new market data.
+        </p>
+        {notices[noticeKey] ? <p className="mt-4 text-sm text-foreground">{notices[noticeKey]}</p> : null}
+        {allowed ? (
+          <ScreenerTool params={params} userId={user?.id ?? null} signedIn={Boolean(user)} canAdd={access.canAddFavorite} />
+        ) : (
+          <Preview datasetRows={dataset.rows} available={dataset.available} free={access.isFree} />
+        )}
+      </main>
+      <SiteFooter />
+    </div>
+  );
+}
+
+function Preview({
+  datasetRows,
+  available,
+  free,
+}: {
+  datasetRows: ScreenerRow[];
+  available: Set<keyof ScreenerRow>;
+  free: boolean;
+}) {
+  const preview = [...datasetRows].sort((left, right) => right.score - left.score).slice(0, 5);
+  return (
+    <section className="mt-8">
+      <div className="grid gap-3 sm:grid-cols-2">
+        {SCREENER_PRESETS.filter((preset) => preset.featured).map((preset) => {
+          const ready = presetAvailable(preset, available);
+          const count = ready ? applyScreener(datasetRows, filtersFromSearch({}, preset.id), available).length : null;
+          return (
+            <article key={preset.id} className="rounded-2xl border border-line bg-card p-5">
+              <h2 className="text-lg font-medium">{preset.name}</h2>
+              <p className="mt-2 text-sm leading-6 text-muted">{preset.description}</p>
+              <p className="mt-3 font-mono text-sm tabular-nums">{count == null ? "Unavailable in this dataset" : `${count} companies`}</p>
+            </article>
+          );
+        })}
+      </div>
+      <h2 className="mt-8 text-lg font-medium">Highest AssetScores</h2>
+      <ul className="mt-3 divide-y divide-line rounded-2xl border border-line">
+        {preview.map((row) => (
+          <li key={row.symbol} className="flex items-center justify-between px-4 py-3 text-sm">
+            <span>
+              {row.symbol} <span className="text-muted">{row.name}</span>
+            </span>
+            <span className="font-mono tabular-nums">{row.score}</span>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-6 max-w-2xl text-sm leading-6 text-muted">
+        {free
+          ? "The full strategies, filters, rankings, quality and momentum matrix, discovery lists, and saved screens are included with the 30-day Pro trial and with Pro."
+          : "The Stock Screener is included with an AssetScore Pro trial or a paid Pro plan. Saved screens stay in your account."}{" "}
+        {PRO_MONTHLY_PRICE.label}.
+      </p>
+      <Link href="/pricing" className="mt-4 inline-flex h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-ink">
+        See Pro
+      </Link>
+    </section>
+  );
+}
+
+async function ScreenerTool({
+  params,
+  userId,
+  signedIn,
+  canAdd,
+}: {
+  params: Record<string, string | string[] | undefined>;
+  userId: string | null;
+  signedIn: boolean;
+  canAdd: boolean;
+}) {
+  const dataset = loadScreenerDataset();
+  const view = screenerView(typeof params.view === "string" ? params.view : "quick");
+  const presetId = typeof params.preset === "string" ? params.preset : null;
+  const filters = filtersFromSearch(params, presetId);
+  const queryText = typeof params.q === "string" ? params.q : "";
+  const sort = SCREENER_SORTS.includes(params.sort as ScreenerSort) ? (params.sort as ScreenerSort) : "score";
+  const direction = params.dir === "asc" ? "asc" : "desc";
+  const columns = columnsFromSearch(params).filter((column) => {
+    const field = RESULT_COLUMNS.find((item) => item.id === column)?.field;
+    return field === "indexes" || (field != null && dataset.available.has(field));
+  });
+  const quadrant = QUADRANTS.some((item) => item.id === params.quadrant) ? (params.quadrant as QuadrantId) : null;
+  const filtered = sortScreener(searchScreener(applyScreener(dataset.rows, filters, dataset.available), queryText), sort, direction);
+  const matrixSource = quadrant ? filtered.filter((row) => quadrantFor(row) === quadrant) : filtered;
+  const listed = view === "matrix" && quadrant ? matrixSource : filtered;
+  const page = pageScreener(listed, Number(typeof params.page === "string" ? params.page : "1"));
+  const extra = { view, sort, dir: direction, cols: columns.join(","), ...(queryText ? { q: queryText } : {}), ...(quadrant ? { quadrant } : {}) };
+  const screens = view === "filters" ? await loadScreens(userId) : null;
+  const featured = SCREENER_PRESETS.filter((preset) => preset.featured);
 
   return (
     <>
-      <p className="mt-4 max-w-3xl text-sm leading-6 text-muted">
-        AssetScore Stock Screener helps you discover companies matching your investment criteria. Screening results are
-        based on the latest available daily dataset and are not investment recommendations.
-      </p>
-      <p className="mt-3 text-sm text-muted">
-        {updated ? `Market data last updated: ${updated}.` : "No published dataset is available yet."} The screener reads
-        the daily published dataset. Changing a filter does not request a new market-data update.
-      </p>
-      {dataset.fullUniverse ? null : (
-        <p className="mt-3 max-w-3xl text-sm leading-6 text-muted">
-          This published snapshot includes the top-rated names from each index and their overall AssetScore. Pillar,
-          valuation, growth, and market-cap filters stay off until the next publish stores those fields. Missing values
-          are left blank and are not treated as zero.
-        </p>
-      )}
-      {notice ? <p className="mt-4 text-sm text-foreground">{notice}</p> : null}
-
-      <div className="mt-8 flex flex-wrap gap-2">
-        {SCREENER_PRESETS.map((preset) =>
-          presetAvailable(preset, dataset.available) ? (
-            <Link
-              key={preset.id}
-              href={`/screener?preset=${preset.id}`}
-              className="rounded-full border border-line px-3 py-2 text-sm hover:text-accent"
-            >
-              {preset.name}
-            </Link>
-          ) : (
-            <span key={preset.id} className="rounded-full border border-line px-3 py-2 text-sm text-muted" title={preset.description}>
-              {preset.name} unavailable
-            </span>
-          ),
-        )}
-      </div>
-
-      <form action="/screener" className="mt-8 rounded-2xl border border-line bg-card p-5">
-        <input type="hidden" name="indexesSet" value="1" />
-        <fieldset>
-          <legend className="text-sm font-medium">Indexes</legend>
-          <div className="mt-3 flex flex-wrap gap-4">
-            {SCREENER_INDEXES.map((index) => (
-              <label key={index.id} className="flex items-center gap-2 text-sm">
-                <input type="checkbox" name="indexes" value={index.id} defaultChecked={filters.indexes.includes(index.id)} />
-                {index.name}
-              </label>
-            ))}
-          </div>
-        </fieldset>
-        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {numberInput("scoreMin", "Minimum AssetScore", filters.scoreMin)}
-          {numberInput("scoreMax", "Maximum AssetScore", filters.scoreMax)}
-          {dataset.available.has("value") ? numberInput("valueMin", "Minimum Value", filters.valueMin) : null}
-          {dataset.available.has("growth") ? numberInput("growthMin", "Minimum Growth", filters.growthMin) : null}
-          {dataset.available.has("quality") ? numberInput("qualityMin", "Minimum Quality", filters.qualityMin) : null}
-          {dataset.available.has("health") ? numberInput("healthMin", "Minimum Financial Health", filters.healthMin) : null}
-          {dataset.available.has("momentum") ? numberInput("momentumMin", "Minimum Momentum", filters.momentumMin) : null}
-          {dataset.available.has("pe") ? numberInput("peMin", "Minimum P/E", filters.peMin) : null}
-          {dataset.available.has("pe") ? numberInput("peMax", "Maximum P/E", filters.peMax) : null}
-        </div>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <button type="submit" className="inline-flex h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-ink">
-            Apply filters
-          </button>
-          <Link href="/screener" className="inline-flex h-11 items-center rounded-full border border-line px-5 text-sm">
-            Clear all filters
+      <nav className="mt-8 flex gap-2 overflow-x-auto pb-2" aria-label="Screener sections">
+        {SCREENER_VIEWS.map((item) => (
+          <Link
+            key={item}
+            href={`/screener?${screenerQuery(filters, { ...extra, view: item })}`}
+            aria-current={view === item ? "page" : undefined}
+            className={`h-10 shrink-0 rounded-full px-4 text-sm leading-10 ${view === item ? "bg-foreground text-background" : "border border-line text-muted"}`}
+          >
+            {viewLabels[item]}
           </Link>
-        </div>
-      </form>
+        ))}
+      </nav>
 
-      {screens ? (
-        <section className="mt-8">
-          <h2 className="text-lg font-medium">Saved screens</h2>
-          {screens.length === 0 ? <p className="mt-2 text-sm text-muted">No saved screens yet.</p> : null}
-          <ul className="mt-3 space-y-2">
-            {screens.map((screen) => {
-              const stored = filtersFromStored(screen.filters);
-              return (
-                <li key={screen.id} className="flex flex-wrap items-center gap-3 text-sm">
-                  {stored ? (
-                    <Link href={`/screener?${screenerQuery(stored)}`} className="hover:text-accent">
-                      {screen.name}
-                    </Link>
-                  ) : (
-                    <span>{screen.name}</span>
-                  )}
-                  <form action={deleteScreen}>
-                    <input type="hidden" name="screenId" value={screen.id} />
-                    <button type="submit" className="text-muted hover:text-foreground">
-                      Delete
-                    </button>
-                  </form>
-                </li>
-              );
-            })}
-          </ul>
-          <form action={saveScreen} className="mt-4 flex flex-col gap-3 sm:flex-row">
-            <input type="hidden" name="indexesSet" value="1" />
-            {filters.indexes.map((index) => (
-              <input key={index} type="hidden" name="indexes" value={index} />
-            ))}
-            {(
-              [
-                "scoreMin",
-                "scoreMax",
-                "valueMin",
-                "growthMin",
-                "qualityMin",
-                "healthMin",
-                "momentumMin",
-                "peMin",
-                "peMax",
-              ] as const
-            ).map((key) =>
-              typeof filters[key] === "number" ? <input key={key} type="hidden" name={key} value={filters[key] as number} /> : null,
-            )}
-            <input name="name" placeholder="Name this screen" className="h-11 flex-1 rounded-xl border border-line bg-white/[0.03] px-3 text-sm" />
-            <button type="submit" className="h-11 rounded-full border border-line px-5 text-sm">
-              Save current filters
-            </button>
-          </form>
+      {view === "quick" ? (
+        <section className="mt-6 grid gap-3 sm:grid-cols-2">
+          {featured.map((preset) => {
+            const ready = presetAvailable(preset, dataset.available);
+            const count = ready ? applyScreener(dataset.rows, filtersFromSearch({}, preset.id), dataset.available).length : null;
+            return (
+              <article key={preset.id} className="rounded-2xl border border-line bg-card p-5">
+                <h2 className="text-lg font-medium">{preset.name}</h2>
+                <p className="mt-2 text-sm leading-6 text-muted">{preset.description}</p>
+                <p className="mt-2 text-sm leading-6 text-muted">{preset.criteria}</p>
+                <p className="mt-3 font-mono text-sm tabular-nums">{count == null ? "This dataset does not have every figure" : `${count} companies`}</p>
+                {ready ? (
+                  <Link href={`/screener?preset=${preset.id}&view=quick`} className="mt-4 inline-flex h-10 items-center rounded-full bg-accent px-4 text-sm font-medium text-ink">
+                    View matches
+                  </Link>
+                ) : null}
+              </article>
+            );
+          })}
         </section>
       ) : null}
 
-      <div className="mt-8 overflow-x-auto rounded-2xl border border-line">
-        <table className="w-full min-w-[40rem] text-left text-sm">
+      {view === "filters" ? <FilterForm filters={filters} columns={columns} queryText={queryText} sort={sort} direction={direction} /> : null}
+
+      {view === "rankings" ? (
+        <p className="mt-6 max-w-3xl text-sm leading-6 text-muted">
+          Rank is the position in this sorted list. It is not the AssetScore. Choose a column heading to sort. A blank cell means the figure was not in the published dataset.
+        </p>
+      ) : null}
+
+      {view === "matrix" ? <Matrix rows={filtered} filters={filters} extra={extra} active={quadrant} /> : null}
+
+      {view === "discovery" ? <Discovery rows={dataset.rows} /> : null}
+
+      {view === "discovery" || (view === "quick" && !presetId) || (view === "matrix" && !quadrant) ? null : (
+        <Results
+          pageRows={page.rows}
+          page={page.page}
+          pages={page.pages}
+          pageSize={page.pageSize}
+          total={page.total}
+          columns={columns}
+          filters={filters}
+          sort={sort}
+          direction={direction}
+          extra={extra}
+          signedIn={signedIn}
+          canAdd={canAdd}
+          queryText={queryText}
+        />
+      )}
+
+      {screens ? <SavedScreens screens={screens} filters={filters} sort={sort} direction={direction} /> : null}
+    </>
+  );
+}
+
+function FilterForm({
+  filters,
+  columns,
+  queryText,
+  sort,
+  direction,
+}: {
+  filters: ScreenerFilters;
+  columns: ResultColumnId[];
+  queryText: string;
+  sort: ScreenerSort;
+  direction: "asc" | "desc";
+}) {
+  const groups: Array<{ title: string; help: string; fields: Array<{ key: (typeof SCREENER_NUMERIC_KEYS)[number]; label: string }> }> = [
+    {
+      title: "AssetScore",
+      help: FILTER_HELP.score,
+      fields: [
+        ["scoreMin", "Minimum AssetScore"],
+        ["scoreMax", "Maximum AssetScore"],
+        ["valueMin", "Minimum Value"],
+        ["valueMax", "Maximum Value"],
+        ["growthMin", "Minimum Growth"],
+        ["growthMax", "Maximum Growth"],
+        ["healthMin", "Minimum Financial Health"],
+        ["healthMax", "Maximum Financial Health"],
+        ["qualityMin", "Minimum Quality"],
+        ["qualityMax", "Maximum Quality"],
+        ["momentumMin", "Minimum Momentum"],
+        ["momentumMax", "Maximum Momentum"],
+      ].map(([key, label]) => ({ key: key as (typeof SCREENER_NUMERIC_KEYS)[number], label })),
+    },
+    {
+      title: "Growth and profitability",
+      help: `${FILTER_HELP.revenueGrowth} ${FILTER_HELP.netMargin} Earnings growth, operating margin, return on equity, and return on assets are not in this dataset.`,
+      fields: [
+        ["revenueGrowthMin", "Minimum revenue growth (0.10 = 10%)"],
+        ["revenueGrowthMax", "Maximum revenue growth (0.10 = 10%)"],
+        ["marginMin", "Minimum net margin (0.15 = 15%)"],
+        ["marginMax", "Maximum net margin (0.15 = 15%)"],
+      ].map(([key, label]) => ({ key: key as (typeof SCREENER_NUMERIC_KEYS)[number], label })),
+    },
+    {
+      title: "Financial health",
+      help: `${FILTER_HELP.health} ${FILTER_HELP.debtToEquity} ${FILTER_HELP.currentRatio} Cash flow is not in this dataset.`,
+      fields: [
+        ["debtToEquityMin", "Minimum debt to equity"],
+        ["debtToEquityMax", "Maximum debt to equity"],
+        ["currentRatioMin", "Minimum current ratio"],
+        ["currentRatioMax", "Maximum current ratio"],
+      ].map(([key, label]) => ({ key: key as (typeof SCREENER_NUMERIC_KEYS)[number], label })),
+    },
+    {
+      title: "Valuation and market",
+      help: `${FILTER_HELP.pe} ${FILTER_HELP.marketCap} Forward P/E, price to sales, PEG, EV/EBITDA, and volume are not in this dataset.`,
+      fields: [
+        ["peMin", "Minimum P/E"],
+        ["peMax", "Maximum P/E"],
+        ["marketCapMin", "Minimum market cap"],
+        ["marketCapMax", "Maximum market cap"],
+        ["priceMin", "Minimum price"],
+        ["priceMax", "Maximum price"],
+      ].map(([key, label]) => ({ key: key as (typeof SCREENER_NUMERIC_KEYS)[number], label })),
+    },
+  ];
+
+  return (
+    <form action="/screener" className="mt-6 rounded-2xl border border-line bg-card p-5">
+      <input type="hidden" name="view" value="filters" />
+      <input type="hidden" name="indexesSet" value="1" />
+      <input type="hidden" name="sort" value={sort} />
+      <input type="hidden" name="dir" value={direction} />
+      <fieldset>
+        <legend className="text-sm font-medium">Index membership</legend>
+        <div className="mt-3 flex flex-wrap gap-4">
+          {SCREENER_INDEXES.map((index) => (
+            <label key={index.id} className="flex items-center gap-2 text-sm">
+              <input type="checkbox" name="indexes" value={index.id} defaultChecked={filters.indexes.includes(index.id)} />
+              {index.name}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+      {groups.map((group) => (
+        <details key={group.title} className="mt-4" open={group.title === "AssetScore"}>
+          <summary className="cursor-pointer text-sm font-medium">{group.title}</summary>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">{group.help}</p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {group.fields.map((field) => (
+              <label key={field.key} className="block text-xs text-muted">
+                {field.label}
+                <input
+                  name={field.key}
+                  type="number"
+                  step="any"
+                  defaultValue={filters[field.key] ?? ""}
+                  className="mt-1 h-10 w-full rounded-xl border border-line bg-white/[0.03] px-3 text-sm text-foreground"
+                />
+              </label>
+            ))}
+          </div>
+        </details>
+      ))}
+      <fieldset className="mt-4">
+        <legend className="text-sm font-medium">Visible columns</legend>
+        <div className="mt-3 flex flex-wrap gap-3">
+          {RESULT_COLUMNS.map((column) => (
+            <label key={column.id} className="flex items-center gap-2 text-sm">
+              <input type="checkbox" name="cols" value={column.id} defaultChecked={columns.includes(column.id)} />
+              {column.label}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+      <label className="mt-4 block text-xs text-muted">
+        Search ticker or company
+        <input name="q" defaultValue={queryText} className="mt-1 h-10 w-full max-w-sm rounded-xl border border-line bg-white/[0.03] px-3 text-sm text-foreground" />
+      </label>
+      <div className="mt-5 flex flex-wrap items-center gap-3">
+        {SCREENER_NUMERIC_KEYS.filter((key) => typeof filters[key] === "number").map((key) => (
+          <span key={key} className="rounded-full border border-line px-3 py-1 text-xs text-muted">
+            {key} {filters[key] as number}
+          </span>
+        ))}
+      </div>
+      <div className="mt-4 flex flex-wrap gap-3">
+        <button type="submit" className="inline-flex h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-ink">
+          Apply filters
+        </button>
+        <Link href="/screener?view=filters" className="inline-flex h-11 items-center rounded-full border border-line px-5 text-sm">
+          Clear all filters
+        </Link>
+      </div>
+    </form>
+  );
+}
+
+function Matrix({
+  rows,
+  filters,
+  extra,
+  active,
+}: {
+  rows: ScreenerRow[];
+  filters: ScreenerFilters;
+  extra: Record<string, string>;
+  active: QuadrantId | null;
+}) {
+  const matrix = matrixPoints(rows);
+  return (
+    <section className="mt-6">
+      <p className="max-w-3xl text-sm leading-6 text-muted">
+        Each point is one company. The horizontal position is the existing Quality score. The vertical position is the existing Momentum score. The split is 70. A company missing either score is counted as missing and is not plotted.
+      </p>
+      <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,28rem)_1fr]">
+        <svg viewBox="0 0 100 100" role="img" aria-label="Quality and momentum matrix" className="w-full rounded-2xl border border-line bg-card">
+          <line x1="70" y1="0" x2="70" y2="100" stroke="rgba(244,245,247,0.18)" />
+          <line x1="0" y1="30" x2="100" y2="30" stroke="rgba(244,245,247,0.18)" />
+          {matrix.points.map((point) => (
+            <a key={point.symbol} href={`/stocks/${point.symbol}`}>
+              <circle cx={point.quality} cy={100 - point.momentum} r="1.5" fill={point.quadrant === active || active == null ? "#d7f25c" : "rgba(244,245,247,0.28)"}>
+                <title>{`${point.symbol} ${point.name}. Quality ${point.quality}. Momentum ${point.momentum}.`}</title>
+              </circle>
+            </a>
+          ))}
+        </svg>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {QUADRANTS.map((item) => (
+            <Link key={item.id} href={`/screener?${screenerQuery(filters, { ...extra, view: "matrix", quadrant: item.id })}`} className="rounded-2xl border border-line bg-card p-4">
+              <p className="text-sm font-medium">{item.title}</p>
+              <p className="mt-2 text-sm leading-6 text-muted">{item.detail}</p>
+              <p className="mt-3 font-mono text-sm tabular-nums">{matrix.counts[item.id]} companies</p>
+            </Link>
+          ))}
+        </div>
+      </div>
+      <p className="mt-3 text-sm text-muted">{matrix.missing} companies are not plotted because Quality or Momentum is missing. Select a quadrant to open its companies.</p>
+    </section>
+  );
+}
+
+function Discovery({ rows }: { rows: ScreenerRow[] }) {
+  const observations = loadScoreHistory().map((item) => ({
+    symbol: item.symbol,
+    asOf: item.asOf,
+    methodologyVersion: item.methodologyVersion,
+    growth: item.growth,
+    health: item.health,
+  }));
+  const categories = discoverStocks(rows, observations);
+  return (
+    <div className="mt-6 space-y-4">
+      {categories.map((category) => (
+        <section key={category.id} className="rounded-2xl border border-line bg-card p-5">
+          <h2 className="text-lg font-medium">{category.title}</h2>
+          <p className="mt-2 text-sm leading-6 text-muted">{category.explanation}</p>
+          {category.unavailableReason ? <p className="mt-3 text-sm leading-6 text-muted">{category.unavailableReason}</p> : null}
+          {category.rows.length > 0 ? (
+            <ul className="mt-4 space-y-2 text-sm">
+              {category.rows.map((row) => (
+                <li key={row.symbol}>
+                  <Link href={`/stocks/${row.symbol}`} className="font-medium hover:text-accent">
+                    {row.symbol}
+                  </Link>{" "}
+                  <span className="text-muted">{row.name}. {row.reason}</span>
+                </li>
+              ))}
+            </ul>
+          ) : category.available ? (
+            <p className="mt-3 text-sm text-muted">No company in the published dataset meets this rule.</p>
+          ) : null}
+        </section>
+      ))}
+    </div>
+  );
+}
+
+function Results({
+  pageRows,
+  page,
+  pages,
+  pageSize,
+  total,
+  columns,
+  filters,
+  sort,
+  direction,
+  extra,
+  signedIn,
+  canAdd,
+  queryText,
+}: {
+  pageRows: ScreenerRow[];
+  page: number;
+  pages: number;
+  pageSize: number;
+  total: number;
+  columns: ResultColumnId[];
+  filters: ScreenerFilters;
+  sort: ScreenerSort;
+  direction: "asc" | "desc";
+  extra: Record<string, string>;
+  signedIn: boolean;
+  canAdd: boolean;
+  queryText: string;
+}) {
+  const query = screenerQuery(filters, extra);
+  return (
+    <section className="mt-6">
+      <form action="/screener" className="mb-4 flex flex-col gap-3 sm:flex-row">
+        <input type="hidden" name="indexesSet" value="1" />
+        {filters.indexes.map((index) => (
+          <input key={index} type="hidden" name="indexes" value={index} />
+        ))}
+        {SCREENER_NUMERIC_KEYS.map((key) => (typeof filters[key] === "number" ? <input key={key} type="hidden" name={key} value={filters[key] as number} /> : null))}
+        <input type="hidden" name="view" value={extra.view ?? "filters"} />
+        <input type="hidden" name="sort" value={sort} />
+        <input type="hidden" name="dir" value={direction} />
+        <input type="hidden" name="cols" value={columns.join(",")} />
+        <input name="q" defaultValue={queryText} placeholder="Search ticker or company" className="h-11 flex-1 rounded-xl border border-line bg-white/[0.03] px-3 text-sm" />
+        <button type="submit" className="h-11 rounded-full border border-line px-5 text-sm">
+          Search
+        </button>
+      </form>
+      <div className="overflow-x-auto rounded-2xl border border-line">
+        <table className="w-full min-w-[44rem] text-left text-sm">
           <thead className="border-b border-line text-muted">
             <tr>
+              <th className="px-4 py-3 font-normal">Rank</th>
               <th className="px-4 py-3 font-normal">
-                <SortHeading label="Company" column="symbol" sort={sort} direction={direction} filters={filters} />
+                <SortLink label="Company" column="name" sort={sort} direction={direction} filters={filters} extra={extra} />
               </th>
-              <th className="px-4 py-3 font-normal">Indexes</th>
               <th className="px-4 py-3 font-normal">
-                <SortHeading label="AssetScore" column="score" sort={sort} direction={direction} filters={filters} />
+                <SortLink label="AssetScore" column="score" sort={sort} direction={direction} filters={filters} extra={extra} />
               </th>
-              {dataset.available.has("value") ? (
-                <th className="px-4 py-3 font-normal">
-                  <SortHeading label="Value" column="value" sort={sort} direction={direction} filters={filters} />
-                </th>
-              ) : null}
-              {dataset.available.has("growth") ? (
-                <th className="px-4 py-3 font-normal">
-                  <SortHeading label="Growth" column="growth" sort={sort} direction={direction} filters={filters} />
-                </th>
-              ) : null}
-              {dataset.available.has("quality") ? (
-                <th className="px-4 py-3 font-normal">
-                  <SortHeading label="Quality" column="quality" sort={sort} direction={direction} filters={filters} />
-                </th>
-              ) : null}
-              {dataset.available.has("health") ? (
-                <th className="px-4 py-3 font-normal">
-                  <SortHeading label="Health" column="health" sort={sort} direction={direction} filters={filters} />
-                </th>
-              ) : null}
-              {dataset.available.has("momentum") ? (
-                <th className="px-4 py-3 font-normal">
-                  <SortHeading label="Momentum" column="momentum" sort={sort} direction={direction} filters={filters} />
-                </th>
-              ) : null}
-              {dataset.available.has("pe") ? (
-                <th className="px-4 py-3 font-normal">
-                  <SortHeading label="P/E" column="pe" sort={sort} direction={direction} filters={filters} />
-                </th>
-              ) : null}
-              {dataset.available.has("price") ? (
-                <th className="px-4 py-3 font-normal">
-                  <SortHeading label="Price" column="price" sort={sort} direction={direction} filters={filters} />
-                </th>
-              ) : null}
+              {columns.map((column) => {
+                const defined = RESULT_COLUMNS.find((item) => item.id === column);
+                if (!defined || defined.id === "indexes") return <th key={column} className="px-4 py-3 font-normal">Indexes</th>;
+                return (
+                  <th key={column} className="px-4 py-3 font-normal">
+                    <SortLink label={defined.label} column={defined.field as ScreenerSort} sort={sort} direction={direction} filters={filters} extra={extra} />
+                  </th>
+                );
+              })}
               <th className="px-4 py-3 font-normal"> </th>
             </tr>
           </thead>
           <tbody>
-            {page.rows.length === 0 ? (
+            {pageRows.length === 0 ? (
               <tr>
-                <td className="px-4 py-5 text-muted" colSpan={12}>
-                  No companies in the published dataset match these filters.
+                <td colSpan={12} className="px-4 py-5 text-muted">
+                  No companies match. Remove a filter or choose another index.
                 </td>
               </tr>
             ) : (
-              page.rows.map((row) => (
+              pageRows.map((row, index) => (
                 <tr key={row.symbol} className="border-b border-line last:border-b-0">
+                  <td className="px-4 py-3 font-mono text-muted tabular-nums">{(page - 1) * pageSize + index + 1}</td>
                   <td className="px-4 py-3">
                     <Link href={`/stocks/${row.symbol}`} className="font-medium hover:text-accent">
-                      {row.symbol}
+                      {row.name}
                     </Link>
-                    <span className="mt-1 block text-muted">{row.name}</span>
-                  </td>
-                  <td className="px-4 py-3 text-muted">
-                    {row.indexes.map((index) => SCREENER_INDEXES.find((item) => item.id === index)?.name ?? index).join(", ")}
+                    <span className="mt-1 block text-muted">{row.symbol}</span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="font-mono tabular-nums">{row.score}</span>
+                    <span className="font-mono text-base tabular-nums">{row.score}</span>
                     <span className="mt-1 block text-xs text-muted">{row.band}</span>
                   </td>
-                  {dataset.available.has("value") ? <td className="px-4 py-3 font-mono tabular-nums">{row.value ?? "—"}</td> : null}
-                  {dataset.available.has("growth") ? <td className="px-4 py-3 font-mono tabular-nums">{row.growth ?? "—"}</td> : null}
-                  {dataset.available.has("quality") ? <td className="px-4 py-3 font-mono tabular-nums">{row.quality ?? "—"}</td> : null}
-                  {dataset.available.has("health") ? <td className="px-4 py-3 font-mono tabular-nums">{row.health ?? "—"}</td> : null}
-                  {dataset.available.has("momentum") ? <td className="px-4 py-3 font-mono tabular-nums">{row.momentum ?? "—"}</td> : null}
-                  {dataset.available.has("pe") ? <td className="px-4 py-3 font-mono tabular-nums">{row.pe ?? "—"}</td> : null}
-                  {dataset.available.has("price") ? (
-                    <td className="px-4 py-3 font-mono tabular-nums">{row.price == null ? "—" : formatMoney(row.price)}</td>
-                  ) : null}
+                  {columns.map((column) => (
+                    <td key={column} className="px-4 py-3 font-mono tabular-nums">
+                      {column === "indexes"
+                        ? row.indexes.map((item) => SCREENER_INDEXES.find((index) => index.id === item)?.name ?? item).join(", ")
+                        : formatColumn(row, column)}
+                    </td>
+                  ))}
                   <td className="px-4 py-3">
-                    <FavoriteButton ticker={row.symbol} signedIn canAdd initialFavorite={false} />
+                    <FavoriteButton ticker={row.symbol} signedIn={signedIn} canAdd={canAdd} initialFavorite={false} />
                   </td>
                 </tr>
               ))
@@ -372,38 +603,123 @@ async function ScreenerTool({
       </div>
       <div className="mt-4 flex items-center justify-between text-sm text-muted">
         <p>
-          {page.total} companies · page {page.page} of {page.pages}
+          {total} companies · page {page} of {pages}
         </p>
         <div className="flex gap-4">
-          {page.page > 1 ? <Link href={`/screener?${query}&page=${page.page - 1}`}>Previous</Link> : null}
-          {page.page < page.pages ? <Link href={`/screener?${query}&page=${page.page + 1}`}>Next</Link> : null}
+          {page > 1 ? <Link href={`/screener?${query}&page=${page - 1}`}>Previous</Link> : null}
+          {page < pages ? <Link href={`/screener?${query}&page=${page + 1}`}>Next</Link> : null}
         </div>
       </div>
-    </>
+    </section>
   );
 }
 
-function SortHeading({
+function SortLink({
   label,
   column,
   sort,
   direction,
   filters,
+  extra,
 }: {
   label: string;
   column: ScreenerSort;
   sort: ScreenerSort;
   direction: "asc" | "desc";
   filters: ScreenerFilters;
+  extra: Record<string, string>;
 }) {
-  const active = sort === column;
-  const next = active && direction === "desc" ? "asc" : "desc";
-  const mark = active ? (direction === "asc" ? " ↑" : " ↓") : "";
+  if (!SCREENER_SORTS.includes(column)) return <span>{label}</span>;
+  const next = sort === column && direction === "desc" ? "asc" : "desc";
   return (
-    <Link href={`/screener?${screenerQuery(filters, { sort: column, dir: next })}`} aria-sort={active ? (direction === "asc" ? "ascending" : "descending") : "none"}>
+    <Link href={`/screener?${screenerQuery(filters, { ...extra, sort: column, dir: next })}`}>
       {label}
-      {mark}
+      {sort === column ? (direction === "asc" ? " ↑" : " ↓") : ""}
     </Link>
+  );
+}
+
+function formatColumn(row: ScreenerRow, column: ResultColumnId) {
+  if (column === "indexes") return "";
+  const value = row[column];
+  if (typeof value !== "number") return "—";
+  if (column === "revenueGrowth" || column === "netMargin") return `${(value * 100).toFixed(1)}%`;
+  if (column === "price") return formatMoney(value);
+  if (column === "marketCap") return new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 }).format(value);
+  if (column === "pe" || column === "debtToEquity" || column === "currentRatio") return value.toFixed(2);
+  return String(value);
+}
+
+function SavedScreens({
+  screens,
+  filters,
+  sort,
+  direction,
+}: {
+  screens: Array<{ id: string; name: string; filters: unknown }> | null;
+  filters: ScreenerFilters;
+  sort: ScreenerSort;
+  direction: "asc" | "desc";
+}) {
+  if (screens == null) return <p className="mt-8 text-sm text-muted">Saved screens are unavailable until the account database is configured.</p>;
+  return (
+    <section className="mt-8">
+      <h2 className="text-lg font-medium">Saved screens</h2>
+      <p className="mt-2 text-sm leading-6 text-muted">A saved screen stores the filter settings, not a copy of the financial data. It remains if Pro ends, and it opens again with Pro.</p>
+      {screens.length === 0 ? <p className="mt-3 text-sm text-muted">No saved screens yet.</p> : null}
+      <ul className="mt-3 space-y-2">
+        {screens.map((screen) => {
+          const stored = filtersFromStored(screen.filters);
+          const storedSort = sortFromStored(screen.filters);
+          return (
+            <li key={screen.id} className="flex flex-wrap items-center gap-3 text-sm">
+              {stored ? (
+                <Link href={`/screener?${screenerQuery(stored, { view: "filters", sort: storedSort.sort, dir: storedSort.direction })}`} className="hover:text-accent">
+                  {screen.name}
+                </Link>
+              ) : (
+                <span>{screen.name}</span>
+              )}
+              <form action={saveScreen}>
+                <ScreenFields filters={filters} sort={sort} direction={direction} />
+                <input type="hidden" name="screenId" value={screen.id} />
+                <input type="hidden" name="name" value={screen.name} />
+                <button type="submit" className="text-muted hover:text-foreground">
+                  Replace with current filters
+                </button>
+              </form>
+              <form action={deleteScreen}>
+                <input type="hidden" name="screenId" value={screen.id} />
+                <button type="submit" className="text-muted hover:text-foreground">
+                  Delete
+                </button>
+              </form>
+            </li>
+          );
+        })}
+      </ul>
+      <form action={saveScreen} className="mt-4 flex flex-col gap-3 sm:flex-row">
+        <ScreenFields filters={filters} sort={sort} direction={direction} />
+        <input name="name" placeholder="Name this screen" className="h-11 flex-1 rounded-xl border border-line bg-white/[0.03] px-3 text-sm" />
+        <button type="submit" className="h-11 rounded-full border border-line px-5 text-sm">
+          Save current filters
+        </button>
+      </form>
+    </section>
+  );
+}
+
+function ScreenFields({ filters, sort, direction }: { filters: ScreenerFilters; sort: ScreenerSort; direction: "asc" | "desc" }) {
+  return (
+    <>
+      <input type="hidden" name="indexesSet" value="1" />
+      <input type="hidden" name="sort" value={sort} />
+      <input type="hidden" name="dir" value={direction} />
+      {filters.indexes.map((index) => (
+        <input key={index} type="hidden" name="indexes" value={index} />
+      ))}
+      {SCREENER_NUMERIC_KEYS.map((key) => (typeof filters[key] === "number" ? <input key={key} type="hidden" name={key} value={filters[key] as number} /> : null))}
+    </>
   );
 }
 
