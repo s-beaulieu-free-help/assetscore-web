@@ -66,18 +66,22 @@ function exampleHolding(stock: StockPageData | null, ticker: string, allocation:
     score: stock?.score ?? null,
     band: stock?.band ?? null,
     allocation,
+    pillars: stock?.pillars.map((pillar) => ({ label: pillar.label, score: pillar.score })) ?? [],
   };
 }
 
 export default async function Home() {
   await recordDailyCount("homepage_view");
-  const [{ user, profile }, access, example, apple, microsoft, meta] = await Promise.all([
+  const [{ user, profile }, access, example, apple, microsoft, regeneron, coke, exxon, caterpillar] = await Promise.all([
     loadViewer(),
     loadAccess(),
     loadStock("NVDA"),
     loadStock("AAPL"),
     loadStock("MSFT"),
-    loadStock("META"),
+    loadStock("REGN"),
+    loadStock("KO"),
+    loadStock("XOM"),
+    loadStock("CAT"),
   ]);
   const name = user ? viewerName(profile) : null;
   const faqSchema = {
@@ -122,10 +126,10 @@ export default async function Home() {
           left={apple}
           right={microsoft}
           holdings={[
-            exampleHolding(example, "NVDA", 15),
-            exampleHolding(apple, "AAPL", 25),
-            exampleHolding(microsoft, "MSFT", 40),
-            exampleHolding(meta, "META", 20),
+            exampleHolding(regeneron, "REGN", 15),
+            exampleHolding(coke, "KO", 25),
+            exampleHolding(exxon, "XOM", 40),
+            exampleHolding(caterpillar, "CAT", 20),
           ]}
         />
         <Pillars />

@@ -9,6 +9,7 @@ export type ExampleHolding = {
   score: number | null;
   band: string | null;
   allocation: number;
+  pillars: { label: string; score: number | null }[];
 };
 
 function PillarRow({ label, score }: { label: string; score: number | null }) {
@@ -172,8 +173,9 @@ export function ProductDemos({
           </h2>
           <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
             Registered users add the stocks they own and give each one a percentage of the portfolio. The portfolio
-            score is the allocation-weighted average of those AssetScores. This example is four live scores at 15%,
-            25%, 40%, and 20%.
+            score is the allocation-weighted average of those AssetScores. This example is four live scores, weighted
+            15%, 25%, 40%, and 20%: a healthcare company, a consumer staple, an energy company, and an industrial. Their
+            bands and pillar scores show how the same 0–100 scale treats a stronger business and a weaker cyclical one.
           </p>
           <div className="mt-10 rounded-2xl border border-line bg-card p-5 sm:p-6">
             <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
@@ -198,19 +200,31 @@ export function ProductDemos({
             </p>
             <ul className="mt-4 divide-y divide-line border-t border-line">
               {holdings.map((holding) => (
-                <li key={holding.ticker} className="flex flex-col gap-2 py-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <Link href={`/stocks/${holding.ticker}`} className="text-lg font-medium hover:text-accent">
-                      {holding.ticker}
-                    </Link>
-                    <p className="mt-1 text-sm text-muted">{holding.name}</p>
+                <li key={holding.ticker} className="py-4">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <Link href={`/stocks/${holding.ticker}`} className="text-lg font-medium hover:text-accent">
+                        {holding.ticker}
+                      </Link>
+                      <p className="mt-1 text-sm text-muted">{holding.name}</p>
+                    </div>
+                    <div className="flex items-baseline gap-4">
+                      <p className="font-mono text-sm tabular-nums">
+                        {holding.score == null ? "Score unavailable" : `${holding.score} ${holding.band ?? ""}`.trim()}
+                      </p>
+                      <p className="font-mono text-sm tabular-nums">{holding.allocation.toFixed(2)}%</p>
+                    </div>
                   </div>
-                  <div className="flex items-baseline gap-4">
-                    <p className="font-mono text-sm tabular-nums">
-                      {holding.score == null ? "Score unavailable" : `${holding.score} ${holding.band ?? ""}`.trim()}
-                    </p>
-                    <p className="font-mono text-sm tabular-nums">{holding.allocation.toFixed(2)}%</p>
-                  </div>
+                  {holding.pillars.length > 0 ? (
+                    <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-5">
+                      {holding.pillars.map((pillar) => (
+                        <div key={pillar.label}>
+                          <dt className="text-[11px] tracking-[0.14em] text-muted uppercase">{pillar.label}</dt>
+                          <dd className="mt-1 font-mono text-sm tabular-nums">{pillar.score ?? "—"}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  ) : null}
                 </li>
               ))}
             </ul>
