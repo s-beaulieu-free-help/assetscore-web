@@ -33,6 +33,8 @@ type Profile = {
   change?: number;
   sector?: string;
   industry?: string;
+  isEtf?: boolean;
+  isFund?: boolean;
 };
 
 type Quote = {
@@ -99,6 +101,7 @@ export type FmpSnapshot = {
   yearHigh: number | null;
   sector: string | null;
   industry: string | null;
+  isEtf: boolean;
   statementDate: string | null;
   fetchedAt: string;
   history: PricePoint[];
@@ -119,6 +122,7 @@ export type StockPageData = {
   reasons: string[];
   sector: string | null;
   industry: string | null;
+  isEtf: boolean;
   industryGroup: string;
   methodologyVersion: string;
   statementDate: string | null;
@@ -341,6 +345,7 @@ export const getFmpSnapshot = cache(async (symbol: string): Promise<FmpSnapshot>
     yearHigh: quote?.yearHigh ?? null,
     sector: profile?.sector ?? null,
     industry: profile?.industry ?? null,
+    isEtf: Boolean(profile?.isEtf || profile?.isFund || /exchange traded fund|\betf\b/i.test(profile?.industry ?? "")),
     statementDate: ratios?.date ?? income?.date ?? null,
     fetchedAt: new Date().toISOString(),
     history: normalizeHistory(historyResult.data),
@@ -440,6 +445,7 @@ export function buildStockPage(snapshot: FmpSnapshot): StockPageData {
     reasons: scored.reasons,
     sector: snapshot.sector,
     industry: snapshot.industry,
+    isEtf: snapshot.isEtf,
     industryGroup: scored.industryGroup,
     methodologyVersion: scored.methodologyVersion,
     statementDate: scored.statementDate,

@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { ScoreGauge } from "@/components/score-gauge";
-import { allocationTotal, portfolioObservations, weightedPortfolioScore } from "@/lib/portfolio-score";
+import { allocationTotal } from "@/lib/portfolio-score";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { parseTicker } from "@/lib/stocks";
 
@@ -16,6 +15,9 @@ export type HoldingView = {
   score: number | null;
   band: string | null;
   pillars: { label: string; score: number | null }[];
+  sector: string | null;
+  isEtf: boolean;
+  statementDate: string | null;
 };
 
 const inputClass =
@@ -38,9 +40,7 @@ export function PortfolioEditor({
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
   const total = allocationTotal(holdings.map((holding) => holding.allocation));
-  const observations = portfolioObservations(holdings);
   const remaining = Math.max(0, Math.round((100 - total) * 10000) / 10000);
-  const weighted = weightedPortfolioScore(holdings);
   const locked = status === "complete";
 
   async function run(task: () => PromiseLike<{ error: { message: string } | null }>, success: string) {
@@ -125,57 +125,8 @@ export function PortfolioEditor({
   }
 
   return (
-    <div>
-      <section className="mt-10 grid items-center gap-4 rounded-2xl border border-line bg-card px-6 py-8 lg:grid-cols-[220px_1fr] lg:px-10">
-        <div className="flex justify-center">
-          {weighted.score == null ? (
-            <p className="max-w-40 text-center text-sm text-muted">Score incomplete</p>
-          ) : (
-            <ScoreGauge score={weighted.score} size={180} id={id} />
-          )}
-        </div>
-        <div>
-          <p className="font-mono text-[11px] tracking-[0.18em] text-muted uppercase">Portfolio score</p>
-          <h2 className="mt-3 text-2xl font-medium tracking-[-0.03em]">
-            {weighted.score == null ? "Incomplete" : `${weighted.score} of 100`}
-          </h2>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-muted">
-            {weighted.reason ??
-              "The score is the allocation-weighted average of each stock's AssetScore. It uses the same stock scores as the dashboard."}
-          </p>
-          <p className="mt-4 font-mono text-sm text-muted tabular-nums">
-            {holdings.length} stock{holdings.length === 1 ? "" : "s"} · Total allocation {total.toFixed(2)}% · Remaining{" "}
-            {remaining.toFixed(2)}% · {status === "complete" ? "Complete" : "Incomplete"}
-          </p>
-        </div>
-      </section>
-
-      {holdings.length > 0 ? (
-        <section className="mt-4 rounded-2xl border border-line bg-card p-6">
-          <h3 className="text-lg font-medium">What the portfolio shows</h3>
-          <p className="mt-2 text-sm leading-6 text-muted">
-            Pillar averages weight each holding by its allocation. A missing pillar is left out of that average. These
-            notes describe the mix. They are not instructions to buy or sell. Past holdings are not stored, so this
-            page does not draw a historical portfolio score.
-          </p>
-          <dl className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-            {observations.averages.map((pillar) => (
-              <div key={pillar.label}>
-                <dt className="text-xs text-muted">{pillar.label}</dt>
-                <dd className="mt-1 font-mono text-lg tabular-nums">{pillar.score ?? "—"}</dd>
-              </div>
-            ))}
-          </dl>
-          {observations.notes.length > 0 ? (
-            <ul className="mt-4 space-y-2 text-sm leading-6 text-muted">
-              {observations.notes.map((note) => (
-                <li key={note}>{note}</li>
-              ))}
-            </ul>
-          ) : null}
-        </section>
-      ) : null}
-
+    <div id="holdings">
+      <h2 className="mt-10 text-lg font-medium">Holdings</h2>
       <ul className="mt-4 divide-y divide-line overflow-hidden rounded-2xl border border-line bg-card">
         {holdings.length === 0 ? (
           <li className="px-6 py-6 text-sm text-muted">No stocks in this portfolio yet.</li>
@@ -187,7 +138,11 @@ export function PortfolioEditor({
                   <Link href={`/stocks/${holding.ticker}`} className="text-lg font-medium hover:text-accent">
                     {holding.ticker}
                   </Link>
-                  <p className="mt-1 text-sm text-muted">{holding.name}</p>
+                  <p className="mt-1 text-sm text-muted">
+                    {holding.name}
+                    {holding.isEtf ? " · ETF" : ""}
+                    {holding.sector ? ` · ${holding.sector}` : holding.isEtf ? "" : " · Sector unavailable"}
+                  </p>
                   <p className="mt-3 text-sm text-muted">
                     {holding.pillars.map((pillar) => `${pillar.label} ${pillar.score ?? "—"}`).join(" · ")}
                   </p>
