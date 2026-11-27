@@ -36,8 +36,7 @@ export default function TermsPage() {
           </p>
           <p>
             You are responsible for the account, the information you enter, and your investment decisions. Market data
-            comes from Financial Modeling Prep and can be delayed. Annual statements and the latest quote can refer to
-            different dates.
+            can be delayed. Annual statements and the latest quote can refer to different dates.
           </p>
           <p>
             Questions about the account, privacy, or these terms can be sent from the{" "}

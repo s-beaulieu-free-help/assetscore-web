@@ -24,7 +24,7 @@ export function HowItsScored({ className = "" }: { className?: string }) {
           Each included pillar has equal weight. A pillar with no input is left out of the average. It is not replaced
           with zero.
         </p>
-        <p>The figures come from Financial Modeling Prep: the latest quote and the latest annual statements.</p>
+        <p>The figures are the latest quote and the latest annual statements.</p>
         <ul className="space-y-2">
           {sources.map((item) => (
             <li key={item.pillar}>

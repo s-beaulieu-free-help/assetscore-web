@@ -1,4 +1,4 @@
-/** Stock-page live badge and source line. */
+/** Stock-page live badge and last-updated time. */
 export function formatFetchedAt(iso: string) {
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
@@ -32,8 +32,7 @@ export function LiveDataBadge({ live }: { live: boolean }) {
 export function MarketDataSource({ fetchedAt }: { fetchedAt: string | null }) {
   return (
     <div className="mt-3">
-      <p className="text-xs text-muted">Source: Financial Modeling Prep</p>
-      <p className="mt-1 text-xs text-muted">
+      <p className="text-xs text-muted">
         Last Updated:{" "}
         {fetchedAt ? (
           <time className="font-mono text-foreground/85" dateTime={fetchedAt}>

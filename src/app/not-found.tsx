@@ -12,7 +12,7 @@ export default function NotFound() {
           No analysis for that symbol.
         </h1>
         <p className="mt-4 max-w-md text-sm leading-6 text-muted">
-          AssetScore looks up any ticker Financial Modeling Prep lists. Check the symbol and try again.
+          Check the symbol and try again. AssetScore looks up US-listed tickers.
         </p>
         <Link
           href="/"

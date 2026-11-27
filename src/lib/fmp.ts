@@ -19,7 +19,7 @@ export class FmpError extends Error {
 
 export class FmpNotFoundError extends FmpError {
   constructor(symbol: string) {
-    super(`No Financial Modeling Prep profile was found for ${symbol}.`, 404);
+    super(`No market data was found for ${symbol}.`, 404);
     this.name = "FmpNotFoundError";
   }
 }
@@ -127,7 +127,7 @@ export type StockPageData = {
 function apiKey() {
   const key = process.env.FMP_API_KEY;
   if (!key) {
-    throw new FmpError("Market data is unavailable because FMP_API_KEY is not set.", 500);
+    throw new FmpError("Market data is unavailable.", 500);
   }
   return key;
 }
@@ -168,7 +168,7 @@ async function fmpQuery<T>(path: string, params: Record<string, string>, ttlMs: 
   if (cached && Date.now() - cached.at < cached.ttl) return cached.data as T;
 
   if (Date.now() < limitedUntil) {
-    throw new FmpError("Financial Modeling Prep returned status 429.", 429);
+    throw new FmpError("Market data is temporarily unavailable.", 429);
   }
 
   const controller = new AbortController();
@@ -181,7 +181,7 @@ async function fmpQuery<T>(path: string, params: Record<string, string>, ttlMs: 
       next: { revalidate: Math.round(ttlMs / 1000) },
     });
   } catch {
-    throw new FmpError("Financial Modeling Prep could not be reached.", 503);
+    throw new FmpError("Market data could not be reached.", 503);
   } finally {
     clearTimeout(timer);
   }
@@ -190,15 +190,15 @@ async function fmpQuery<T>(path: string, params: Record<string, string>, ttlMs: 
     const retryAfter = Number(response.headers.get("retry-after"));
     const waitMs = Number.isFinite(retryAfter) && retryAfter > 0 ? Math.min(retryAfter * 1000, 120_000) : 60_000;
     limitedUntil = Math.max(limitedUntil, Date.now() + waitMs);
-    throw new FmpError("Financial Modeling Prep returned status 429.", 429);
+    throw new FmpError("Market data is temporarily unavailable.", 429);
   }
 
   if (response.status === 401 || response.status === 403) {
-    throw new FmpError("Financial Modeling Prep rejected the API key.", response.status);
+    throw new FmpError("Market data is unavailable.", response.status);
   }
 
   if (!response.ok) {
-    throw new FmpError(`Financial Modeling Prep returned status ${response.status}.`, response.status);
+    throw new FmpError("Market data could not be loaded.", response.status);
   }
 
   const data = (await response.json()) as T;
@@ -301,18 +301,18 @@ export const getFmpSnapshot = cache(async (symbol: string): Promise<FmpSnapshot>
   const profile = first(profileResult.data);
   const quote = first(quoteResult.data);
   const scoreInputsLimited = [profileResult, quoteResult, ratioResult, growthResult].some((result) => result.rateLimited);
-  if (scoreInputsLimited) throw new FmpError("Financial Modeling Prep returned status 429.", 429);
+  if (scoreInputsLimited) throw new FmpError("Market data is temporarily unavailable.", 429);
   const rateLimited = [profileResult, quoteResult, incomeResult, ratioResult, growthResult, historyResult].some(
     (result) => result.rateLimited,
   );
   if (!profile && !quote) {
-    if (rateLimited) throw new FmpError("Financial Modeling Prep returned status 429.", 429);
+    if (rateLimited) throw new FmpError("Market data is temporarily unavailable.", 429);
     throw new FmpNotFoundError(symbol);
   }
 
   const price = quote?.price ?? profile?.price;
   if (price == null || Number.isNaN(price)) {
-    if (rateLimited) throw new FmpError("Financial Modeling Prep returned status 429.", 429);
+    if (rateLimited) throw new FmpError("Market data is temporarily unavailable.", 429);
     throw new FmpNotFoundError(symbol);
   }
 
@@ -366,7 +366,7 @@ export const getIndexSeries = cache(async (symbol: string): Promise<IndexSeries 
   const price = quote?.price;
   if (price == null || Number.isNaN(price)) {
     if (quoteResult.rateLimited || historyResult.rateLimited) {
-      throw new FmpError("Financial Modeling Prep returned status 429.", 429);
+      throw new FmpError("Market data is temporarily unavailable.", 429);
     }
     return null;
   }

@@ -284,7 +284,7 @@ export function scoreSnapshot(input: ScoreInput): ScoreResult {
       score: null,
       band: null,
       pillars,
-      reasons: ["Financial Modeling Prep did not return the inputs used for a score."],
+      reasons: ["The inputs used for a score were not returned."],
       methodologyVersion: "2",
       industryGroup,
       statementDate: input.statementDate ?? null,

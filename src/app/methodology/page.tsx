@@ -30,8 +30,8 @@ export default function MethodologyPage() {
         <p className="font-mono text-[11px] tracking-[0.2em] text-muted uppercase">Methodology</p>
         <h1 className="mt-4 text-4xl font-medium tracking-[-0.045em] sm:text-5xl">How the score is calculated</h1>
         <p className="mt-6 text-sm leading-7 text-muted">
-          AssetScore describes company characteristics from the latest Financial Modeling Prep quote and the latest
-          annual figures. It is not a prediction of future returns, and it is not investment advice.
+          AssetScore describes company characteristics from the latest quote and the latest annual figures. It is not a
+          prediction of future returns, and it is not investment advice.
         </p>
 
         <section className="mt-12">
@@ -73,7 +73,7 @@ export default function MethodologyPage() {
         <section className="mt-12">
           <h2 className="text-2xl font-medium tracking-[-0.03em]">How Financial Metrics Become Scores</h2>
           <p className="mt-4 text-sm leading-7 text-muted">
-            Each pillar starts from a figure that Financial Modeling Prep returned. The mapping below is the one the
+            Each pillar starts from a reported figure. The mapping below is the one the
             stock page uses. Methodology 2 keeps those formulas for operating companies. Banks, insurers, and real
             estate investment trusts leave out ratios that do not fit those industries.
           </p>

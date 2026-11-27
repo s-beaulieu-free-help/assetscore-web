@@ -9,12 +9,12 @@ export const homeFaqs = [
   {
     question: "Where does AssetScore get its financial data?",
     answer:
-      "Stock pages use Financial Modeling Prep. A score is built from the latest quote and the latest annual ratios and income figures. The quote supplies the price and the 52-week range. The annual statements supply earnings, revenue growth, profit margin, and the balance-sheet ratios.",
+      "A score is built from the latest quote and the latest annual ratios and income figures. The quote supplies the price and the 52-week range. The annual statements supply earnings, revenue growth, profit margin, and the balance-sheet ratios.",
   },
   {
     question: "How frequently is financial information updated?",
     answer:
-      "A stock page keeps a successful response for about five minutes, then asks Financial Modeling Prep again. The stock page shows the time that data was fetched, in US Eastern time.",
+      "The quote is refreshed about every five minutes. The stock page shows when that data was fetched, in US Eastern time.",
   },
   {
     question: "Which stock markets are supported?",

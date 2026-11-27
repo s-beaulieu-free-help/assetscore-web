@@ -13,7 +13,7 @@ export const metadata: Metadata = shareMetadata({ title, description, path: "/co
 const covered = [
   {
     title: "US-listed stocks",
-    body: "A stock page can be opened for a US ticker when Financial Modeling Prep returns a quote and annual figures. Search, comparison, favorites, and portfolios use those tickers.",
+    body: "A stock page can be opened for a US ticker when a quote and annual figures are available. Search, comparison, favorites, and portfolios use those tickers.",
   },
   {
     title: "S&P 500, Nasdaq 100, and Dow Jones",
