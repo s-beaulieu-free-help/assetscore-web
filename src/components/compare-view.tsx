@@ -4,6 +4,7 @@ import { ScoreGauge } from "@/components/score-gauge";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import type { StockPageData } from "@/lib/fmp";
+import { industryGroupLabel, type IndustryGroup } from "@/lib/score";
 import { formatChange, formatMoney } from "@/lib/stocks";
 
 function formatUpdated(iso: string) {
@@ -29,6 +30,11 @@ function StockColumn({ stock }: { stock: StockPageData }) {
         {stock.name}
         <span className="px-2 text-white/20">·</span>
         {stock.exchange}
+      </p>
+      <p className="mt-2 text-xs leading-5 text-muted">
+        {stock.industry ?? "Industry was not returned"}. Treated as {industryGroupLabel(stock.industryGroup as IndustryGroup)}.
+        Coverage {stock.pillars.filter((pillar) => pillar.score != null).length} of{" "}
+        {stock.pillars.filter((pillar) => !pillar.omitted).length} pillars.
       </p>
       <p className="mt-4 font-mono text-2xl tabular-nums">{formatMoney(stock.price)}</p>
       <p className={`mt-1 font-mono text-sm tabular-nums ${positive ? "text-accent-2" : "text-[#f0a3a8]"}`}>
@@ -96,6 +102,14 @@ export function CompareView({ left, right }: { left: StockPageData; right: Stock
           annual period returned. Prices are in US dollars. A dash means the figure was not returned. This is not a
           forecast.
         </p>
+        {left.industryGroup !== right.industryGroup ? (
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
+            These companies are not scored with the same set of ratios. {left.ticker} is treated as{" "}
+            {industryGroupLabel(left.industryGroup as IndustryGroup)}. {right.ticker} is treated as{" "}
+            {industryGroupLabel(right.industryGroup as IndustryGroup)}. A pillar left blank for one of them was not
+            used for that industry.
+          </p>
+        ) : null}
 
         <div className="mt-8 grid gap-4 md:grid-cols-2">
           <StockColumn stock={left} />

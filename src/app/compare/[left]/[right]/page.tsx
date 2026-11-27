@@ -27,6 +27,14 @@ async function loadPair(leftRaw: string, rightRaw: string) {
 }
 
 export async function generateMetadata({ params }: ComparePageProps): Promise<Metadata> {
+  const access = await loadAccess();
+  if (access.isFree) {
+    return {
+      title: "Compare · AssetScore",
+      description: "Side-by-side stock comparison is included with the trial and with Pro.",
+      robots: { index: false, follow: false },
+    };
+  }
   const { left, right } = await params;
   const pair = await loadPair(left, right);
   if (!pair) return { title: "Compare · AssetScore" };

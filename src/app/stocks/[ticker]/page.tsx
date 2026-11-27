@@ -6,6 +6,7 @@ import { recordConsentedEvent, recordDailyCount } from "@/lib/analytics";
 import { loadAccess, recordStockEvaluation } from "@/lib/billing/access";
 import { FREE_EVALUATION_LIMIT_FALLBACK } from "@/lib/billing/plans";
 import { buildStockPage, FmpNotFoundError, getFmpSnapshot } from "@/lib/fmp";
+import { historyForSymbol } from "@/lib/score-history";
 import { parseTicker } from "@/lib/stocks";
 import { loadViewer } from "@/lib/viewer";
 
@@ -72,5 +73,12 @@ export default async function StockPage({ params }: StockPageProps) {
     if (access.isFree) await recordConsentedEvent("free_activity");
   }
 
-  return <StockView stock={buildStockPage(snapshot)} showAds={access.shouldDisplayAds} signedIn={Boolean(user)} />;
+  return (
+    <StockView
+      stock={buildStockPage(snapshot)}
+      scoreHistory={historyForSymbol(snapshot.symbol)}
+      showAds={access.shouldDisplayAds}
+      signedIn={Boolean(user)}
+    />
+  );
 }

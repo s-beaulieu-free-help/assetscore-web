@@ -155,7 +155,8 @@ export function PortfolioEditor({
           <h3 className="text-lg font-medium">What the portfolio shows</h3>
           <p className="mt-2 text-sm leading-6 text-muted">
             Pillar averages weight each holding by its allocation. A missing pillar is left out of that average. These
-            notes describe the mix. They are not instructions to buy or sell.
+            notes describe the mix. They are not instructions to buy or sell. Past holdings are not stored, so this
+            page does not draw a historical portfolio score.
           </p>
           <dl className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
             {observations.averages.map((pillar) => (

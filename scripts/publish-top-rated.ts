@@ -1,7 +1,8 @@
-import { readFileSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { readFileSync, writeFileSync } from "node:fs";
 import { scoreSnapshot } from "../src/lib/score";
+import type { ScoreObservation } from "../src/lib/score-history";
 
 const REFRESH_GAP_MS = 20 * 60 * 60 * 1000;
 
@@ -29,6 +30,7 @@ type Ratios = {
   debtToEquityRatio?: number | null;
 };
 type Growth = { growthRevenue?: number | null };
+type Profile = { sector?: string; industry?: string };
 
 const key = process.env.FMP_API_KEY;
 
@@ -196,6 +198,10 @@ async function main() {
       quality: number | null;
       health: number | null;
       momentum: number | null;
+      sector: string | null;
+      industry: string | null;
+      industryGroup: string;
+      methodologyVersion: "2";
     }
   >();
   let index = 0;
@@ -212,6 +218,8 @@ async function main() {
     await sleep(220);
     const growth = (await optionalRows<Growth>("income-statement-growth", { symbol, limit: "1", period: "annual" }))[0];
     await sleep(220);
+    const profile = (await optionalRows<Profile>("profile", { symbol }))[0];
+    await sleep(220);
     const result = scoreSnapshot({
       price,
       pe: finite(ratios?.priceToEarningsRatio),
@@ -222,6 +230,9 @@ async function main() {
       yearLow: finite(quote.yearLow),
       yearHigh: finite(quote.yearHigh),
       history: [],
+      sector: profile?.sector ?? null,
+      industry: profile?.industry ?? null,
+      statementDate: null,
     });
     if (result.score != null && result.band) {
       const pillar = (label: string) => result.pillars.find((item) => item.label === label)?.score ?? null;
@@ -243,6 +254,10 @@ async function main() {
         quality: pillar("Quality"),
         health: pillar("Financial Health"),
         momentum: pillar("Momentum"),
+        sector: profile?.sector ?? null,
+        industry: profile?.industry ?? null,
+        industryGroup: result.industryGroup,
+        methodologyVersion: "2",
       });
     }
     if (index % 25 === 0) console.log(`${index}/${symbols.length} scored ${scored.size}`);
@@ -273,6 +288,34 @@ async function main() {
   const destination = path.join(process.cwd(), "src", "data", "top-rated.json");
   await mkdir(path.dirname(destination), { recursive: true });
   await writeFile(destination, `${JSON.stringify(published, null, 2)}\n`);
+  const asOf = published.publishedAt.slice(0, 10);
+  const historyDestination = path.join(process.cwd(), "src", "data", "score-history.json");
+  let existing: ScoreObservation[] = [];
+  try {
+    existing = (JSON.parse(readFileSync(historyDestination, "utf8")) as { observations?: ScoreObservation[] }).observations ?? [];
+  } catch {
+    existing = [];
+  }
+  const seen = new Set(existing.map((row) => `${row.symbol}|${row.asOf}|${row.methodologyVersion}`));
+  const observations = [...existing];
+  for (const row of published.universe) {
+    const key = `${row.symbol}|${asOf}|2`;
+    if (seen.has(key)) continue;
+    observations.push({
+      symbol: row.symbol,
+      name: row.name,
+      asOf,
+      methodologyVersion: "2",
+      industryGroup: row.industryGroup === "bank" || row.industryGroup === "insurance" || row.industryGroup === "reit" ? row.industryGroup : "general",
+      score: row.score,
+      value: row.value,
+      growth: row.growth,
+      quality: row.quality,
+      health: row.health,
+      momentum: row.momentum,
+    });
+  }
+  writeFileSync(historyDestination, `${JSON.stringify({ observations }, null, 2)}\n`);
   for (const list of published.lists) {
     console.log(`${list.name}: published ${list.entries.length}`);
   }

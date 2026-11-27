@@ -28,6 +28,8 @@ type Profile = {
   price?: number;
   marketCap?: number;
   change?: number;
+  sector?: string;
+  industry?: string;
 };
 
 type Quote = {
@@ -49,10 +51,12 @@ type LightBar = {
 };
 
 type IncomeStatement = {
+  date?: string;
   revenue?: number;
 };
 
 type Ratios = {
+  date?: string;
   priceToEarningsRatio?: number | null;
   netProfitMargin?: number | null;
   currentRatio?: number | null;
@@ -90,6 +94,9 @@ export type FmpSnapshot = {
   volume: number | null;
   yearLow: number | null;
   yearHigh: number | null;
+  sector: string | null;
+  industry: string | null;
+  statementDate: string | null;
   fetchedAt: string;
   history: PricePoint[];
 };
@@ -107,6 +114,11 @@ export type StockPageData = {
   band: string | null;
   pillars: Pillar[];
   reasons: string[];
+  sector: string | null;
+  industry: string | null;
+  industryGroup: string;
+  methodologyVersion: string;
+  statementDate: string | null;
 };
 
 function apiKey() {
@@ -279,6 +291,9 @@ export const getFmpSnapshot = cache(async (symbol: string): Promise<FmpSnapshot>
     volume: quote?.volume ?? null,
     yearLow: quote?.yearLow ?? null,
     yearHigh: quote?.yearHigh ?? null,
+    sector: profile?.sector ?? null,
+    industry: profile?.industry ?? null,
+    statementDate: ratios?.date ?? income?.date ?? null,
     fetchedAt: new Date().toISOString(),
     history: normalizeHistory(historyResult.data),
   };
@@ -322,7 +337,12 @@ export const getIndexSeries = cache(async (symbol: string): Promise<IndexSeries 
 });
 
 export function buildStockPage(snapshot: FmpSnapshot): StockPageData {
-  const scored = scoreSnapshot(snapshot);
+  const scored = scoreSnapshot({
+    ...snapshot,
+    sector: snapshot.sector,
+    industry: snapshot.industry,
+    statementDate: snapshot.statementDate,
+  });
   return {
     ticker: snapshot.symbol,
     name: snapshot.companyName,
@@ -370,5 +390,10 @@ export function buildStockPage(snapshot: FmpSnapshot): StockPageData {
     band: scored.band,
     pillars: scored.pillars,
     reasons: scored.reasons,
+    sector: snapshot.sector,
+    industry: snapshot.industry,
+    industryGroup: scored.industryGroup,
+    methodologyVersion: scored.methodologyVersion,
+    statementDate: scored.statementDate,
   };
 }

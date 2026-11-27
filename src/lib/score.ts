@@ -7,7 +7,12 @@ export type Pillar = {
   score: number | null;
   note: string;
   why: string | null;
+  omitted?: boolean;
 };
+
+export type IndustryGroup = "general" | "bank" | "insurance" | "reit";
+
+export type MethodologyVersion = "1" | "2";
 
 export type ScoreInput = {
   price: number;
@@ -19,6 +24,9 @@ export type ScoreInput = {
   yearLow: number | null;
   yearHigh: number | null;
   history: PricePoint[];
+  sector?: string | null;
+  industry?: string | null;
+  statementDate?: string | null;
 };
 
 export type ScoreResult = {
@@ -26,7 +34,48 @@ export type ScoreResult = {
   band: string | null;
   pillars: Pillar[];
   reasons: string[];
+  methodologyVersion: MethodologyVersion;
+  industryGroup: IndustryGroup;
+  statementDate: string | null;
 };
+
+const INDUSTRY_OMITTED: Record<Exclude<IndustryGroup, "general">, Partial<Record<PillarLabel, string>>> = {
+  bank: {
+    Quality:
+      "Quality is not scored for banks. Net profit margin is not comparable for a bank, and return on equity was not in the returned data.",
+    "Financial Health":
+      "Financial Health is not scored for banks. The current ratio and debt-to-equity are not used, and capital ratios were not in the returned data.",
+  },
+  insurance: {
+    Quality:
+      "Quality is not scored for insurers. Net profit margin is not used, and underwriting results were not in the returned data.",
+    "Financial Health":
+      "Financial Health is not scored for insurers. The current ratio and debt-to-equity are not used, and insurance capital measures were not in the returned data.",
+  },
+  reit: {
+    Value:
+      "Value is not scored for real estate investment trusts. Annual price-to-earnings is not used, and funds from operations were not in the returned data.",
+    Quality: "Quality is not scored for real estate investment trusts. Net profit margin is not used.",
+    "Financial Health":
+      "Financial Health is not scored for real estate investment trusts. The current ratio and debt-to-equity are not used.",
+  },
+};
+
+export function industryGroupFor(sector?: string | null, industry?: string | null): IndustryGroup {
+  const industryText = (industry ?? "").toLowerCase();
+  const text = `${sector ?? ""} ${industry ?? ""}`.toLowerCase();
+  if (/\breit\b|real estate investment trust/.test(text)) return "reit";
+  if (industryText.includes("insurance")) return "insurance";
+  if (/\bbanks?\b|\bbanking\b|\bthrifts?\b/.test(industryText)) return "bank";
+  return "general";
+}
+
+export function industryGroupLabel(group: IndustryGroup) {
+  if (group === "bank") return "bank";
+  if (group === "insurance") return "insurer";
+  if (group === "reit") return "real estate investment trust";
+  return "operating company";
+}
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
@@ -216,13 +265,19 @@ function momentumScore(input: ScoreInput): Pillar {
 }
 
 export function scoreSnapshot(input: ScoreInput): ScoreResult {
+  const industryGroup = industryGroupFor(input.sector, input.industry);
+  const omissions = industryGroup === "general" ? {} : INDUSTRY_OMITTED[industryGroup];
   const pillars = [
     valueScore(input.pe),
     growthScore(input.revenueGrowth),
     qualityScore(input.netMargin),
     healthScore(input.currentRatio, input.debtToEquity),
     momentumScore(input),
-  ];
+  ].map((pillar) => {
+    const note = omissions[pillar.label];
+    if (!note) return pillar;
+    return { label: pillar.label, score: null, note, why: null, omitted: true };
+  });
   const scored = pillars.filter((pillar): pillar is Pillar & { score: number } => pillar.score != null);
   if (scored.length === 0) {
     return {
@@ -230,6 +285,9 @@ export function scoreSnapshot(input: ScoreInput): ScoreResult {
       band: null,
       pillars,
       reasons: ["Financial Modeling Prep did not return the inputs used for a score."],
+      methodologyVersion: "2",
+      industryGroup,
+      statementDate: input.statementDate ?? null,
     };
   }
 
@@ -246,5 +304,8 @@ export function scoreSnapshot(input: ScoreInput): ScoreResult {
     band,
     pillars,
     reasons: [...scored.flatMap((pillar) => (pillar.why ? [pillar.why] : [])), closing],
+    methodologyVersion: "2",
+    industryGroup,
+    statementDate: input.statementDate ?? null,
   };
 }

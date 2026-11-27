@@ -19,7 +19,7 @@ const articles = [
   {
     id: "financial-health",
     title: "How to evaluate a company's financial health",
-    body: "AssetScore Financial Health uses the latest annual current ratio and debt compared with equity. A higher current ratio means short-term assets cover short-term bills more comfortably. More debt relative to equity lowers that part of the score. If only one figure is available, that figure is the pillar. The score describes the balance sheet that was returned. It does not say whether the shares will rise.",
+    body: "For an operating company, Financial Health uses the latest annual current ratio and debt compared with equity. A higher current ratio means short-term assets cover short-term bills more comfortably. More debt relative to equity lowers that part of the score. If only one figure is available, that figure is the pillar. Banks, insurers, and real estate investment trusts do not use these two ratios, because they do not describe those businesses and the industry-specific figures are not in the returned data. The score describes the figures that were used. It does not say whether the shares will rise.",
   },
   {
     id: "compare",
@@ -29,12 +29,12 @@ const articles = [
   {
     id: "pe",
     title: "Understanding the price-to-earnings ratio",
-    body: "Value uses the annual price-to-earnings ratio. The ratio is the price divided by annual earnings. A lower positive multiple scores higher. Negative earnings keep Value low. The ratio does not include dividends or a forecast, and it can look very different for companies in different businesses. AssetScore does not adjust it by industry.",
+    body: "Value uses the annual price-to-earnings ratio for operating companies, banks, and insurers. The ratio is the price divided by annual earnings. A lower positive multiple scores higher. Negative earnings keep Value low. Real estate investment trusts do not use this ratio, because funds from operations were not in the returned data. The ratio does not include dividends or a forecast.",
   },
   {
     id: "profitability",
     title: "How to evaluate company profitability",
-    body: "Quality uses the annual net profit margin, the share of revenue kept as profit. A wider margin scores higher. A loss scores lower. Profitability is one of five equal pillars, so a wide margin can still sit next to an expensive multiple or a weak price trend.",
+    body: "For an operating company, Quality uses the annual net profit margin, the share of revenue kept as profit. A wider margin scores higher. A loss scores lower. Banks, insurers, and real estate investment trusts do not use this margin. Profitability is one equal pillar among the pillars that apply, so a wide margin can still sit next to an expensive multiple or a weak price trend.",
   },
   {
     id: "overvalued",
