@@ -25,18 +25,50 @@ function formatDay(isoDate: string) {
   }).format(new Date(Date.UTC(year, month - 1, day)));
 }
 
+const RELATED_GUIDES = [
+  { href: "/methodology", label: "How the score is calculated" },
+  { href: "/learn/reading-the-assetscore", label: "How to read an AssetScore" },
+  { href: "/learn/price-to-earnings-ratio", label: "Price-to-earnings and valuation" },
+  { href: "/learn/revenue-growth", label: "Revenue growth" },
+  { href: "/learn/profit-margin-and-quality", label: "Profit margin and company quality" },
+  { href: "/learn/current-ratio-and-debt", label: "Current ratio and debt" },
+  { href: "/topics/sp500-quality", label: "Highest quality S&P 500 stocks" },
+];
+
 export function StockView({
   stock,
+  ranks = [],
   scoreHistory = [],
   showAds = false,
   signedIn = false,
 }: {
   stock: StockPageData;
+  ranks?: Array<{ slug: string; name: string; rank: number }>;
   scoreHistory?: ScoreObservation[];
   showAds?: boolean;
   signedIn?: boolean;
 }) {
   const positive = stock.change >= 0;
+  const pageUrl = `https://assetscore.net/stocks/${stock.ticker}`;
+  const schema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "AssetScore", item: "https://assetscore.net/" },
+          { "@type": "ListItem", position: 2, name: "S&P 500 ranking", item: "https://assetscore.net/rankings/sp500" },
+          { "@type": "ListItem", position: 3, name: `${stock.name} (${stock.ticker})`, item: pageUrl },
+        ],
+      },
+      {
+        "@type": "WebPage",
+        name: `${stock.name} (${stock.ticker}) stock analysis`,
+        url: pageUrl,
+        about: { "@type": "Corporation", name: stock.name, tickerSymbol: stock.ticker },
+      },
+    ],
+  };
   const priceHistory = stock.history;
   const closes = priceHistory.map((point) => point.price);
   const applicable = stock.pillars.filter((pillar) => !pillar.omitted).length;
@@ -135,9 +167,16 @@ export function StockView({
             </p>
             <HowItsScored className="mt-4 max-w-xl" />
             <p className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm">
-              <Link href="/rankings/sp500" className="text-foreground hover:text-accent">
-                S&amp;P 500 rankings
-              </Link>
+              {ranks.map((entry) => (
+                <Link key={entry.slug} href={`/rankings/${entry.slug}`} className="text-foreground hover:text-accent">
+                  {entry.name} rank {entry.rank}
+                </Link>
+              ))}
+              {ranks.length === 0 ? (
+                <Link href="/rankings/sp500" className="text-foreground hover:text-accent">
+                  S&amp;P 500 rankings
+                </Link>
+              ) : null}
               <Link href={`/compare/${stock.ticker}`} className="text-foreground hover:text-accent">
                 Compare {stock.ticker}
               </Link>
@@ -176,6 +215,19 @@ export function StockView({
             </Link>
           </div>
         </section>
+
+        <nav className="mt-4 rounded-2xl border border-line bg-card px-6 py-6" aria-label="Related research">
+          <h2 className="text-xl font-medium tracking-[-0.03em]">Related research</h2>
+          <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+            {RELATED_GUIDES.map((guide) => (
+              <li key={guide.href}>
+                <Link href={guide.href} className="text-foreground hover:text-accent">
+                  {guide.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
         <section className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5" aria-label="Scoring categories">
           {stock.pillars.map((pillar) => (
@@ -399,6 +451,7 @@ export function StockView({
         <PromotionSlot placement="stock" enabled={showAds} />
         <StockReviews ticker={stock.ticker} />
       </main>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <SiteFooter />
     </div>
   );

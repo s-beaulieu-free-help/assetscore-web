@@ -2,41 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { LEARN_ARTICLES } from "@/lib/learn-articles";
 import { shareMetadata } from "@/lib/seo";
 
 const title = "How to read a stock score · AssetScore";
 const description =
-  "Short explanations of financial health, stock comparison, the price-to-earnings ratio, profitability, and what a high price multiple means.";
+  "Articles on valuation, revenue growth, profit margin, financial health, and how those ratios become an AssetScore.";
 
 export const metadata: Metadata = shareMetadata({ title, description, path: "/learn" });
-
-const articles = [
-  {
-    id: "financial-health",
-    title: "How to evaluate a company's financial health",
-    body: "For an operating company, Financial Health uses the latest annual current ratio and debt compared with equity. A higher current ratio means short-term assets cover short-term bills more comfortably. More debt relative to equity lowers that part of the score. If only one figure is available, that figure is the pillar. Banks, insurers, and real estate investment trusts do not use these two ratios, because they do not describe those businesses and the industry-specific figures are not in the returned data. The score describes the figures that were used. It does not say whether the shares will rise.",
-  },
-  {
-    id: "compare",
-    title: "How to compare two stocks",
-    body: "A comparison puts two companies on the same five pillars: Value, Growth, Quality, Financial Health, and Momentum. Each pillar uses the same inputs as the stock page. The useful reading is which pillar is stronger for each company, not which overall number is larger by itself. Comparison is included with the 30-day trial and with Pro.",
-  },
-  {
-    id: "pe",
-    title: "Understanding the price-to-earnings ratio",
-    body: "Value uses the annual price-to-earnings ratio for operating companies, banks, and insurers. The ratio is the price divided by annual earnings. A lower positive multiple scores higher. Negative earnings keep Value low. Real estate investment trusts do not use this ratio, because funds from operations were not in the returned data. The ratio does not include dividends or a forecast.",
-  },
-  {
-    id: "profitability",
-    title: "How to evaluate company profitability",
-    body: "For an operating company, Quality uses the annual net profit margin, the share of revenue kept as profit. A wider margin scores higher. A loss scores lower. Banks, insurers, and real estate investment trusts do not use this margin. Profitability is one equal pillar among the pillars that apply, so a wide margin can still sit next to an expensive multiple or a weak price trend.",
-  },
-  {
-    id: "overvalued",
-    title: "What a high price multiple means here",
-    body: "A high annual price-to-earnings ratio lowers the Value score. That is a description of the multiple, not a statement that the shares are about to fall. Momentum, which measures where the price sits in the 52-week range, can be strong at the same time. Read the pillars separately before reading the average.",
-  },
-];
 
 export default function LearnPage() {
   return (
@@ -46,20 +19,31 @@ export default function LearnPage() {
         <p className="font-mono text-[11px] tracking-[0.2em] text-muted uppercase">Learn</p>
         <h1 className="mt-4 text-4xl font-medium tracking-[-0.045em]">How to read a stock score</h1>
         <p className="mt-4 text-sm leading-7 text-muted">
-          These notes match the calculations on the stock page. The full rules are on the{" "}
+          Each article explains one part of the score used on stock pages and in the{" "}
+          <Link href="/rankings/sp500" className="text-foreground hover:text-accent">
+            S&P 500 ranking
+          </Link>
+          . The formulas are on the{" "}
           <Link href="/methodology" className="text-foreground hover:text-accent">
             methodology
           </Link>{" "}
-          page.
+          page. Category lists are under{" "}
+          <Link href="/topics" className="text-foreground hover:text-accent">
+            topics
+          </Link>
+          .
         </p>
-        <div className="mt-10 space-y-10">
-          {articles.map((article) => (
-            <article key={article.id} id={article.id}>
-              <h2 className="text-2xl font-medium tracking-[-0.03em]">{article.title}</h2>
-              <p className="mt-3 text-sm leading-7 text-muted">{article.body}</p>
-            </article>
+        <ul className="mt-10 space-y-4">
+          {LEARN_ARTICLES.map((article) => (
+            <li key={article.slug} className="rounded-2xl border border-line bg-card px-5 py-5">
+              <p className="font-mono text-[11px] tracking-[0.16em] text-muted uppercase">{article.kicker}</p>
+              <Link href={`/learn/${article.slug}`} className="mt-2 block text-lg font-medium hover:text-accent">
+                {article.title}
+              </Link>
+              <p className="mt-2 text-sm leading-6 text-muted">{article.description}</p>
+            </li>
           ))}
-        </div>
+        </ul>
       </main>
       <SiteFooter />
     </div>

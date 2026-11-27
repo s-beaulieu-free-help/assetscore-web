@@ -6,6 +6,7 @@ import { recordConsentedEvent, recordDailyCount } from "@/lib/analytics";
 import { loadAccess, recordStockEvaluation } from "@/lib/billing/access";
 import { FREE_EVALUATION_LIMIT_FALLBACK } from "@/lib/billing/plans";
 import { buildStockPage, FmpNotFoundError, getFmpSnapshot } from "@/lib/fmp";
+import { ranksForSymbol } from "@/lib/rankings";
 import { historyForSymbol } from "@/lib/score-history";
 import { shareMetadata } from "@/lib/seo";
 import { parseTicker } from "@/lib/stocks";
@@ -22,9 +23,13 @@ export async function generateMetadata({ params }: StockPageProps): Promise<Meta
 
   try {
     const snapshot = await getFmpSnapshot(ticker);
-    const title = `${snapshot.companyName} Stock Analysis & Financial Health Score | AssetScore`;
-    const description = `Explore ${snapshot.companyName} (${snapshot.symbol}) AssetScore, financial health, profitability, growth, and valuation. See the company's financial strengths and weaknesses. This is research, not a forecast.`;
-    return shareMetadata({ title, description, path: `/stocks/${snapshot.symbol}` });
+    const stock = buildStockPage(snapshot);
+    const title = `${stock.name} (${stock.ticker}) Stock Analysis & AssetScore | AssetScore`;
+    const description =
+      stock.score == null
+        ? `${stock.name} (${stock.ticker}) stock analysis: value, growth, quality, financial health, and momentum. A score is omitted when the required figures are missing. Research, not a forecast.`
+        : `${stock.name} (${stock.ticker}) AssetScore is ${stock.score} (${stock.band}). See value, growth, quality, financial health, and momentum from the latest annual figures and quote. Research, not a forecast.`;
+    return shareMetadata({ title, description, path: `/stocks/${stock.ticker}` });
   } catch {
     return shareMetadata({
       title: `${ticker} · AssetScore`,
@@ -71,6 +76,7 @@ export default async function StockPage({ params }: StockPageProps) {
   return (
     <StockView
       stock={buildStockPage(snapshot)}
+      ranks={ranksForSymbol(snapshot.symbol)}
       scoreHistory={historyForSymbol(snapshot.symbol)}
       showAds={access.shouldDisplayAds}
       signedIn={Boolean(user)}

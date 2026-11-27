@@ -3,8 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { rankedIndex, rankingPage, RANKING_PAGES } from "@/lib/rankings";
+import { LEARN_ARTICLES } from "@/lib/learn-articles";
+import { RANKING_FAQS, rankedIndex, rankingPage, RANKING_PAGES } from "@/lib/rankings";
 import { shareMetadata } from "@/lib/seo";
+import { TOPIC_PAGES } from "@/lib/topics";
 
 type RankingPageProps = {
   params: Promise<{ slug: string }>;
@@ -37,17 +39,30 @@ export default async function RankingPage({ params }: RankingPageProps) {
         timeZoneName: "short",
       }).format(new Date(publishedAt))
     : null;
-  const listSchema = {
+  const faqs = RANKING_FAQS[page.slug];
+  const schema = {
     "@context": "https://schema.org",
-    "@type": "ItemList",
-    name: page.title,
-    numberOfItems: rows.length,
-    itemListElement: rows.map((row, index) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      name: `${row.name} (${row.symbol})`,
-      url: `https://assetscore.net/stocks/${row.symbol}`,
-    })),
+    "@graph": [
+      {
+        "@type": "ItemList",
+        name: page.title,
+        numberOfItems: rows.length,
+        itemListElement: rows.map((row, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: `${row.name} (${row.symbol})`,
+          url: `https://assetscore.net/stocks/${row.symbol}`,
+        })),
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: faqs.map((item) => ({
+          "@type": "Question",
+          name: item.question,
+          acceptedAnswer: { "@type": "Answer", text: item.answer },
+        })),
+      },
+    ],
   };
 
   return (
@@ -56,21 +71,48 @@ export default async function RankingPage({ params }: RankingPageProps) {
       <main className="mx-auto w-full max-w-6xl px-6 pt-16 pb-24">
         <p className="font-mono text-[11px] tracking-[0.2em] text-muted uppercase">Rankings</p>
         <h1 className="mt-4 max-w-3xl text-4xl font-medium tracking-[-0.045em] sm:text-5xl">{page.title}</h1>
-        <p className="mt-4 max-w-3xl text-sm leading-7 text-muted">
-          {page.name} companies in the daily published universe, ordered by AssetScore. The score is the same rounded
-          average of Value, Growth, Quality, Financial Health, and Momentum used on each stock page. This list is not a
-          forecast and it is not a recommendation to buy or sell.
-        </p>
+        <p className="mt-4 max-w-3xl text-sm leading-7 text-muted">{page.lead}</p>
         <p className="mt-4 text-sm text-foreground">Last updated: {updated ?? "No ranking has been published yet."}</p>
-        <p className="mt-3 text-sm text-muted">
+        <nav className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm" aria-label="Related reading">
           <Link href="/methodology" className="text-foreground hover:text-accent">
             How the score is calculated
           </Link>
-          <span className="px-2 text-white/20">·</span>
           <Link href="/screener" className="text-foreground hover:text-accent">
             Stock Screener
           </Link>
-        </p>
+          <Link href="/topics" className="text-foreground hover:text-accent">
+            Stock categories
+          </Link>
+          <Link href="/learn" className="text-foreground hover:text-accent">
+            Guides
+          </Link>
+        </nav>
+        <div className="mt-6 grid gap-6 sm:grid-cols-2">
+          <div>
+            <h2 className="text-sm font-medium">S&amp;P 500 by pillar</h2>
+            <ul className="mt-2 space-y-2 text-sm">
+              {TOPIC_PAGES.map((topic) => (
+                <li key={topic.slug}>
+                  <Link href={`/topics/${topic.slug}`} className="text-foreground hover:text-accent">
+                    {topic.h1}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h2 className="text-sm font-medium">How the pillars are scored</h2>
+            <ul className="mt-2 space-y-2 text-sm">
+              {LEARN_ARTICLES.map((article) => (
+                <li key={article.slug}>
+                  <Link href={`/learn/${article.slug}`} className="text-foreground hover:text-accent">
+                    {article.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
         <nav className="mt-8 flex flex-wrap gap-3 text-sm" aria-label="Index rankings">
           {RANKING_PAGES.map((item) => (
             <Link
@@ -113,8 +155,19 @@ export default async function RankingPage({ params }: RankingPageProps) {
             </table>
           </div>
         )}
+        <section className="mt-12 max-w-3xl">
+          <h2 className="text-2xl font-medium tracking-[-0.03em]">Questions about this ranking</h2>
+          <dl className="mt-6 space-y-6">
+            {faqs.map((item) => (
+              <div key={item.question}>
+                <dt className="text-sm font-medium">{item.question}</dt>
+                <dd className="mt-2 text-sm leading-7 text-muted">{item.answer}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
       </main>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(listSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <SiteFooter />
     </div>
   );

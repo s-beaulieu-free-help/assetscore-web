@@ -54,6 +54,9 @@ export function SiteFooter() {
             <Link href="/about" className="transition-colors hover:text-foreground">
               About
             </Link>
+            <Link href="/topics" className="transition-colors hover:text-foreground">
+              Topics
+            </Link>
             <Link href="/learn" className="transition-colors hover:text-foreground">
               Learn
             </Link>
