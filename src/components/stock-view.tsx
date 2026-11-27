@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { HowItsScored } from "@/components/how-its-scored";
 import { PromotionSlot } from "@/components/promotion-slot";
 import { FavoriteControl } from "@/components/favorite-control";
 import { formatFetchedAt, LiveDataBadge, MarketDataSource } from "@/components/market-data-status";
@@ -132,10 +133,8 @@ export function StockView({
             <p className="mt-4 max-w-xl text-sm leading-6 text-muted">
               Each pillar has equal weight. A high overall score does not mean every pillar is strong.
             </p>
+            <HowItsScored className="mt-4 max-w-xl" />
             <p className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm">
-              <Link href="/methodology" className="text-foreground hover:text-accent">
-                How this score is calculated
-              </Link>
               <Link href="/rankings/sp500" className="text-foreground hover:text-accent">
                 S&amp;P 500 rankings
               </Link>

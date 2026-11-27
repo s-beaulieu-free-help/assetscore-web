@@ -1,3 +1,5 @@
+import { HowItsScored } from "@/components/how-its-scored";
+
 const features = [
   {
     title: "Simple",
@@ -15,7 +17,7 @@ const features = [
     title: "Transparent",
     line: "See exactly how the score is calculated",
     detail:
-      "Every AssetScore shows the five pillars beside the headline number, so a high score is something you can question, not a black box.",
+      "The headline score is the rounded average of the pillars that have data. Each included pillar has equal weight. Open How it's scored for the figure behind each pillar.",
   },
 ];
 
@@ -35,6 +37,7 @@ export function Features() {
               <h3 className="text-2xl font-medium tracking-[-0.03em]">{feature.title}</h3>
               <p className="mt-4 text-[15px] leading-7 text-foreground">{feature.line}</p>
               <p className="mt-3 text-sm leading-6 text-muted">{feature.detail}</p>
+              {feature.title === "Transparent" ? <HowItsScored className="mt-5" /> : null}
             </article>
           ))}
         </div>

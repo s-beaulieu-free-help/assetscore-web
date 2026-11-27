@@ -1,3 +1,5 @@
+import { HowItsScored } from "@/components/how-its-scored";
+
 const pillars = [
   {
     title: "Value",
@@ -39,6 +41,7 @@ export function Pillars() {
           input is left out of the average. The score is an explanation of the numbers, not a recommendation to buy or
           sell.
         </p>
+        <HowItsScored className="mt-6 max-w-2xl" />
         <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-6">
           {pillars.map((pillar, index) => (
             <article

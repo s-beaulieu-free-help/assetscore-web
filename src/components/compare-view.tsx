@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { HowItsScored } from "@/components/how-its-scored";
 import { PriceChart } from "@/components/price-chart";
 import { ScoreGauge } from "@/components/score-gauge";
 import { SiteFooter } from "@/components/site-footer";
@@ -102,6 +103,7 @@ export function CompareView({ left, right }: { left: StockPageData; right: Stock
           annual period returned. Prices are in US dollars. A dash means the figure was not returned. This is not a
           forecast.
         </p>
+        <HowItsScored className="mt-4 max-w-2xl" />
         {left.industryGroup !== right.industryGroup ? (
           <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
             These companies are not scored with the same set of ratios. {left.ticker} is treated as{" "}
