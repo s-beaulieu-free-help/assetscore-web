@@ -83,8 +83,8 @@ export default async function PricingPage({
         </div>
         <p className="mt-4 max-w-3xl text-sm leading-6 text-muted">
           Saved portfolios, favorites, and reviews stay in the account after a trial ends. Creating a new portfolio,
-          comparison, favorite, or review requires Pro. The stock page uses the same score for Free and Pro. Historical
-          score tracking is not available yet.
+          comparison, favorite, or review requires Pro. The stock page uses the same score for Free and Pro, and it shows
+          stored score history from the daily dataset on both plans.
         </p>
 
         <div className="mt-12 grid gap-4 lg:grid-cols-2">

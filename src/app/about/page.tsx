@@ -82,6 +82,10 @@ const available = [
     title: "Stock Screener",
     body: "Screen that daily universe by index and AssetScore. Included with the 30-day Pro trial and with Pro at $5.99 US/month.",
   },
+  {
+    title: "Score history",
+    body: "A stock page lists stored AssetScore observations from the daily dataset, including the pillar scores. A day with no stored score stays blank.",
+  },
 ];
 
 const planned = [
@@ -92,10 +96,6 @@ const planned = [
   {
     title: "Crypto scores",
     body: "A score for crypto assets, using a methodology written for that market.",
-  },
-  {
-    title: "Historical score tracking",
-    body: "A record of how an AssetScore changes over time.",
   },
 ];
 
