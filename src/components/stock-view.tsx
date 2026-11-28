@@ -145,7 +145,10 @@ export function StockView({
               {stock.score == null ? "Not enough inputs for a score." : `${stock.score} of 100`}
             </h2>
             {stock.band ? <p className="score-band mt-2 text-lg text-foreground">{stock.band}</p> : null}
-            <HowItsScored className="mt-4 max-w-xl" />
+            <HowItsScored
+              className="mt-4 max-w-xl"
+              summary="AssetScore integrates five analytical pillars: Value, Growth, Quality, Financial Health, and Momentum. A median-based normalization model adjusts individual components to account for relative dispersion and central tendency."
+            />
             <p className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm">
               {ranks.map((entry) => (
                 <Link key={entry.slug} href={`/rankings/${entry.slug}`} className="text-foreground hover:text-accent">

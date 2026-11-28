@@ -15,14 +15,18 @@ const sources = [
   },
 ];
 
-export function HowItsScored({ className = "" }: { className?: string }) {
+export function HowItsScored({
+  className = "",
+  summary = HEADLINE_SCORE_SUMMARY,
+}: {
+  className?: string;
+  summary?: string;
+}) {
   return (
     <details className={`rounded-xl border border-line bg-white/[0.03] px-4 py-3 ${className}`}>
       <summary className="cursor-pointer text-sm font-medium tracking-[-0.01em] text-foreground">How it&apos;s scored</summary>
       <div className="mt-3 space-y-3 text-sm leading-6 text-muted">
-        <p>
-          {HEADLINE_SCORE_SUMMARY}
-        </p>
+        <p>{summary}</p>
         <p>The figures are the latest quote and the latest annual statements.</p>
         <ul className="space-y-2">
           {sources.map((item) => (
