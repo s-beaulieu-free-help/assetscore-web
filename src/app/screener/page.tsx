@@ -7,7 +7,7 @@ import { deleteScreen, saveScreen } from "@/app/screener/actions";
 import { recordDailyCount } from "@/lib/analytics";
 import { loadAccess } from "@/lib/billing/access";
 import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
-import { QUADRANTS, discoverStocks, matrixPoints, quadrantFor, type QuadrantId } from "@/lib/screener-discovery";
+import { MATRIX_SPLIT, QUADRANTS, discoverStocks, matrixPoints, quadrantFor, type QuadrantId } from "@/lib/screener-discovery";
 import { loadScoreHistory } from "@/lib/score-history";
 import {
   FILTER_HELP,
@@ -434,9 +434,38 @@ function Matrix({
         Each point is one company. The horizontal position is the existing Quality score. The vertical position is the existing Momentum score. The split is 70. A company missing either score is counted as missing and is not plotted.
       </p>
       <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,28rem)_1fr]">
-        <svg viewBox="0 0 100 100" role="img" aria-label="Quality and momentum matrix" className="w-full rounded-2xl border border-line bg-card">
-          <line x1="70" y1="0" x2="70" y2="100" stroke="rgba(244,245,247,0.18)" />
-          <line x1="0" y1="30" x2="100" y2="30" stroke="rgba(244,245,247,0.18)" />
+        <svg viewBox="-18 -10 132 128" role="img" aria-label="Quality and momentum matrix. Quality runs from 0 to 100 left to right. Momentum runs from 0 to 100 bottom to top. The quadrant split is 70." className="w-full rounded-2xl border border-line bg-card">
+          <rect x="0" y="0" width="100" height="100" fill="none" stroke="rgba(244,245,247,0.16)" />
+          <line x1={MATRIX_SPLIT} y1="0" x2={MATRIX_SPLIT} y2="100" stroke="rgba(244,245,247,0.18)" />
+          <line x1="0" y1={100 - MATRIX_SPLIT} x2="100" y2={100 - MATRIX_SPLIT} stroke="rgba(244,245,247,0.18)" />
+          {[0, 20, 40, 60, 80, 100].map((value) => (
+            <line key={`momentum-tick-${value}`} x1="-1.2" y1={100 - value} x2="0" y2={100 - value} stroke="rgba(244,245,247,0.22)" />
+          ))}
+          {[0, MATRIX_SPLIT, 100].map((value) => (
+            <g key={`momentum-${value}`} className="fill-muted font-mono">
+              <line x1="-2.2" y1={100 - value} x2="0" y2={100 - value} stroke="rgba(244,245,247,0.4)" />
+              <text x="-3.2" y={100 - value} textAnchor="end" dominantBaseline="middle" fontSize="3.5">
+                {value}
+              </text>
+            </g>
+          ))}
+          <text x="-50" y="-13" transform="rotate(-90)" textAnchor="middle" fontSize="3.6" className="fill-muted">
+            Momentum
+          </text>
+          {[0, 20, 40, 60, 80, 100].map((value) => (
+            <line key={`quality-tick-${value}`} x1={value} y1="100" x2={value} y2="101.2" stroke="rgba(244,245,247,0.22)" />
+          ))}
+          {[0, MATRIX_SPLIT, 100].map((value) => (
+            <g key={`quality-${value}`} className="fill-muted font-mono">
+              <line x1={value} y1="100" x2={value} y2="102.2" stroke="rgba(244,245,247,0.4)" />
+              <text x={value} y="107" textAnchor="middle" fontSize="3.5">
+                {value}
+              </text>
+            </g>
+          ))}
+          <text x="50" y="114" textAnchor="middle" fontSize="3.6" className="fill-muted">
+            Quality
+          </text>
           {matrix.points.map((point) => (
             <a key={point.symbol} href={`/stocks/${point.symbol}`}>
               <circle cx={point.quality} cy={100 - point.momentum} r="1.5" fill={point.quadrant === active || active == null ? "#d7f25c" : "rgba(244,245,247,0.28)"}>

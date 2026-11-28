@@ -48,6 +48,7 @@ type Quote = {
   volume?: number;
   yearLow?: number;
   yearHigh?: number;
+  timestamp?: number;
 };
 
 type LightBar = {
@@ -385,9 +386,20 @@ export const getIndexSeries = cache(async (symbol: string): Promise<IndexSeries 
         ? price - quote.previousClose
         : (quote?.change ?? 0),
     history: normalizeHistory(historyResult.data),
-    fetchedAt: new Date().toISOString(),
+    fetchedAt: quoteAsOf(quote, symbol),
   };
 });
+
+function quoteAsOf(quote: Quote | undefined, symbol: string) {
+  const stamp = quote?.timestamp;
+  if (typeof stamp === "number" && Number.isFinite(stamp) && stamp > 0) {
+    const milliseconds = stamp < 1_000_000_000_000 ? stamp * 1000 : stamp;
+    return new Date(milliseconds).toISOString();
+  }
+  const url = endpoint("quote", { symbol });
+  const cached = successCache.get(`${QUOTE_TTL_MS}:${url.toString()}`);
+  return new Date(cached?.at ?? Date.now()).toISOString();
+}
 
 export function buildStockPage(snapshot: FmpSnapshot): StockPageData {
   const scored = scoreSnapshot({

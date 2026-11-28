@@ -93,6 +93,14 @@ export function bandFor(score: number) {
   return "Weak";
 }
 
+export function scoreTextClass(score: number) {
+  if (score >= 90) return "text-accent-2";
+  if (score >= 80) return "text-[#9adf6a]";
+  if (score >= 70) return "text-accent";
+  if (score >= 60) return "text-[#e2c15a]";
+  return "text-[#c47b3a]";
+}
+
 function percent(value: number, digits = 1) {
   const scaled = value * 100;
   const sign = scaled > 0 ? "+" : "";

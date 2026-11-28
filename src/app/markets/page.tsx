@@ -3,6 +3,7 @@ import Link from "next/link";
 import { PriceChart } from "@/components/price-chart";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { formatFetchedAt } from "@/components/market-data-status";
 import { getIndexSeries, type IndexSeries } from "@/lib/fmp";
 import { formatChange, formatMoney } from "@/lib/stocks";
 import { shareMetadata } from "@/lib/seo";
@@ -35,6 +36,7 @@ export default async function MarketsPage() {
   const series = user
     ? await Promise.all(INDEXES.map(async (index) => ({ index, data: await loadIndex(index.symbol) })))
     : [];
+  const updatedAt = latestUpdate(series);
 
   return (
     <div>
@@ -45,8 +47,16 @@ export default async function MarketsPage() {
         {user ? (
           <>
             <p className="mt-4 max-w-xl text-sm leading-6 text-muted">
-              Latest levels and closing prices for the major indexes. Prices come from the same live market data as the stock pages.
+              Latest levels and closing prices for the major indexes. Prices come from the same market data as the stock pages.
             </p>
+            {updatedAt ? (
+              <p className="mt-3 text-xs text-muted">
+                Last updated:{" "}
+                <time className="font-mono text-foreground/85" dateTime={updatedAt}>
+                  {formatFetchedAt(updatedAt)}
+                </time>
+              </p>
+            ) : null}
             <div className="mt-10 space-y-6">
               {series.map(({ index, data }) => {
                 const positive = (data?.change ?? 0) >= 0;
@@ -62,6 +72,12 @@ export default async function MarketsPage() {
                           <p className="font-mono text-2xl tracking-[-0.04em] tabular-nums">{formatMoney(data.price)}</p>
                           <p className={`mt-1 font-mono text-sm tabular-nums ${positive ? "text-accent-2" : "text-[#f0a3a8]"}`}>
                             {formatChange(data.change, data.price)}
+                          </p>
+                          <p className="mt-2 text-xs text-muted">
+                            Last updated:{" "}
+                            <time className="font-mono text-foreground/85" dateTime={data.fetchedAt}>
+                              {formatFetchedAt(data.fetchedAt)}
+                            </time>
                           </p>
                         </div>
                       ) : (
@@ -91,4 +107,9 @@ export default async function MarketsPage() {
       <SiteFooter />
     </div>
   );
+}
+
+function latestUpdate(series: Array<{ data: IndexSeries | null }>) {
+  const times = series.flatMap((item) => (item.data ? [item.data.fetchedAt] : []));
+  return times.sort().at(-1) ?? null;
 }

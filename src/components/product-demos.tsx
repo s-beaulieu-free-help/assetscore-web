@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ScoreGauge } from "@/components/score-gauge";
 import type { StockPageData } from "@/lib/fmp";
 import { analyzePortfolio } from "@/lib/portfolio-quality";
+import { scoreTextClass } from "@/lib/score";
 
 export type ExampleHolding = {
   ticker: string;
@@ -151,12 +152,18 @@ export function PortfolioPreview({ holdings }: { holdings: ExampleHolding[] }) {
         <h2 className="mt-4 max-w-xl text-[2rem] leading-[1.1] font-medium tracking-[-0.035em] sm:text-4xl">
           See the bigger picture.
         </h2>
-        <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
-          Company Quality is the allocation-weighted average of the same AssetScores used on each stock page. Portfolio
-          Construction looks at how those allocations are spread across companies and sectors. Overall combines the two,
-          60% company quality and 40% construction, only when both can be calculated. This example uses live scores for
-          a healthcare company, a consumer staple, an energy company, and an industrial, weighted 15%, 25%, 40%, and 20%.
-        </p>
+        <div className="mt-4 max-w-2xl space-y-3 text-sm leading-6 text-muted">
+          <p>
+            <strong className="font-medium text-foreground">Company Quality</strong> measures the weighted quality of
+            your holdings. <strong className="font-medium text-foreground">Portfolio Construction</strong> evaluates
+            diversification across companies and sectors. <strong className="font-medium text-foreground">Overall Score</strong>{" "}
+            combines both: 60% quality and 40% construction.
+          </p>
+          <p>
+            Example: Four companies across healthcare, consumer staples, energy, and industrials, weighted 15%, 25%,
+            40%, and 20%, using live AssetScores.
+          </p>
+        </div>
         <div className="mt-10 rounded-2xl border border-line bg-card p-5 sm:p-6">
           <div className="grid gap-8 sm:grid-cols-3">
             {scores.map(([label, score, note]) => (
@@ -193,7 +200,14 @@ export function PortfolioPreview({ holdings }: { holdings: ExampleHolding[] }) {
                 </div>
                 <div className="flex items-baseline gap-4">
                   <p className="font-mono text-sm tabular-nums">
-                    {holding.score == null ? "Score unavailable" : `${holding.score} ${holding.band ?? ""}`.trim()}
+                    {holding.score == null ? (
+                      "Score unavailable"
+                    ) : (
+                      <>
+                        <span className={scoreTextClass(holding.score)}>{holding.score}</span>
+                        {holding.band ? <span className="text-muted"> {holding.band}</span> : null}
+                      </>
+                    )}
                   </p>
                   <p className="font-mono text-sm tabular-nums">{holding.allocation.toFixed(0)}%</p>
                 </div>

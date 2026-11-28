@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ScoreGauge } from "@/components/score-gauge";
+import { scoreTextClass } from "@/lib/score";
 import type { PortfolioAnalysis } from "@/lib/portfolio-quality";
 
 export type PortfolioHistoryPoint = {
@@ -136,7 +137,7 @@ export function PortfolioQualityView({
                   <h3 className="text-sm font-medium">Strongest scored holdings</h3>
                   <ul className="mt-2 space-y-1 text-sm text-muted">
                     {analysis.company.strongest.map((row) => (
-                      <li key={row.ticker}>{row.ticker} · {row.score} · {row.allocation.toFixed(1)}%</li>
+                      <li key={row.ticker}>{row.ticker} · <span className={scoreTextClass(row.score)}>{row.score}</span> · {row.allocation.toFixed(1)}%</li>
                     ))}
                   </ul>
                 </div>
@@ -144,7 +145,7 @@ export function PortfolioQualityView({
                   <h3 className="text-sm font-medium">Weakest scored holdings</h3>
                   <ul className="mt-2 space-y-1 text-sm text-muted">
                     {analysis.company.weakest.map((row) => (
-                      <li key={row.ticker}>{row.ticker} · {row.score} · {row.allocation.toFixed(1)}%</li>
+                      <li key={row.ticker}>{row.ticker} · <span className={scoreTextClass(row.score)}>{row.score}</span> · {row.allocation.toFixed(1)}%</li>
                     ))}
                   </ul>
                 </div>

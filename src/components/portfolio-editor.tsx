@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { allocationTotal } from "@/lib/portfolio-score";
+import { scoreTextClass } from "@/lib/score";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { parseTicker } from "@/lib/stocks";
 
@@ -149,7 +150,14 @@ export function PortfolioEditor({
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
                   <p className="font-mono text-sm tabular-nums">
-                    {holding.score == null ? "Score unavailable" : `${holding.score} ${holding.band}`}
+                    {holding.score == null ? (
+                      "Score unavailable"
+                    ) : (
+                      <>
+                        <span className={scoreTextClass(holding.score)}>{holding.score}</span>
+                        <span className="text-muted"> {holding.band}</span>
+                      </>
+                    )}
                   </p>
                   {canEdit && !locked ? (
                     <form

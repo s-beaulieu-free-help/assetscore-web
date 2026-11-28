@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import Link from "next/link";
+import { scoreTextClass } from "@/lib/score";
 
 type RankedStock = {
   rank: number;
@@ -83,7 +84,7 @@ export function TopRatedLists() {
                           <span className="mt-1 block truncate text-sm text-muted">{entry.name}</span>
                         </span>
                         <span className="shrink-0 text-right">
-                          <span className="block font-mono text-sm tabular-nums">{entry.score}</span>
+                          <span className={`block font-mono text-sm tabular-nums ${scoreTextClass(entry.score)}`}>{entry.score}</span>
                           <span className="block text-xs text-muted">{entry.band}</span>
                         </span>
                       </Link>

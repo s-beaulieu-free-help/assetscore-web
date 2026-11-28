@@ -5,6 +5,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { LEARN_ARTICLES } from "@/lib/learn-articles";
 import { RANKING_FAQS, rankedIndex, rankingPage, RANKING_PAGES } from "@/lib/rankings";
+import { scoreTextClass } from "@/lib/score";
 import { jsonLd, shareMetadata } from "@/lib/seo";
 import { TOPIC_PAGES } from "@/lib/topics";
 
@@ -147,7 +148,7 @@ export default async function RankingPage({ params }: RankingPageProps) {
                       </Link>
                       <span className="mt-1 block font-mono text-xs text-muted">{row.symbol}</span>
                     </td>
-                    <td className="px-4 py-3 font-mono tabular-nums">{row.score}</td>
+                    <td className={`px-4 py-3 font-mono tabular-nums ${scoreTextClass(row.score)}`}>{row.score}</td>
                     <td className="px-4 py-3 text-muted">{row.band}</td>
                   </tr>
                 ))}
