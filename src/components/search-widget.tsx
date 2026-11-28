@@ -1,14 +1,43 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
 const tickerPattern = /^[A-Z][A-Z0-9.-]{0,9}$/;
+
+function placeTicker(behavior: ScrollBehavior) {
+  const form = document.getElementById("analyze");
+  if (!form) return false;
+  const rect = form.getBoundingClientRect();
+  const header = 88;
+  const available = window.innerHeight - header;
+  const targetTop = header + Math.max(16, (available - rect.height) / 2);
+  const delta = rect.top - targetTop;
+  if (Math.abs(delta) > 8) window.scrollBy({ top: delta, behavior });
+  const input = document.getElementById("ticker");
+  if (input instanceof HTMLInputElement && document.activeElement !== input) input.focus({ preventScroll: true });
+  return Math.abs(delta) <= 8;
+}
+
+export function presentTicker() {
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  placeTicker(reduce ? "auto" : "smooth");
+}
 
 export function SearchWidget() {
   const router = useRouter();
   const [ticker, setTicker] = useState("");
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (window.location.hash !== "#analyze") return;
+    let tries = 0;
+    const timer = window.setInterval(() => {
+      tries += 1;
+      if (placeTicker("auto") || tries > 15) window.clearInterval(timer);
+    }, 100);
+    return () => window.clearInterval(timer);
+  }, []);
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -29,7 +58,7 @@ export function SearchWidget() {
   }
 
   return (
-    <form id="analyze" onSubmit={onSubmit} className="w-full max-w-xl">
+    <form id="analyze" onSubmit={onSubmit} className="w-full max-w-xl scroll-mt-28">
       <label htmlFor="ticker" className="sr-only">
         Ticker symbol
       </label>

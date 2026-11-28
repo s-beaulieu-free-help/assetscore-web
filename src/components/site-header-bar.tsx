@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AccountNav } from "@/components/account-nav";
+import { AnalyzeStockLink } from "@/components/analyze-stock-link";
 import { BrandLogo } from "@/components/brand-logo";
 
 export function SiteHeaderBar({ name, notice = null }: { name: string | null; notice?: string | null }) {
@@ -38,12 +39,9 @@ export function SiteHeaderBar({ name, notice = null }: { name: string | null; no
             Screener
           </Link>
           <AccountNav name={name} notice={notice} />
-          <Link
-            href="/#analyze"
-            className="inline-flex h-9 shrink-0 items-center rounded-full bg-accent px-3.5 text-[13px] font-medium text-ink transition hover:brightness-110"
-          >
+          <AnalyzeStockLink className="inline-flex h-9 shrink-0 items-center rounded-full bg-accent px-3.5 text-[13px] font-medium text-ink transition hover:brightness-110">
             Analyze a Stock
-          </Link>
+          </AnalyzeStockLink>
         </div>
       </div>
     </header>
