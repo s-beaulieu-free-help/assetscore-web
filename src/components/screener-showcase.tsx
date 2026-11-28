@@ -103,7 +103,8 @@ export function ScreenerShowcase() {
             <p className="text-sm font-medium">Stock Screener</p>
             <p className="text-xs text-muted">{updated ? `Published ${updated}` : "Daily dataset"}</p>
           </div>
-          <fieldset disabled className="bg-panel px-4 py-4">
+          <div className="bg-panel">
+          <fieldset disabled className="border-0 px-4 py-4">
             <legend className="text-sm font-medium">Filters</legend>
             <div className="mt-3 flex flex-wrap gap-2">
               {SCREENER_PRESETS.filter((item) => presetAvailable(item, dataset.available)).map((item) => (
@@ -139,6 +140,7 @@ export function ScreenerShowcase() {
               })}
             </div>
           </fieldset>
+          </div>
           <div className="overflow-x-auto border-t border-line">
             <table className="w-full text-left text-sm">
               <thead className="border-b border-line text-muted">
