@@ -11,7 +11,6 @@ import { StockReviews } from "@/components/stock-reviews";
 import type { StockPageData } from "@/lib/fmp";
 import { PILLAR_COPY } from "@/lib/pillar-copy";
 import type { ScoreObservation } from "@/lib/score-history";
-import { HEADLINE_SCORE_SUMMARY, industryGroupLabel, type IndustryGroup } from "@/lib/score";
 import { jsonLd } from "@/lib/seo";
 import { scoreStory } from "@/lib/score-story";
 import { formatChange, formatMoney } from "@/lib/stocks";
@@ -72,8 +71,6 @@ export function StockView({
   };
   const priceHistory = stock.history;
   const closes = priceHistory.map((point) => point.price);
-  const applicable = stock.pillars.filter((pillar) => !pillar.omitted).length;
-  const covered = stock.pillars.filter((pillar) => pillar.score != null).length;
   const hasHistory = closes.length >= 2;
   const story = scoreStory(stock.pillars);
 
@@ -128,21 +125,10 @@ export function StockView({
           </div>
           <div>
             <dt className="font-mono tracking-[0.14em] uppercase">Score calculated</dt>
-            <dd className="mt-1 text-foreground/85">
-              {formatFetchedAt(stock.fetchedAt)} · methodology {stock.methodologyVersion}
-            </dd>
+            <dd className="mt-1 text-foreground/85">{formatFetchedAt(stock.fetchedAt)}</dd>
           </div>
         </dl>
-        <p className="mt-3 max-w-2xl text-xs leading-5 text-muted">
-          {stock.industry ? stock.industry : "Industry was not returned"}. Treated as{" "}
-          {industryGroupLabel(stock.industryGroup as IndustryGroup)}. Financial data coverage: {covered} of {applicable}{" "}
-          pillars used for this industry.
-        </p>
-        <p className="mt-3 max-w-2xl text-xs leading-5 text-muted">
-          Ratios and revenue growth use the latest annual figures. The price and 52-week range use the latest quote.
-          Those periods can differ. Amounts are in US dollars. A dash means the figure was not returned, not that it is
-          zero.
-        </p>
+        {stock.industry ? <p className="mt-3 max-w-2xl text-xs leading-5 text-muted">{stock.industry}</p> : null}
 
         <section className="mt-10 grid items-center gap-6 rounded-2xl border border-line bg-card px-6 py-8 lg:grid-cols-[240px_1fr] lg:px-10">
           <div className="flex justify-center">
@@ -158,10 +144,6 @@ export function StockView({
               {stock.score == null ? "Not enough inputs for a score." : `${stock.score} of 100`}
             </h2>
             {stock.band ? <p className="mt-2 text-lg text-foreground">{stock.band}</p> : null}
-            <p className="mt-4 max-w-xl text-sm leading-7 text-muted">
-              {HEADLINE_SCORE_SUMMARY} It describes the latest figures. It does not predict future returns. A high
-              overall score does not mean every pillar is strong.
-            </p>
             <HowItsScored className="mt-4 max-w-xl" />
             <p className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm">
               {ranks.map((entry) => (
@@ -377,7 +359,6 @@ export function StockView({
                 <thead className="text-xs tracking-[0.12em] text-muted uppercase">
                   <tr>
                     <th className="py-2 pr-4 font-normal">Date</th>
-                    <th className="py-2 pr-4 font-normal">Method</th>
                     <th className="py-2 pr-4 font-normal">Score</th>
                     <th className="py-2 pr-4 font-normal">Value</th>
                     <th className="py-2 pr-4 font-normal">Growth</th>
@@ -390,7 +371,6 @@ export function StockView({
                   {scoreHistory.map((row) => (
                     <tr key={`${row.asOf}-${row.methodologyVersion}`} className="border-t border-line">
                       <td className="py-2 pr-4 font-mono tabular-nums">{formatDay(row.asOf)}</td>
-                      <td className="py-2 pr-4 font-mono tabular-nums">{row.methodologyVersion}</td>
                       <td className="py-2 pr-4 font-mono tabular-nums">{row.score}</td>
                       <td className="py-2 pr-4 font-mono tabular-nums">{row.value ?? "—"}</td>
                       <td className="py-2 pr-4 font-mono tabular-nums">{row.growth ?? "—"}</td>
@@ -401,11 +381,11 @@ export function StockView({
                   ))}
                 </tbody>
               </table>
-              <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
-                {scoreHistory.length < 2
-                  ? "One observation is not enough to show a change over 1, 3, 6, or 12 months. The next daily publish adds another date."
-                  : "Compare rows that share the same methodology version. A change across versions is a methodology change, not a change in the company."}
-              </p>
+              {scoreHistory.length < 2 ? (
+                <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
+                  One observation is not enough to show a change over 1, 3, 6, or 12 months. The next daily publish adds another date.
+                </p>
+              ) : null}
             </div>
           )}
         </section>
