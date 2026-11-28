@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { UpgradeLink } from "@/components/upgrade-link";
 import { PromotionSlot } from "@/components/promotion-slot";
 import { loadAccess } from "@/lib/billing/access";
 import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
@@ -38,11 +39,12 @@ export default async function PortfoliosPage() {
               <CreatePortfolioForm />
             ) : (
               <p className="mt-6 max-w-xl text-sm leading-6 text-muted">
-                New portfolios and allocation-weighted scores are included with AssetScore Pro. Pro is {PRO_MONTHLY_PRICE.label}. Portfolios you
-                already saved stay available.{" "}
-                <Link href="/pricing" className="text-foreground hover:text-accent">
-                  See Pro plans
-                </Link>
+                Unlock complete Portfolio Intelligence and understand the quality and construction of your investments.
+                Pro is {PRO_MONTHLY_PRICE.label}. A new account includes 30 days with no credit card and no automatic
+                charge. Portfolios you already saved stay available.{" "}
+                <UpgradeLink href="/pricing" className="text-foreground hover:text-accent">
+                  See AssetScore Pro
+                </UpgradeLink>
                 .
               </p>
             )}

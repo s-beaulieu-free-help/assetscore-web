@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { UpgradeLink } from "@/components/upgrade-link";
 import { FavoriteButton } from "@/components/favorite-button";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -163,14 +164,20 @@ function Preview({
         ))}
       </ul>
       <p className="mt-6 max-w-2xl text-sm leading-6 text-muted">
+        Discover companies using the full power of AssetScore Pro.{" "}
         {free
-          ? "The full strategies, filters, rankings, quality and momentum matrix, discovery lists, and saved screens are included with the 30-day Pro trial and with Pro."
-          : "The Stock Screener is included with an AssetScore Pro trial or a paid Pro plan. Saved screens stay in your account."}{" "}
-        {PRO_MONTHLY_PRICE.label}.
+          ? `Your trial has ended. Pro is ${PRO_MONTHLY_PRICE.label}.`
+          : `The 30-day trial includes the full screener, with no credit card and no automatic charge. Pro is ${PRO_MONTHLY_PRICE.label}.`}
       </p>
-      <Link href="/pricing" className="mt-4 inline-flex h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-ink">
-        See Pro
-      </Link>
+      {free ? (
+        <UpgradeLink href="/pricing" className="mt-4 inline-flex h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-ink">
+          See AssetScore Pro
+        </UpgradeLink>
+      ) : (
+        <UpgradeLink href="/register" className="mt-4 inline-flex h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-ink">
+          Start Your Free 30-Day Trial
+        </UpgradeLink>
+      )}
     </section>
   );
 }

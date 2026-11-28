@@ -1,9 +1,10 @@
 "use client";
 
-import Link from "next/link";
+import { UpgradeLink } from "@/components/upgrade-link";
 import { useState } from "react";
 import { ScoreGauge } from "@/components/score-gauge";
 import { scoreTextClass } from "@/lib/score";
+import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
 import type { PortfolioAnalysis } from "@/lib/portfolio-quality";
 
 export type PortfolioHistoryPoint = {
@@ -107,10 +108,10 @@ export function PortfolioQualityView({
           </ul>
           {advanced ? null : (
             <p className="mt-6 text-sm leading-6 text-muted">
-              The full quality breakdown, diversification detail, insights, and history are included with the 30-day Pro trial and with Pro.{" "}
-              <Link href="/pricing" className="text-foreground underline">
-                See Pro
-              </Link>
+              Unlock complete Portfolio Intelligence and understand the quality and construction of your investments. Pro is {PRO_MONTHLY_PRICE.label}. A new account includes a 30-day trial.{" "}
+              <UpgradeLink href="/pricing" className="text-foreground underline">
+                See AssetScore Pro
+              </UpgradeLink>
             </p>
           )}
         </div>
@@ -157,7 +158,7 @@ export function PortfolioQualityView({
           ) : (
             <p className="text-sm leading-6 text-muted">
               Company Quality is {scoreText(analysis.company.score, analysis.company.status)}. The pillar breakdown is part of Pro.{" "}
-              <Link href="/pricing" className="text-foreground underline">See Pro</Link>
+              <UpgradeLink href="/pricing" className="text-foreground underline">See AssetScore Pro</UpgradeLink>
             </p>
           )}
         </div>
@@ -197,7 +198,7 @@ export function PortfolioQualityView({
           ) : (
             <p className="text-sm leading-6 text-muted">
               Portfolio Construction is {scoreText(analysis.construction.score, analysis.construction.status)}. Sector and position detail is part of Pro.{" "}
-              <Link href="/pricing" className="text-foreground underline">See Pro</Link>
+              <UpgradeLink href="/pricing" className="text-foreground underline">See AssetScore Pro</UpgradeLink>
             </p>
           )}
         </div>
@@ -231,7 +232,7 @@ export function PortfolioQualityView({
           ) : (
             <p className="text-sm leading-6 text-muted">
               Historical portfolio scores are kept when a subscription ends and are visible with Pro.{" "}
-              <Link href="/pricing" className="text-foreground underline">See Pro</Link>
+              <UpgradeLink href="/pricing" className="text-foreground underline">See AssetScore Pro</UpgradeLink>
             </p>
           )}
         </div>

@@ -95,7 +95,7 @@ export function ScreenerShowcase() {
             href="/pricing"
             className="mt-8 inline-flex h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-ink transition hover:brightness-110"
           >
-            Explore AssetScore Pro
+            Start Your Free 30-Day Trial
           </UpgradeLink>
         </div>
         <div className="overflow-hidden rounded-2xl border border-line bg-card">

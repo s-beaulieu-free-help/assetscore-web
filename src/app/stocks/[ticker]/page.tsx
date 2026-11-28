@@ -4,7 +4,6 @@ import { StockView } from "@/components/stock-view";
 import { UpgradeNote } from "@/components/upgrade-note";
 import { recordConsentedEvent, recordDailyCount } from "@/lib/analytics";
 import { loadAccess, recordStockEvaluation } from "@/lib/billing/access";
-import { FREE_EVALUATION_LIMIT_FALLBACK } from "@/lib/billing/plans";
 import { buildStockPage, FmpNotFoundError, getFmpSnapshot } from "@/lib/fmp";
 import { ranksForSymbol } from "@/lib/rankings";
 import { historyForSymbolResolved } from "@/lib/score-history";
@@ -48,11 +47,10 @@ export default async function StockPage({ params }: StockPageProps) {
   if (access.isFree) {
     const gate = await recordStockEvaluation(ticker);
     if (!gate.allowed) {
-      const limit = gate.limit ?? FREE_EVALUATION_LIMIT_FALLBACK;
       return (
         <UpgradeNote
-          title="You've reached your monthly free analysis limit"
-          copy={`You've reached your monthly free analysis limit of ${limit} stock evaluations. Pro includes unlimited stock evaluations, the Stock Screener, new portfolios, and stock comparisons. A stock you already opened this month does not count again.`}
+          title="Continue exploring companies with unlimited stock analysis"
+          copy="The monthly free limit is reached. Pro includes unlimited stock evaluations. A stock you already opened this month does not count again."
         />
       );
     }

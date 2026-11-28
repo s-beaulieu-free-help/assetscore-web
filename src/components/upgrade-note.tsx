@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { UpgradeLink } from "@/components/upgrade-link";
 import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
 
 export function UpgradeNote({ title, copy }: { title: string; copy: string }) {
@@ -14,9 +14,9 @@ export function UpgradeNote({ title, copy }: { title: string; copy: string }) {
         <p className="mt-3 max-w-xl text-sm leading-6 text-muted">
           Pro is {PRO_MONTHLY_PRICE.label}. A paid plan starts only when you subscribe.
         </p>
-        <Link href="/pricing" className="mt-8 inline-flex h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-ink">
-          See Pro plans
-        </Link>
+        <UpgradeLink href="/pricing" className="mt-8 inline-flex h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-ink">
+          See AssetScore Pro
+        </UpgradeLink>
       </main>
       <SiteFooter />
     </div>
