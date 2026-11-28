@@ -1,3 +1,4 @@
+import { HEADLINE_SCORE_SUMMARY } from "@/lib/score";
 import { loadScreenerDataset, SCREENER_INDEXES, type ScreenerIndexId, type ScreenerRow } from "@/lib/screener";
 
 export const RANKING_PAGES = [
@@ -9,7 +10,7 @@ export const RANKING_PAGES = [
     description:
       "S&P 500 companies ranked by AssetScore quality: value, growth, profitability, financial health, and momentum from the daily published dataset. Each row links to that stock analysis.",
     lead:
-      "This is the public ranking of S&P 500 companies by AssetScore. The score is the rounded equal-weight average of Value, Growth, Quality, Financial Health, and Momentum when those figures exist. Quality uses the annual net profit margin for an operating company. A higher rank describes stronger latest figures. It is not a forecast and it is not a recommendation to buy or sell.",
+      `This is the public ranking of S&P 500 companies by AssetScore. ${HEADLINE_SCORE_SUMMARY} Quality uses the annual net profit margin for an operating company. A higher rank describes stronger latest figures. It is not a forecast and it is not a recommendation to buy or sell.`,
   },
   {
     slug: "nasdaq100",
@@ -29,7 +30,7 @@ export const RANKING_PAGES = [
     description:
       "Dow Jones stocks ranked by AssetScore. Each company links to its stock analysis, methodology, and the ratios behind the score.",
     lead:
-      "Dow Jones companies in the daily published universe, ordered by AssetScore. The score is the same rounded average used on each stock page. This list is not a forecast and it is not a recommendation to buy or sell.",
+      `Dow Jones companies in the daily published universe, ordered by AssetScore. ${HEADLINE_SCORE_SUMMARY} This list is not a forecast and it is not a recommendation to buy or sell.`,
   },
 ] as const;
 
@@ -38,7 +39,7 @@ export const RANKING_FAQS: Record<RankingSlug, Array<{ question: string; answer:
     {
       question: "How are the best quality S&P 500 stocks ranked?",
       answer:
-        "Companies in the published S&P 500 universe are ordered by AssetScore. The score is the rounded average of the pillars that have data. Each included pillar has equal weight. Quality is the annual net profit margin for an operating company.",
+        `Companies in the published S&P 500 universe are ordered by AssetScore. ${HEADLINE_SCORE_SUMMARY} Quality is the annual net profit margin for an operating company.`,
     },
     {
       question: "Does a high AssetScore mean the stock will rise?",
@@ -55,7 +56,7 @@ export const RANKING_FAQS: Record<RankingSlug, Array<{ question: string; answer:
     {
       question: "How are Nasdaq 100 stocks ranked?",
       answer:
-        "Nasdaq 100 companies in the daily published dataset are ordered by AssetScore, the same equal-weight average used on stock pages.",
+        `Nasdaq 100 companies in the daily published dataset are ordered by the same AssetScore used on stock pages. ${HEADLINE_SCORE_SUMMARY}`,
     },
     {
       question: "Is this the same score as the S&P 500 ranking?",
@@ -72,7 +73,7 @@ export const RANKING_FAQS: Record<RankingSlug, Array<{ question: string; answer:
     {
       question: "Does a high rank mean the shares are undervalued?",
       answer:
-        "No. Value is one pillar, based on the annual price-to-earnings ratio when that pillar applies. The headline rank averages every pillar that has data.",
+        "No. Value is one pillar, based on the annual price-to-earnings ratio when that pillar applies. The headline rank uses every pillar that has data, after each score is moved slightly toward the middle of that group.",
     },
   ],
 };

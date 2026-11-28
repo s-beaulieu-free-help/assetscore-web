@@ -1,46 +1,32 @@
-import { readFileSync } from "node:fs";
-import path from "node:path";
 import Link from "next/link";
+import { RANKING_PAGES, rankedIndex } from "@/lib/rankings";
 import { scoreTextClass } from "@/lib/score";
 
-type RankedStock = {
-  rank: number;
-  symbol: string;
-  name: string;
-  score: number;
-  band: string;
-};
-
-type PublishedRanking = {
-  publishedAt: string;
-  lists: Array<{ id: string; name: string; entries: RankedStock[] }>;
-};
-
-const fallbackLists = [
-  { id: "sp500", name: "S&P 500", entries: [] },
-  { id: "nasdaq100", name: "Nasdaq 100", entries: [] },
-  { id: "dow", name: "Dow Jones", entries: [] },
-];
-
-function publishedRanking(): PublishedRanking | null {
-  try {
-    const raw = readFileSync(path.join(process.cwd(), "src", "data", "top-rated.json"), "utf8");
-    return JSON.parse(raw) as PublishedRanking;
-  } catch {
-    return null;
-  }
-}
-
 export function TopRatedLists() {
-  const published = publishedRanking();
-  const lists = published?.lists?.length ? published.lists : fallbackLists;
-  const publishedLabel = published?.publishedAt
+  const lists = RANKING_PAGES.map((page) => {
+    const ranked = rankedIndex(page.indexId);
+    return {
+      id: page.slug,
+      name: page.name,
+      href: `/rankings/${page.slug}`,
+      publishedAt: ranked.publishedAt,
+      entries: ranked.rows.slice(0, 8).map((row, index) => ({
+        rank: index + 1,
+        symbol: row.symbol,
+        name: row.name,
+        score: row.score,
+        band: row.band,
+      })),
+    };
+  });
+  const publishedAt = lists.find((list) => list.publishedAt)?.publishedAt ?? null;
+  const publishedLabel = publishedAt
     ? new Intl.DateTimeFormat("en-US", {
         month: "short",
         day: "numeric",
         year: "numeric",
         timeZone: "America/New_York",
-      }).format(new Date(published.publishedAt))
+      }).format(new Date(publishedAt))
     : null;
 
   return (
@@ -59,14 +45,9 @@ export function TopRatedLists() {
             <article key={list.id} className="rounded-2xl border border-line bg-card px-6 py-7">
               <div className="flex items-baseline justify-between gap-3">
                 <h3 className="text-xl font-medium tracking-[-0.03em]">{list.name}</h3>
-                {list.id === "sp500" || list.id === "nasdaq100" || list.id === "dow" ? (
-                  <Link
-                    href={list.id === "dow" ? "/rankings/dow-jones" : `/rankings/${list.id}`}
-                    className="text-xs text-muted hover:text-accent"
-                  >
-                    Full ranking
-                  </Link>
-                ) : null}
+                <Link href={list.href} className="text-xs text-muted hover:text-accent">
+                  Full ranking
+                </Link>
               </div>
               {list.entries.length === 0 ? (
                 <p className="mt-4 text-sm leading-6 text-muted">No ranking has been published yet.</p>

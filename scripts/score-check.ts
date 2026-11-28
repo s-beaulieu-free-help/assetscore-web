@@ -22,7 +22,7 @@ function pillar(input: ScoreInput, label: string) {
 
 const general = scoreSnapshot({ ...base, sector: "Technology", industry: "Software" });
 assert(general.industryGroup === "general", "technology stays on the operating-company path");
-assert(general.methodologyVersion === "2", "live scores use methodology 2");
+assert(general.methodologyVersion === "3", "live scores use methodology 3");
 assert(general.score != null && general.score >= 0 && general.score <= 100, "overall stays inside 0–100");
 assert(pillar(base, "Value")?.score === Math.round(100 - (15 - 8) * 1.6), "value formula unchanged");
 assert(pillar(base, "Growth")?.score === Math.round(50 + 0.1 * 80), "growth formula unchanged");

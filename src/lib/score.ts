@@ -12,7 +12,10 @@ export type Pillar = {
 
 export type IndustryGroup = "general" | "bank" | "insurance" | "reit";
 
-export type MethodologyVersion = "1" | "2";
+export type MethodologyVersion = "1" | "2" | "3";
+
+export const HEADLINE_SCORE_SUMMARY =
+  "AssetScore looks at up to five pillars: Value, Growth, Quality, Financial Health, and Momentum. Only pillars with a score are included, and each included pillar has the same weight. Each of those scores is moved 15% of the way toward the middle score of the group. The AssetScore is the rounded average of those adjusted scores. A missing pillar is left out. It is not treated as zero.";
 
 export type ScoreInput = {
   price: number;
@@ -83,6 +86,22 @@ function clamp(value: number, min: number, max: number) {
 
 function roundScore(value: number) {
   return Math.round(clamp(value, 0, 100));
+}
+
+function median(values: number[]) {
+  const sorted = [...values].sort((left, right) => left - right);
+  const middle = Math.floor(sorted.length / 2);
+  if (sorted.length % 2 === 1) return sorted[middle];
+  return (sorted[middle - 1] + sorted[middle]) / 2;
+}
+
+export function headlineScore(values: Array<number | null | undefined>) {
+  const available = values.filter((value): value is number => typeof value === "number" && Number.isFinite(value));
+  if (available.length === 0) return null;
+  if (available.length === 1) return roundScore(available[0]);
+  const middle = median(available);
+  const adjusted = available.map((score) => score + 0.15 * (middle - score));
+  return roundScore(adjusted.reduce((sum, score) => sum + score, 0) / adjusted.length);
 }
 
 export function bandFor(score: number) {
@@ -293,26 +312,37 @@ export function scoreSnapshot(input: ScoreInput): ScoreResult {
       band: null,
       pillars,
       reasons: ["The inputs used for a score were not returned."],
-      methodologyVersion: "2",
+      methodologyVersion: "3",
       industryGroup,
       statementDate: input.statementDate ?? null,
     };
   }
 
-  const score = Math.round(scored.reduce((sum, pillar) => sum + pillar.score, 0) / scored.length);
+  const score = headlineScore(scored.map((pillar) => pillar.score));
+  if (score == null) {
+    return {
+      score: null,
+      band: null,
+      pillars,
+      reasons: ["The inputs used for a score were not returned."],
+      methodologyVersion: "3",
+      industryGroup,
+      statementDate: input.statementDate ?? null,
+    };
+  }
   const band = bandFor(score);
   const strongest = [...scored].sort((left, right) => right.score - left.score)[0];
   const softest = [...scored].sort((left, right) => left.score - right.score)[0];
   const closing =
     strongest.label === softest.label
-      ? `The pillars sit close together. Rounded, they average ${score}, which is the ${band} band.`
-      : `${strongest.label} carries the result at ${strongest.score}. ${softest.label} is the drag at ${softest.score}. Together they round to ${score}, ${band}.`;
+      ? `The pillars sit close together. The AssetScore is ${score}, which is the ${band} band.`
+      : `${strongest.label} carries the result at ${strongest.score}. ${softest.label} is the drag at ${softest.score}. The AssetScore is ${score}, ${band}.`;
   return {
     score,
     band,
     pillars,
     reasons: [...scored.flatMap((pillar) => (pillar.why ? [pillar.why] : [])), closing],
-    methodologyVersion: "2",
+    methodologyVersion: "3",
     industryGroup,
     statementDate: input.statementDate ?? null,
   };

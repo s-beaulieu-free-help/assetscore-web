@@ -21,7 +21,7 @@ const covered = [
   },
   {
     title: "Operating companies, banks, insurers, and REITs",
-    body: "Operating companies use all five pillars. Banks and insurers keep Value, Growth, and Momentum. Real estate investment trusts keep Growth and Momentum. Omitted pillars are left out of the average.",
+    body: "Operating companies use all five pillars. Banks and insurers keep Value, Growth, and Momentum. Real estate investment trusts keep Growth and Momentum. Omitted pillars are left out of the score.",
   },
 ];
 

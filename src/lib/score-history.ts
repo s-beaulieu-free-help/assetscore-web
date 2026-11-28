@@ -45,7 +45,7 @@ function asGroup(value: string): IndustryGroup | null {
 }
 
 function asVersion(value: string): MethodologyVersion | null {
-  if (value === "1" || value === "2") return value;
+  if (value === "1" || value === "2" || value === "3") return value;
   return null;
 }
 

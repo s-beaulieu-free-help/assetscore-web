@@ -226,7 +226,7 @@ async function main() {
       sector: string | null;
       industry: string | null;
       industryGroup: string;
-      methodologyVersion: "2";
+      methodologyVersion: "3";
     }
   >();
   let index = 0;
@@ -282,7 +282,7 @@ async function main() {
         sector: profile?.sector ?? null,
         industry: profile?.industry ?? null,
         industryGroup: result.industryGroup,
-        methodologyVersion: "2",
+        methodologyVersion: "3",
       });
     }
     if (index % 25 === 0) console.log(`${index}/${symbols.length} scored ${scored.size}`);
@@ -324,13 +324,13 @@ async function main() {
   const seen = new Set(existing.map((row) => `${row.symbol}|${row.asOf}|${row.methodologyVersion}`));
   const observations = [...existing];
   for (const row of published.universe) {
-    const key = `${row.symbol}|${asOf}|2`;
+    const key = `${row.symbol}|${asOf}|3`;
     if (seen.has(key)) continue;
     observations.push({
       symbol: row.symbol,
       name: row.name,
       asOf,
-      methodologyVersion: "2",
+      methodologyVersion: "3",
       industryGroup: row.industryGroup === "bank" || row.industryGroup === "insurance" || row.industryGroup === "reit" ? row.industryGroup : "general",
       score: row.score,
       value: row.value,
@@ -341,7 +341,7 @@ async function main() {
     });
   }
   writeFileSync(historyDestination, `${JSON.stringify({ observations }, null, 2)}\n`);
-  const today = observations.filter((row) => row.asOf === asOf && row.methodologyVersion === "2");
+  const today = observations.filter((row) => row.asOf === asOf && row.methodologyVersion === "3");
   await upsertSnapshots(today, asOf).catch((error: unknown) => {
     console.error(error instanceof Error ? error.message : "Snapshot upsert failed. The JSON files were still written.");
   });
@@ -361,7 +361,7 @@ async function upsertSnapshots(rows: ScoreObservation[], asOf: string) {
   const payload = rows.map((row) => ({
     symbol: row.symbol,
     as_of: asOf,
-    methodology_version: "2",
+    methodology_version: "3",
     company_name: row.name,
     industry_group: row.industryGroup,
     score: row.score,

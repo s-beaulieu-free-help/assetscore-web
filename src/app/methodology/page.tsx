@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { PILLAR_COPY } from "@/lib/pillar-copy";
-import { bandFor, type PillarLabel } from "@/lib/score";
+import { bandFor, HEADLINE_SCORE_SUMMARY, type PillarLabel } from "@/lib/score";
 import { shareMetadata } from "@/lib/seo";
 
 const title = "Stock scoring methodology · AssetScore";
@@ -37,10 +37,10 @@ export default function MethodologyPage() {
         <section className="mt-12">
           <h2 className="text-2xl font-medium tracking-[-0.03em]">The overall score</h2>
           <p className="mt-4 text-sm leading-7 text-muted">
-            Five pillars are scored from 0 to 100. The headline score is the rounded average of the pillars that have
-            data. Each included pillar has the same weight. A high overall score does not mean every pillar is strong.
-            For example, scores of 80, 60, 90, 70, and 50 average to 70, which is the Solid band. The 90 does not erase
-            the 50. A pillar with no input is left out of the average. It is not replaced with zero.
+            {HEADLINE_SCORE_SUMMARY} A high overall score does not mean every pillar is strong. For example, pillar
+            scores of 90, 80, 75, 70, and 20 have a middle score of 75. After each score moves 15% of the way toward
+            75, they average 68.2, which rounds to 68. The 90 does not erase the 20, and the 20 is not left as extreme
+            as it started.
           </p>
           <ul className="mt-6 divide-y divide-line overflow-hidden rounded-2xl border border-line">
             {bands.map((band) => (
@@ -99,8 +99,11 @@ export default function MethodologyPage() {
             0. A negative multiple scores 12. Growth is 50 plus 80 times the revenue growth rate. Quality is 35 plus
             140 times the net profit margin. Financial Health averages 20 plus 40 times the current ratio and 88 minus
             18 times debt-to-equity, using whichever of those two figures was returned. Momentum is the price position
-            from the 52-week low to the high, scaled from 0 to 100. Every pillar is clamped to 0–100. The headline
-            score is the rounded average of the pillars that have a score.
+            from the 52-week low to the high, scaled from 0 to 100. Every pillar is clamped to 0–100. Methodology 3
+            keeps those pillar formulas. The headline score then finds the median of the pillar scores that exist,
+            moves each of those scores 15% of the way toward that median, and rounds the average of the adjusted
+            scores. The median and the adjusted scores are not rounded first. One available pillar is used unchanged.
+            Two available pillars move toward their midpoint, so their average does not change.
           </p>
           <p className="mt-4 text-sm leading-7 text-muted">
             Banks and insurers keep Value, Growth, and Momentum. Quality and Financial Health are omitted. Real estate
@@ -110,14 +113,14 @@ export default function MethodologyPage() {
             AssetScore stores today.
           </p>
           <p className="mt-4 text-sm leading-7 text-muted">
-            Rankings and the screener keep the last published file until the next daily run. That file is methodology
-            1 for every company. A stock page calculated now is methodology 2. Compare a ranking with a stock page
-            only when the methodology version matches. For an operating company, the two versions use the same
-            formulas.
+            A stock page calculated now is methodology 3. Older stored observations stay under methodology 1 or 2 and
+            are not rewritten. Rankings and the screener apply methodology 3 to the pillar scores already in the daily
+            file, so the headline number matches the current formula without a new data request. Compare a change in
+            the score history only across rows that share a methodology version.
           </p>
           <p className="mt-4 text-sm leading-7 text-muted">
-            The five pillar scores contribute equally to the overall AssetScore. The headline number is the rounded
-            average of the pillars that have a score. A company can outrank another because its earnings multiple,
+            The available pillar scores contribute equally to the overall AssetScore after the median adjustment. A
+            company can outrank another because its earnings multiple,
             revenue change, profit margin, balance sheet, or price position is different. One strong pillar does not
             erase a weak one when both have data.
           </p>
@@ -137,7 +140,7 @@ export default function MethodologyPage() {
         <section className="mt-12">
           <h2 className="text-2xl font-medium tracking-[-0.03em]">Missing data</h2>
           <p className="mt-4 text-sm leading-7 text-muted">
-            If a figure is not returned, the page says so and that pillar is omitted from the average when it has
+            If a figure is not returned, the page says so and that pillar is omitted from the headline score when it has
             nothing to score. For an operating company, Financial Health can still be scored from whichever of the
             current ratio or debt to equity was returned. Amounts are shown in US dollars. A dash is a missing figure,
             not a zero. A pillar left out because of the industry is also excluded, and the page says why.

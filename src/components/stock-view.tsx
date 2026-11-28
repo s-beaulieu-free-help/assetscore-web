@@ -11,7 +11,7 @@ import { StockReviews } from "@/components/stock-reviews";
 import type { StockPageData } from "@/lib/fmp";
 import { PILLAR_COPY } from "@/lib/pillar-copy";
 import type { ScoreObservation } from "@/lib/score-history";
-import { industryGroupLabel, type IndustryGroup } from "@/lib/score";
+import { HEADLINE_SCORE_SUMMARY, industryGroupLabel, type IndustryGroup } from "@/lib/score";
 import { jsonLd } from "@/lib/seo";
 import { scoreStory } from "@/lib/score-story";
 import { formatChange, formatMoney } from "@/lib/stocks";
@@ -159,11 +159,8 @@ export function StockView({
             </h2>
             {stock.band ? <p className="mt-2 text-lg text-foreground">{stock.band}</p> : null}
             <p className="mt-4 max-w-xl text-sm leading-7 text-muted">
-              The score is the rounded average of Value, Growth, Quality, Financial Health, and Momentum when those
-              inputs are present. It describes the latest figures. It does not predict future returns.
-            </p>
-            <p className="mt-4 max-w-xl text-sm leading-6 text-muted">
-              Each pillar has equal weight. A high overall score does not mean every pillar is strong.
+              {HEADLINE_SCORE_SUMMARY} It describes the latest figures. It does not predict future returns. A high
+              overall score does not mean every pillar is strong.
             </p>
             <HowItsScored className="mt-4 max-w-xl" />
             <p className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm">

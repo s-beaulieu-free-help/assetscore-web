@@ -61,7 +61,7 @@ const principles = [
 const available = [
   {
     title: "US stock analysis",
-    body: "A 0–100 AssetScore from value, growth, quality, financial health, and momentum. Missing inputs are left out of the average.",
+    body: "A 0–100 AssetScore from value, growth, quality, financial health, and momentum. Available scores move slightly toward their middle, then the result is rounded. Missing inputs are left out.",
   },
   {
     title: "Stock comparison",

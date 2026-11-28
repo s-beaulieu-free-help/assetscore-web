@@ -35,7 +35,7 @@ export function scoreStory(pillars: Pillar[]): ScoreStory {
   const summary =
     strongest.label === softest.label
       ? `${strongest.label} is the only pillar with data, at ${strongest.score}. The overall score is that reading. It describes the latest figures and does not predict the share price.`
-      : `${strongest.label} is supporting the score at ${strongest.score}. ${softest.label} is the softest reading at ${softest.score}. The overall score is the rounded average of the pillars that have data. It describes those characteristics and does not predict future returns.`;
+      : `${strongest.label} is supporting the score at ${strongest.score}. ${softest.label} is the softest reading at ${softest.score}. The overall score pulls the available pillar scores slightly toward their middle, then rounds that average. It describes those characteristics and does not predict future returns.`;
 
   const monitor = [
     ...weaknesses.map((pillar) => ({

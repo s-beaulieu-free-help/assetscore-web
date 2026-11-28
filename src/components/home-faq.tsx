@@ -1,10 +1,11 @@
 import { FREE_EVALUATION_LIMIT_FALLBACK, PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
+import { HEADLINE_SCORE_SUMMARY } from "@/lib/score";
 
 export const homeFaqs = [
   {
     question: "How is the AssetScore calculated?",
     answer:
-      "The score is the rounded average of up to five pillars, on a scale from 0 to 100. Value comes from the annual price-to-earnings ratio. Growth comes from the change in revenue from the prior year. Quality comes from the net profit margin. Financial health combines the current ratio and debt compared with equity. Momentum comes from where the price sits between the 52-week low and high. A pillar without data is left out of the average. The result is informational and is not a buy or sell recommendation.",
+      `${HEADLINE_SCORE_SUMMARY} Value comes from the annual price-to-earnings ratio. Growth comes from the change in revenue from the prior year. Quality comes from the net profit margin. Financial health combines the current ratio and debt compared with equity. Momentum comes from where the price sits between the 52-week low and high. The result is informational and is not a buy or sell recommendation.`,
   },
   {
     question: "Where does AssetScore get its financial data?",

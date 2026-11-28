@@ -1,4 +1,5 @@
 import { HowItsScored } from "@/components/how-its-scored";
+import { HEADLINE_SCORE_SUMMARY } from "@/lib/score";
 
 const pillars = [
   {
@@ -37,9 +38,7 @@ export function Pillars() {
           Five ways to read a company.
         </h2>
         <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
-          The AssetScore is the rounded average of the pillars that have data, on a scale from 0 to 100. A missing
-          input is left out of the average. The score is an explanation of the numbers, not a recommendation to buy or
-          sell.
+          {HEADLINE_SCORE_SUMMARY} The score explains the latest figures. It is not a recommendation to buy or sell.
         </p>
         <HowItsScored className="mt-6 max-w-2xl" />
         <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-6">

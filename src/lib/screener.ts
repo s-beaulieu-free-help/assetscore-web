@@ -1,6 +1,7 @@
 import { readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import type { Access } from "@/lib/billing/entitlement";
+import { bandFor, headlineScore } from "@/lib/score";
 
 export const SCREENER_INDEXES = [
   { id: "sp500", name: "S&P 500" },
@@ -259,11 +260,19 @@ function normalizeRow(raw: Partial<ScreenerRow> & { symbol?: string; indexes?: s
   const indexes = (raw.indexes ?? (fallbackIndex ? [fallbackIndex] : []))
     .map((item) => asIndex(item))
     .filter((item): item is ScreenerIndexId => item != null);
+  const recomputed = headlineScore([
+    numberOrNull(raw.value),
+    numberOrNull(raw.growth),
+    numberOrNull(raw.quality),
+    numberOrNull(raw.health),
+    numberOrNull(raw.momentum),
+  ]);
+  const score = recomputed ?? raw.score;
   return {
     symbol,
     name: raw.name?.trim() || symbol,
-    score: raw.score,
-    band: raw.band || "",
+    score,
+    band: recomputed == null ? raw.band || "" : bandFor(score),
     indexes,
     price: numberOrNull(raw.price),
     marketCap: numberOrNull(raw.marketCap),

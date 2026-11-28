@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { HEADLINE_SCORE_SUMMARY } from "@/lib/score";
 
 const sources = [
   { pillar: "Value", source: "Annual price-to-earnings ratio. A lower positive multiple scores higher. Negative earnings keep Value low." },
@@ -20,9 +21,7 @@ export function HowItsScored({ className = "" }: { className?: string }) {
       <summary className="cursor-pointer text-sm font-medium tracking-[-0.01em] text-foreground">How it&apos;s scored</summary>
       <div className="mt-3 space-y-3 text-sm leading-6 text-muted">
         <p>
-          The headline AssetScore is the rounded average of the pillar scores that have data, on a scale from 0 to 100.
-          Each included pillar has equal weight. A pillar with no input is left out of the average. It is not replaced
-          with zero.
+          {HEADLINE_SCORE_SUMMARY}
         </p>
         <p>The figures are the latest quote and the latest annual statements.</p>
         <ul className="space-y-2">

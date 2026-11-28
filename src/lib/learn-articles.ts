@@ -19,7 +19,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
     paragraphs: [
       "The price-to-earnings ratio is the share price divided by annual earnings. AssetScore uses the annual ratio returned for the latest statement period. A lower positive multiple scores higher on Value. Negative earnings keep Value low, because the multiple cannot support a high valuation reading.",
       "Value is one equal pillar in the headline AssetScore when it has data. A cheap multiple can lift the average, and an expensive multiple can pull it down, even when growth or profitability is strong. The ratio does not include dividends, and it is not a forecast of the share price.",
-      "Banks and insurers use this annual ratio. Real estate investment trusts do not, because funds from operations were not in the returned data. On those pages Value is left out of the average. It is not replaced with zero.",
+      "Banks and insurers use this annual ratio. Real estate investment trusts do not, because funds from operations were not in the returned data. On those pages Value is left out of the AssetScore. It is not replaced with zero.",
     ],
     related: [
       { href: "/methodology", label: "Full methodology" },
@@ -55,7 +55,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
     paragraphs: [
       "Quality on an operating company is the annual net profit margin: the share of revenue kept as profit. A wider margin scores higher. A loss scores lower.",
       "A high Quality score means the latest annual margin is wide. It does not mean every other part of the business is strong. Value, Growth, Financial Health, and Momentum still count equally when they have data.",
-      "Banks, insurers, and real estate investment trusts do not use net profit margin, because that ratio does not describe those businesses in the data AssetScore stores. Quality is omitted for them and left out of the average.",
+      "Banks, insurers, and real estate investment trusts do not use net profit margin, because that ratio does not describe those businesses in the data AssetScore stores. Quality is omitted for them and left out of the AssetScore.",
     ],
     related: [
       { href: "/methodology", label: "Full methodology" },
@@ -85,11 +85,11 @@ export const LEARN_ARTICLES: LearnArticle[] = [
     slug: "reading-the-assetscore",
     title: "How to read an AssetScore",
     description:
-      "The headline AssetScore is the rounded average of the pillars that have data. Each included pillar has equal weight.",
+      "The headline AssetScore uses the pillars that have data, moves each one 15% of the way toward their median, and rounds the average. Each included pillar has equal weight.",
     kicker: "The score",
     kind: "score",
     paragraphs: [
-      "Five pillars can be scored from 0 to 100: Value, Growth, Quality, Financial Health, and Momentum. The headline number is the rounded average of the pillars that have data. Each included pillar has equal weight. A missing pillar is left out. It is not scored as zero.",
+      "Five pillars can be scored from 0 to 100: Value, Growth, Quality, Financial Health, and Momentum. The headline number uses only the pillars that have data. Their median is calculated, each available score moves 15% of the way toward that median, and the AssetScore is the rounded average of those adjusted scores. Each included pillar has equal weight. A missing pillar is left out. It is not scored as zero. One available pillar is used as it is.",
       "Bands group that average: 90–100 Exceptional, 80–89 Strong, 70–79 Solid, 60–69 Mixed, and 0–59 Weak. A Strong score can still hide a weak pillar. The stock page names the strongest and softest readings for that company.",
       "Momentum uses the latest price between the 52-week low and high. The other pillars use the latest annual figures. Those periods can differ. The result describes the latest inputs. It is not a prediction and it is not investment advice.",
     ],
@@ -128,7 +128,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
     paragraphs: [
       "Revenue is what the company sold during the period. Earnings, or net income, are what remained after the costs of running the business, interest, and taxes. A company can grow sales and still lose money. Another can have flat sales and a wide profit margin. Looking at only one of those numbers hides the other.",
       "The balance sheet is a snapshot, not a year of activity. It lists what the company owns, what it owes, and the equity left for owners. Short-term assets compared with short-term bills is one way to read near-term flexibility. Debt compared with equity is one way to read how much of the business is financed by borrowing. Neither figure says whether the products will sell next year.",
-      "AssetScore keeps those ideas in separate pillars. Growth uses year-over-year revenue. Quality uses the annual net profit margin for operating companies. Financial Health uses the current ratio and debt compared with equity when those inputs exist. Value uses the annual price-to-earnings ratio. A missing input is left out of the average. It is not filled in with zero.",
+      "AssetScore keeps those ideas in separate pillars. Growth uses year-over-year revenue. Quality uses the annual net profit margin for operating companies. Financial Health uses the current ratio and debt compared with equity when those inputs exist. Value uses the annual price-to-earnings ratio. A missing input is left out of the AssetScore. It is not filled in with zero.",
       "Banks, insurers, and real estate investment trusts are not scored with the same operating-company ratios, because those ratios do not describe those businesses in the stored data. Their omitted pillars stay omitted. The stock page shows the pillars that were actually calculated.",
     ],
     related: [
@@ -147,7 +147,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
     paragraphs: [
       "Comparing a share price with another share price rarely helps. A $20 share and a $200 share can belong to companies of similar size, or to companies that have nothing in common. Compare the businesses: how fast revenue grew, how much of each sales dollar became profit, how the balance sheet is financed, and how expensive the shares are relative to earnings.",
       "Sector matters. A software company and an oil producer can both be profitable and still look nothing alike on growth, margins, and debt. A higher number on one ratio is not automatically better once the business model changes. Read the comparison as a set of differences, not as a winner.",
-      "AssetScore uses the same pillars on both sides of a stock comparison when the data exists. Each included pillar has equal weight in that company's headline score. One company can lead on Value and trail on Growth. The page is there so you can see that split. It does not pick which company you should own.",
+      "AssetScore uses the same pillars and the same headline calculation on both sides of a stock comparison when the data exists. Each included pillar has equal weight after the scores move slightly toward their middle. One company can lead on Value and trail on Growth. The page is there so you can see that split. It does not pick which company you should own.",
       "A comparison is only as current as the latest stored figures. Annual statements and a 52-week price range describe different windows of time. If a pillar is missing for one company, that pillar is left out of its average. It is not treated as a failing grade.",
     ],
     related: [

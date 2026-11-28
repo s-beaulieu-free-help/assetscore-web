@@ -41,7 +41,7 @@ export const TOPIC_PAGES: TopicPage[] = [
     pillar: "value",
     pillarLabel: "Value",
     intro:
-      "Value uses the annual price-to-earnings ratio. A lower positive multiple scores higher. These S&P 500 companies have the highest Value scores in the daily dataset. The overall ranking still averages Value with the other pillars that have data.",
+      "Value uses the annual price-to-earnings ratio. A lower positive multiple scores higher. These S&P 500 companies have the highest Value scores in the daily dataset. The overall ranking uses the same AssetScore as the stock page: available pillar scores are moved slightly toward their middle, then averaged.",
     article: { href: "/learn/price-to-earnings-ratio", label: "How the price-to-earnings ratio is scored" },
     rankingHref: "/rankings/sp500",
   },

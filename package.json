@@ -7,7 +7,7 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "test": "tsx --test src/lib/portfolio-quality.test.ts src/lib/screener.test.ts"
+    "test": "tsx --test src/lib/portfolio-quality.test.ts src/lib/screener.test.ts src/lib/score.test.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

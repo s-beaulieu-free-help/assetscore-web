@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { HEADLINE_SCORE_SUMMARY } from "@/lib/score";
 import { loadScreenerDataset, type ScreenerRow } from "@/lib/screener";
 import { shareMetadata } from "@/lib/seo";
 
@@ -51,9 +52,8 @@ export default function ReportsPage() {
         <p className="font-mono text-[11px] tracking-[0.2em] text-muted uppercase">Sample reports</p>
         <h1 className="mt-4 text-4xl font-medium tracking-[-0.045em] sm:text-5xl">How a finished score reads</h1>
         <p className="mt-6 text-sm leading-7 text-muted">
-          These reports use the daily published dataset{label ? `, published ${label}` : ""}. The headline number is the
-          rounded average of the pillars that have data. Each included pillar has equal weight. A live stock page uses
-          the latest quote, so its score can differ from this published snapshot.
+          These reports use the daily published dataset{label ? `, published ${label}` : ""}. {HEADLINE_SCORE_SUMMARY} A
+          live stock page uses the latest quote, so its score can differ from this published snapshot.
         </p>
         {reports.length === 0 ? (
           <p className="mt-10 text-sm leading-7 text-muted">The daily dataset has not been published yet.</p>
