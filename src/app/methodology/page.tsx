@@ -37,10 +37,16 @@ export default function MethodologyPage() {
         <section className="mt-12">
           <h2 className="text-2xl font-medium tracking-[-0.03em]">The overall score</h2>
           <p className="mt-4 text-sm leading-7 text-muted">
-            {HEADLINE_SCORE_SUMMARY} A high overall score does not mean every pillar is strong. For example, pillar
-            scores of 90, 80, 75, 70, and 20 have a middle score of 75. After each score moves 15% of the way toward
-            75, they average 68.2, which rounds to 68. The 90 does not erase the 20, and the 20 is not left as extreme
-            as it started.
+            {HEADLINE_SCORE_SUMMARY} The middle score is the median. With an odd count, that is the center value. With
+            an even count, it is the average of the two center values. The median and the adjusted scores are not
+            rounded. The average of the adjusted scores is rounded, then kept between 0 and 100.
+          </p>
+          <p className="mt-4 text-sm leading-7 text-muted">
+            One available pillar is the AssetScore, with no pull toward a middle. Two available pillars move toward
+            their midpoint, so their average does not change before that final rounding. A high overall score does not
+            mean every pillar is strong. For example, pillar scores of 90, 80, 75, 70, and 20 have a median of 75.
+            After each score moves 15% of the way toward 75, they average 68.2, which rounds to 68. The 90 does not
+            erase the 20, and the 20 is not left as extreme as it started.
           </p>
           <ul className="mt-6 divide-y divide-line overflow-hidden rounded-2xl border border-line">
             {bands.map((band) => (
@@ -73,9 +79,9 @@ export default function MethodologyPage() {
         <section className="mt-12">
           <h2 className="text-2xl font-medium tracking-[-0.03em]">How Financial Metrics Become Scores</h2>
           <p className="mt-4 text-sm leading-7 text-muted">
-            Each pillar starts from a reported figure. The mapping below is the one the
-            stock page uses. Methodology 2 keeps those formulas for operating companies. Banks, insurers, and real
-            estate investment trusts leave out ratios that do not fit those industries.
+            Each pillar starts from a reported figure, is rounded, and is kept between 0 and 100. The mapping below is
+            the one a stock page uses now. Banks, insurers, and real estate investment trusts leave out ratios that do
+            not fit those industries.
           </p>
           <ul className="mt-4 space-y-3 text-sm leading-7 text-muted">
             <li>Value uses the annual price-to-earnings ratio. A lower positive multiple scores higher. Negative earnings keep Value low.</li>
@@ -88,22 +94,21 @@ export default function MethodologyPage() {
             </li>
             <li>
               Momentum uses the latest price compared with the 52-week low and high. A price near the high scores higher.
-              A price near the low scores lower. If that range is missing and enough closing prices exist, Momentum uses
-              the change versus an earlier close.
+              A price near the low scores lower. If that range is missing and at least 40 closing prices exist, Momentum
+              uses the change versus an earlier close.
             </li>
           </ul>
-          <h3 className="mt-8 text-xl font-medium tracking-[-0.03em]">Methodology 2 formulas</h3>
+          <h3 className="mt-8 text-xl font-medium tracking-[-0.03em]">Pillar formulas</h3>
           <p className="mt-4 text-sm leading-7 text-muted">
-            For an operating company, methodology 2 uses the same formulas as methodology 1. Value starts at 100 when
-            the annual price-to-earnings ratio is 8 and falls by 1.6 points for each multiple above 8, with a floor of
-            0. A negative multiple scores 12. Growth is 50 plus 80 times the revenue growth rate. Quality is 35 plus
-            140 times the net profit margin. Financial Health averages 20 plus 40 times the current ratio and 88 minus
-            18 times debt-to-equity, using whichever of those two figures was returned. Momentum is the price position
-            from the 52-week low to the high, scaled from 0 to 100. Every pillar is clamped to 0–100. Methodology 3
-            keeps those pillar formulas. The headline score then finds the median of the pillar scores that exist,
-            moves each of those scores 15% of the way toward that median, and rounds the average of the adjusted
-            scores. The median and the adjusted scores are not rounded first. One available pillar is used unchanged.
-            Two available pillars move toward their midpoint, so their average does not change.
+            Value starts at 100 when the annual price-to-earnings ratio is 8 and falls by 1.6 points for each multiple
+            above 8, with a floor of 0. A negative multiple scores 12. Growth is 50 plus 80 times the revenue growth
+            rate as a decimal, so 15% growth is 0.15. Quality is 35 plus 140 times the net profit margin as a decimal.
+            Financial Health scores the current ratio as 20 plus 40 times that ratio, and debt-to-equity as 88 minus 18
+            times that ratio. Each of those two parts is rounded and kept between 0 and 100, then the pillar is the
+            rounded average of the parts that were returned. Momentum is the price position from the 52-week low to the
+            high, scaled from 0 to 100. When that range is missing, at least 40 closes exist, and an earlier close is
+            available, Momentum is 50 plus 120 times the price change versus that earlier close. Every pillar is
+            rounded and kept between 0 and 100 before the overall score is calculated.
           </p>
           <p className="mt-4 text-sm leading-7 text-muted">
             Banks and insurers keep Value, Growth, and Momentum. Quality and Financial Health are omitted. Real estate
@@ -113,10 +118,8 @@ export default function MethodologyPage() {
             AssetScore stores today.
           </p>
           <p className="mt-4 text-sm leading-7 text-muted">
-            A stock page calculated now is methodology 3. Older stored observations stay under methodology 1 or 2 and
-            are not rewritten. Rankings and the screener apply methodology 3 to the pillar scores already in the daily
-            file, so the headline number matches the current formula without a new data request. Compare a change in
-            the score history only across rows that share a methodology version.
+            Rankings and the screener use this same overall-score calculation on the pillar scores already in the daily
+            file. Older rows in score history stay as they were stored. They are not recalculated.
           </p>
           <p className="mt-4 text-sm leading-7 text-muted">
             The available pillar scores contribute equally to the overall AssetScore after the median adjustment. A

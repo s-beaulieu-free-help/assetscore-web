@@ -25,7 +25,7 @@ export function presentTicker() {
   placeTicker(reduce ? "auto" : "smooth");
 }
 
-export function SearchWidget() {
+export function SearchWidget({ prompt }: { prompt?: string }) {
   const router = useRouter();
   const [ticker, setTicker] = useState("");
   const [message, setMessage] = useState("");
@@ -60,10 +60,11 @@ export function SearchWidget() {
 
   return (
     <form id="analyze" onSubmit={onSubmit} className="w-full max-w-xl scroll-mt-28">
+      {prompt ? <p className="mb-3 text-sm font-medium text-foreground">{prompt}</p> : null}
       <label htmlFor="ticker" className="sr-only">
         Ticker symbol
       </label>
-      <div className="flex flex-col gap-2 rounded-xl border border-line bg-white/[0.03] p-1.5 transition focus-within:border-white/20 sm:flex-row sm:items-center">
+      <div className="flex flex-col gap-2 rounded-2xl border border-accent/50 bg-card p-2 shadow-[0_0_0_1px_rgba(215,242,92,0.08)] transition focus-within:border-accent sm:flex-row sm:items-center">
         <input
           id="ticker"
           name="ticker"
@@ -78,11 +79,11 @@ export function SearchWidget() {
           spellCheck={false}
           autoComplete="off"
           maxLength={12}
-          className="h-11 w-full bg-transparent px-3 text-[15px] text-foreground outline-none placeholder:text-muted/70"
+          className="h-14 w-full bg-transparent px-3 text-base text-foreground outline-none placeholder:text-muted/70"
         />
         <button
           type="submit"
-          className="h-11 shrink-0 rounded-lg bg-foreground px-5 text-sm font-medium text-background transition hover:bg-white"
+          className="h-12 shrink-0 rounded-xl bg-accent px-6 text-sm font-medium text-ink transition hover:brightness-110"
         >
           Analyze
         </button>

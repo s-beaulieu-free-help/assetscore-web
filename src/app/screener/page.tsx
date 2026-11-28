@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ProEnables } from "@/components/pro-enables";
 import { UpgradeLink } from "@/components/upgrade-link";
 import { FavoriteButton } from "@/components/favorite-button";
 import { SiteFooter } from "@/components/site-footer";
@@ -151,12 +152,16 @@ function Preview({
           );
         })}
       </div>
-      <p className="mt-6 max-w-2xl text-sm leading-6 text-muted">
-        The company list is available with an account.{" "}
-        {free
-          ? `Your trial has ended. Pro is ${PRO_MONTHLY_PRICE.label}.`
-          : `The 30-day trial includes the full screener, with no credit card and no automatic charge. Pro is ${PRO_MONTHLY_PRICE.label}.`}
-      </p>
+      <div className="mt-6 max-w-2xl">
+        <p className="text-sm leading-6 text-foreground">Discover companies matching your criteria.</p>
+        <p className="mt-3 text-sm leading-6 text-muted">
+          The counts above are the published screens. The company list opens with Pro.
+          {free
+            ? ` Your trial has ended. Pro is ${PRO_MONTHLY_PRICE.label}. A paid plan starts only when you subscribe.`
+            : " A new account includes 30 days with no credit card and no automatic charge."}
+        </p>
+        <ProEnables className="mt-4" />
+      </div>
       {free ? (
         <UpgradeLink href="/pricing" className="mt-4 inline-flex h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-ink">
           See AssetScore Pro

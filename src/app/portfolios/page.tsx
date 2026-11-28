@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ProEnables } from "@/components/pro-enables";
 import { UpgradeLink } from "@/components/upgrade-link";
 import { PromotionSlot } from "@/components/promotion-slot";
 import { loadAccess } from "@/lib/billing/access";
@@ -38,15 +39,20 @@ export default async function PortfoliosPage() {
             {access.canCreatePortfolio ? (
               <CreatePortfolioForm />
             ) : (
-              <p className="mt-6 max-w-xl text-sm leading-6 text-muted">
-                Unlock complete Portfolio Intelligence and understand the quality and construction of your investments.
-                Pro is {PRO_MONTHLY_PRICE.label}. A new account includes 30 days with no credit card and no automatic
-                charge. Portfolios you already saved stay available.{" "}
-                <UpgradeLink href="/pricing" className="text-foreground hover:text-accent">
+              <div className="mt-6 max-w-xl">
+                <p className="text-sm leading-6 text-foreground">Understand your portfolio&apos;s strengths and weaknesses.</p>
+                <p className="mt-3 text-sm leading-6 text-muted">
+                  Creating another portfolio needs Pro. Portfolios you already saved stay available.
+                </p>
+                <ProEnables className="mt-4" />
+                <p className="mt-4 text-sm leading-6 text-muted">
+                  Pro is {PRO_MONTHLY_PRICE.label}. A paid plan starts only when you subscribe. A new account includes 30
+                  days with no credit card and no automatic charge.
+                </p>
+                <UpgradeLink href="/pricing" className="mt-4 inline-flex h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-ink">
                   See AssetScore Pro
                 </UpgradeLink>
-                .
-              </p>
+              </div>
             )}
             <ul className="mt-10 divide-y divide-line overflow-hidden rounded-2xl border border-line bg-card">
               {data?.length ? (

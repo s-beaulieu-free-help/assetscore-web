@@ -51,8 +51,8 @@ export default async function StockPage({ params, searchParams }: StockPageProps
     if (!gate.allowed) {
       return (
         <UpgradeNote
-          title="Continue exploring companies with unlimited stock analysis"
-          copy="The monthly free limit is reached. Pro includes unlimited stock evaluations. A stock you already opened this month does not count again."
+          title="Evaluate more investment opportunities."
+          copy="This month's free evaluations are used. A company you already opened this month does not count again."
         />
       );
     }
