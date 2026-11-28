@@ -36,7 +36,7 @@ export default function TopicsPage() {
             </li>
           ))}
         </ul>
-        <h2 className="mt-14 text-2xl font-medium tracking-[-0.03em]">Guides</h2>
+        <h2 className="mt-14 text-2xl font-medium tracking-[-0.03em]">Finance and score guides</h2>
         <ul className="mt-4 space-y-3">
           {LEARN_ARTICLES.map((article) => (
             <li key={article.slug}>

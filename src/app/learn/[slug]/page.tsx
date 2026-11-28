@@ -62,8 +62,9 @@ export default async function LearnArticlePage({ params }: LearnArticleProps) {
           ))}
         </div>
         <p className="mt-8 text-sm leading-7 text-muted">
-          These notes match the stock page. They describe the latest figures. They are not a forecast and they are not
-          investment advice.
+          {article.kind === "score"
+            ? "These notes match the stock page. They describe the latest figures. They are not a forecast and they are not investment advice."
+            : "This is educational material about published financial information. It is not a forecast and it is not investment advice."}
         </p>
         <nav className="mt-8 flex flex-wrap gap-x-4 gap-y-2 text-sm" aria-label="Related">
           {article.related.map((link) => (

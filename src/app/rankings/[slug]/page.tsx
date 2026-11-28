@@ -104,7 +104,7 @@ export default async function RankingPage({ params }: RankingPageProps) {
           <div>
             <h2 className="text-sm font-medium">How the pillars are scored</h2>
             <ul className="mt-2 space-y-2 text-sm">
-              {LEARN_ARTICLES.map((article) => (
+              {LEARN_ARTICLES.filter((article) => article.kind === "score").map((article) => (
                 <li key={article.slug}>
                   <Link href={`/learn/${article.slug}`} className="text-foreground hover:text-accent">
                     {article.title}

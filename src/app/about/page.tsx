@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ContactForm } from "@/components/contact-form";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { LEARN_ARTICLES } from "@/lib/learn-articles";
 import { shareMetadata } from "@/lib/seo";
 
 const aboutTitle = "About AssetScore";
@@ -261,6 +262,37 @@ export default function AboutPage() {
               Send a message to AssetScore. Include the email address where you want a reply.
             </p>
             <ContactForm />
+          </div>
+        </section>
+
+        <section className="border-t border-line">
+          <div className="mx-auto w-full max-w-6xl px-6 py-20 lg:py-28">
+            <p className="font-mono text-[11px] tracking-[0.2em] text-muted uppercase">Learn</p>
+            <h2 className="mt-4 max-w-2xl text-3xl font-medium tracking-[-0.035em] sm:text-4xl">
+              Finance guides
+            </h2>
+            <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
+              Short articles on stocks, financial statements, company comparisons, diversification, indexes, and
+              screeners. They describe published information. They are not forecasts or investment advice.
+            </p>
+            <ul className="mt-12 grid gap-4 sm:grid-cols-2">
+              {LEARN_ARTICLES.filter((article) => article.kind === "finance").map((article) => (
+                <li key={article.slug} className="rounded-2xl border border-line bg-card px-6 py-7">
+                  <p className="font-mono text-[11px] tracking-[0.16em] text-muted uppercase">{article.kicker}</p>
+                  <h3 className="mt-3 text-xl font-medium tracking-[-0.03em]">
+                    <Link href={`/learn/${article.slug}`} className="hover:text-accent">
+                      {article.title}
+                    </Link>
+                  </h3>
+                  <p className="mt-3 text-sm leading-6 text-muted">{article.description}</p>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-8 text-sm text-muted">
+              <Link href="/learn" className="text-foreground hover:text-accent">
+                All finance and score guides
+              </Link>
+            </p>
           </div>
         </section>
       </main>
