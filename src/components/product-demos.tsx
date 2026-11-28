@@ -20,7 +20,7 @@ function PillarRow({ label, score }: { label: string; score: number | null }) {
     <div>
       <div className="mb-1.5 flex items-baseline justify-between gap-3">
         <span className="text-[13px]">{label}</span>
-        <span className="font-mono text-[13px] text-muted tabular-nums">{score ?? "—"}</span>
+        <span className={`font-mono text-[13px] tabular-nums ${score == null ? "text-muted" : scoreTextClass(score)}`}>{score ?? "—"}</span>
       </div>
       <div
         className="h-1 overflow-hidden rounded-full bg-white/8"
@@ -148,8 +148,8 @@ export function PortfolioPreview({ holdings }: { holdings: ExampleHolding[] }) {
   return (
     <section id="portfolio" className="scroll-mt-24 border-t border-line">
       <div className="mx-auto w-full max-w-6xl px-6 py-20 lg:py-24">
-        <p className="font-mono text-[11px] tracking-[0.2em] text-muted uppercase">Portfolio analysis</p>
-        <h2 className="mt-4 max-w-xl text-[2rem] leading-[1.1] font-medium tracking-[-0.035em] sm:text-4xl">
+        <p className="font-mono text-[11px] tracking-[0.2em] text-muted uppercase">Analyze</p>
+        <h2 className="mt-4 max-w-xl text-[2rem] leading-[1.05] font-medium tracking-[-0.04em] sm:text-5xl">
           See the bigger picture.
         </h2>
         <div className="mt-4 max-w-2xl space-y-3 text-sm leading-6 text-muted">
@@ -227,39 +227,45 @@ export function ProductDemos({
   example,
   left,
   right,
+  part = "all",
 }: {
   example: StockPageData | null;
   left: StockPageData | null;
   right: StockPageData | null;
+  part?: "all" | "evaluate" | "compare";
 }) {
   return (
     <div>
-      <section id="evaluate" className="scroll-mt-24 border-t border-line">
-        <div className="mx-auto w-full max-w-6xl px-6 py-20 lg:py-24">
-          <p className="font-mono text-[11px] tracking-[0.2em] text-muted uppercase">Stock analysis</p>
-          <h2 className="mt-4 max-w-xl text-[2rem] leading-[1.1] font-medium tracking-[-0.035em] sm:text-4xl">
-            Understand the quality of every stock.
-          </h2>
-          <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
-            A stock page shows the overall AssetScore, the five pillars, the financial inputs, and a plain-language
-            account of what is supporting the score and what is holding it back.
-          </p>
-          <div className="mt-10">
-            {example ? (
-              <StockDemo stock={example} />
-            ) : (
-              <p className="text-sm leading-6 text-muted">
-                The live example could not be loaded. You can still{" "}
-                <Link href="/stocks/NVDA" className="text-foreground hover:text-accent">
-                  open a stock analysis
-                </Link>
-                .
-              </p>
-            )}
+      {part === "compare" ? null : (
+        <section id="evaluate" className="scroll-mt-24 border-t border-line">
+          <div className="mx-auto w-full max-w-6xl px-6 py-24 lg:py-32">
+            <p className="font-mono text-[11px] tracking-[0.2em] text-muted uppercase">Evaluate</p>
+            <h2 className="mt-4 max-w-xl text-[2rem] leading-[1.05] font-medium tracking-[-0.04em] sm:text-5xl">
+              Understand the quality of every stock.
+            </h2>
+            <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
+              A stock page shows the overall AssetScore, the five pillars, the financial inputs, and a plain-language
+              account of what is supporting the score and what is holding it back. This demonstration uses the same
+              NVDA score as the stock page.
+            </p>
+            <div className="mt-10">
+              {example ? (
+                <StockDemo stock={example} />
+              ) : (
+                <p className="text-sm leading-6 text-muted">
+                  The example could not be loaded. You can still{" "}
+                  <Link href="/stocks/NVDA" className="text-foreground hover:text-accent">
+                    open a stock analysis
+                  </Link>
+                  .
+                </p>
+              )}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
+      {part === "evaluate" ? null : (
       <section id="compare" className="scroll-mt-24 border-t border-line">
         <div className="mx-auto w-full max-w-6xl px-6 py-20 lg:py-24">
           <p className="font-mono text-[11px] tracking-[0.2em] text-muted uppercase">Stock comparison</p>
@@ -276,7 +282,7 @@ export function ProductDemos({
               <CompareDemo left={left} right={right} />
             ) : (
               <p className="text-sm leading-6 text-muted">
-                The live comparison could not be loaded. You can still{" "}
+                The comparison example could not be loaded. You can still{" "}
                 <Link href="/compare/AAPL" className="text-foreground hover:text-accent">
                   start a comparison
                 </Link>
@@ -285,7 +291,8 @@ export function ProductDemos({
             )}
           </div>
         </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 }

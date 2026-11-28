@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { ScoreGauge } from "@/components/score-gauge";
 import { buildStockPage, getFmpSnapshot, type StockPageData } from "@/lib/fmp";
+import { scoreTextClass } from "@/lib/score";
 
 function barClass(score: number) {
   if (score >= 90) return "from-accent-2 to-accent";
@@ -13,7 +14,7 @@ function ScoreCardFrame({ children }: { children: ReactNode }) {
   return (
     <article
       id="example"
-      className="rise relative w-full overflow-hidden rounded-2xl border border-line bg-card shadow-[0_30px_80px_-48px_rgba(0,0,0,0.85)]"
+      className="rise relative w-full overflow-hidden rounded-[28px] border border-line bg-card shadow-[0_40px_120px_-64px_rgba(0,0,0,0.9)] transition duration-300 hover:border-white/20"
       style={{ animationDelay: "140ms" }}
     >
       <Link
@@ -49,6 +50,7 @@ export async function ScoreCard() {
   return (
     <ScoreCardFrame>
       <div className="flex items-center justify-between gap-4 border-b border-line px-5 py-3.5 sm:px-6">
+        <p className="font-mono text-[11px] tracking-[0.16em] text-muted uppercase">Demonstration</p>
         <p className="font-mono text-[11px] tracking-[0.16em] text-muted uppercase">{stock.exchange}</p>
       </div>
 
@@ -74,7 +76,7 @@ export async function ScoreCard() {
             <li key={pillar.label}>
               <div className="mb-1.5 flex items-baseline justify-between gap-3">
                 <span className="text-[13px] text-foreground/90">{pillar.label}</span>
-                <span className="font-mono text-[13px] text-muted tabular-nums">{pillar.score ?? "—"}</span>
+                <span className={`font-mono text-[13px] tabular-nums ${pillar.score == null ? "text-muted" : scoreTextClass(pillar.score)}`}>{pillar.score ?? "—"}</span>
               </div>
               <div
                 className="h-1 overflow-hidden rounded-full bg-white/8"

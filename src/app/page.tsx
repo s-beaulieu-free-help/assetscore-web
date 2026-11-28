@@ -85,6 +85,9 @@ export default async function Home() {
           </p>
         ) : null}
         <Hero signedIn={Boolean(user)} />
+        <ProductDemos example={example} left={apple} right={microsoft} part="evaluate" />
+        <TopRatedLists />
+        <ScreenerShowcase />
         <PortfolioPreview
           holdings={[
             exampleHolding(regeneron, "REGN", 15),
@@ -93,9 +96,7 @@ export default async function Home() {
             exampleHolding(caterpillar, "CAT", 20),
           ]}
         />
-        <TopRatedLists />
-        <ScreenerShowcase />
-        <ProductDemos example={example} left={apple} right={microsoft} />
+        <ProductDemos example={example} left={apple} right={microsoft} part="compare" />
         <Pillars />
         <Trust />
         <Features />

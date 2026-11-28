@@ -1,3 +1,5 @@
+import { scoreTextClass } from "@/lib/score";
+
 type ScoreGaugeProps = {
   score: number;
   size?: number;
@@ -53,7 +55,7 @@ export function ScoreGauge({ score, size = 168, id }: ScoreGaugeProps) {
       </svg>
       <div className="pointer-events-none absolute text-center">
         <p
-          className={`font-mono leading-none font-medium tracking-[-0.06em] text-foreground tabular-nums ${size >= 220 ? "text-6xl" : "text-[2.75rem]"}`}
+          className={`font-mono leading-none font-medium tracking-[-0.06em] tabular-nums ${scoreTextClass(score)} ${size >= 220 ? "text-6xl" : size <= 110 ? "text-3xl" : "text-[2.75rem]"}`}
         >
           {score}
         </p>

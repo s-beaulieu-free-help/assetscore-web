@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ScoreCard } from "@/components/score-card";
 import { SearchWidget } from "@/components/search-widget";
+import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
 
 export function Hero({ signedIn = false }: { signedIn?: boolean }) {
   return (
@@ -15,7 +16,7 @@ export function Hero({ signedIn = false }: { signedIn?: boolean }) {
       />
       <div className="relative mx-auto grid w-full max-w-6xl items-center gap-16 px-6 pt-20 pb-24 lg:grid-cols-[minmax(0,1.05fr)_minmax(340px,0.9fr)] lg:gap-20 lg:pt-28 lg:pb-32">
         <div>
-          <h1 className="rise max-w-[12ch] text-[2.75rem] leading-[0.98] font-medium tracking-[-0.045em] text-balance sm:text-6xl lg:text-[4.25rem]">
+          <h1 className="rise max-w-[11ch] text-[3rem] leading-[0.94] font-medium tracking-[-0.05em] text-balance sm:text-6xl lg:text-[4.6rem]">
             Know What{" "}
             <span className="font-serif font-normal tracking-[-0.03em] text-accent">You Own.</span>
           </h1>
@@ -35,7 +36,7 @@ export function Hero({ signedIn = false }: { signedIn?: boolean }) {
                 href="/register"
                 className="inline-flex h-11 items-center justify-center rounded-full bg-accent px-5 text-sm font-medium text-ink transition hover:brightness-110"
               >
-                Start Your 30-Day Free Trial
+                Start Your Free 30-Day Trial
               </Link>
             )}
             <Link
@@ -47,8 +48,9 @@ export function Hero({ signedIn = false }: { signedIn?: boolean }) {
           </div>
           {signedIn ? null : (
             <p className="mt-4 text-sm leading-6 text-muted">
-              30 days of unlimited stock evaluations, the Stock Screener, portfolios, and comparisons. No credit card is required, and the trial does not charge you when it ends. The account then moves to the Free plan.
-            </p>
+            30 days of Pro. No credit card. No automatic charge. Then{" "}
+            <span className="text-foreground">{PRO_MONTHLY_PRICE.label}</span> only if you choose it.
+          </p>
           )}
           <div className="rise mt-10" style={{ animationDelay: "200ms" }}>
             <SearchWidget />

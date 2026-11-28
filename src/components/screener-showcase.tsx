@@ -79,7 +79,7 @@ export function ScreenerShowcase() {
     <section id="screener" className="border-t border-line">
       <div className="mx-auto grid w-full max-w-6xl gap-10 px-6 py-24 lg:grid-cols-[0.72fr_1.28fr] lg:items-start lg:py-32">
         <div>
-          <p className="font-mono text-[11px] tracking-[0.2em] text-muted uppercase">Pro · Stock Screener</p>
+          <p className="font-mono text-[11px] tracking-[0.2em] text-muted uppercase">Discover · Stock Screener</p>
           <h2 className="mt-4 text-[2rem] leading-[1.1] font-medium tracking-[-0.035em] text-balance sm:text-4xl">
             Find Stocks That Match Your Criteria
           </h2>

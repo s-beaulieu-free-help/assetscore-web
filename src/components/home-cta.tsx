@@ -33,7 +33,7 @@ export function HomeCta() {
           href="/register"
           className="mt-8 inline-flex h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-ink transition hover:brightness-110"
         >
-          Start Your 30-Day Free Trial
+          Start Your Free 30-Day Trial
         </Link>
       </div>
     </section>
