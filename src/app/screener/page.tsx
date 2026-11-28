@@ -354,7 +354,7 @@ function FilterForm({
   ];
 
   return (
-    <form action="/screener" className="mt-6 rounded-2xl border border-line bg-card p-5">
+    <form action="/screener" className="mt-6 rounded-2xl border border-line bg-panel p-5">
       <input type="hidden" name="view" value="filters" />
       <input type="hidden" name="indexesSet" value="1" />
       <input type="hidden" name="sort" value={sort} />
@@ -383,7 +383,7 @@ function FilterForm({
                   type="number"
                   step="any"
                   defaultValue={filters[field.key] ?? ""}
-                  className="mt-1 h-10 w-full rounded-xl border border-line bg-white/[0.03] px-3 text-sm text-foreground"
+                  className="mt-1 h-10 w-full rounded-xl border border-line bg-background px-3 text-sm text-foreground"
                 />
               </label>
             ))}
@@ -403,7 +403,7 @@ function FilterForm({
       </fieldset>
       <label className="mt-4 block text-xs text-muted">
         Search ticker or company
-        <input name="q" defaultValue={queryText} className="mt-1 h-10 w-full max-w-sm rounded-xl border border-line bg-white/[0.03] px-3 text-sm text-foreground" />
+        <input name="q" defaultValue={queryText} className="mt-1 h-10 w-full max-w-sm rounded-xl border border-line bg-background px-3 text-sm text-foreground" />
       </label>
       <div className="mt-5 flex flex-wrap items-center gap-3">
         {SCREENER_NUMERIC_KEYS.filter((key) => typeof filters[key] === "number").map((key) => (

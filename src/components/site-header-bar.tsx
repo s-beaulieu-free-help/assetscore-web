@@ -10,7 +10,9 @@ export function SiteHeaderBar({ name, notice = null }: { name: string | null; no
         <Link href="/" className="flex min-w-0 items-center gap-2.5">
           <BrandLogo priority />
           <span className="truncate text-sm font-medium tracking-[-0.02em]">
-            AssetScore
+            <span className="text-accent" data-brand="1">
+              AssetScore
+            </span>
             <span className="text-muted">.net</span>
           </span>
         </Link>

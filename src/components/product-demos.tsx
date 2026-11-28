@@ -246,7 +246,7 @@ export function ProductDemos({
             <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
               A stock page shows the overall AssetScore, the five pillars, the financial inputs, and a plain-language
               account of what is supporting the score and what is holding it back. This demonstration uses the same
-              NVDA score as the stock page.
+              DELL score as the stock page.
             </p>
             <div className="mt-10">
               {example ? (
@@ -254,7 +254,7 @@ export function ProductDemos({
               ) : (
                 <p className="text-sm leading-6 text-muted">
                   The example could not be loaded. You can still{" "}
-                  <Link href="/stocks/NVDA" className="text-foreground hover:text-accent">
+                  <Link href="/stocks/DELL" className="text-foreground hover:text-accent">
                     open a stock analysis
                   </Link>
                   .

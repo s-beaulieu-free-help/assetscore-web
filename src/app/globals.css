@@ -8,6 +8,7 @@
   --accent: #d7f25c;
   --accent-2: #4fd6ae;
   --card: #111317;
+  --panel: #2a2f38;
   --ink: #12140c;
 }
 
@@ -19,6 +20,7 @@
   --color-accent: var(--accent);
   --color-accent-2: var(--accent-2);
   --color-card: var(--card);
+  --color-panel: var(--panel);
   --color-ink: var(--ink);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);

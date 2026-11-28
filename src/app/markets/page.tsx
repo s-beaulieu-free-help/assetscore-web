@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CenterHashTarget } from "@/components/center-hash-target";
 import { PriceChart } from "@/components/price-chart";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -17,10 +18,10 @@ export const metadata: Metadata = shareMetadata({
 });
 
 const INDEXES = [
-  { symbol: "^GSPC", label: "SP500" },
-  { symbol: "^DJI", label: "Dow Jones" },
-  { symbol: "^IXIC", label: "Nasdaq" },
-  { symbol: "^RUT", label: "Russell" },
+  { symbol: "^GSPC", label: "SP500", anchor: "sp500" },
+  { symbol: "^DJI", label: "Dow Jones", anchor: "dow" },
+  { symbol: "^IXIC", label: "Nasdaq", anchor: "nasdaq" },
+  { symbol: "^RUT", label: "Russell", anchor: "russell" },
 ] as const;
 
 async function loadIndex(symbol: string): Promise<IndexSeries | null> {
@@ -41,6 +42,7 @@ export default async function MarketsPage() {
   return (
     <div>
       <SiteHeader />
+      <CenterHashTarget />
       <main className="mx-auto w-full max-w-6xl px-6 pt-16 pb-24">
         <p className="font-mono text-[11px] tracking-[0.2em] text-muted uppercase">Indexes</p>
         <h1 className="mt-4 text-4xl font-medium tracking-[-0.045em] sm:text-5xl">Markets</h1>
@@ -61,7 +63,7 @@ export default async function MarketsPage() {
               {series.map(({ index, data }) => {
                 const positive = (data?.change ?? 0) >= 0;
                 return (
-                  <section key={index.symbol} className="rounded-2xl border border-line bg-card px-5 py-6 sm:px-6">
+                  <section id={index.anchor} key={index.symbol} className="scroll-mt-28 rounded-2xl border border-line bg-card px-5 py-6 sm:px-6">
                     <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
                       <div>
                         <h2 className="text-2xl font-medium tracking-[-0.03em]">{index.label}</h2>

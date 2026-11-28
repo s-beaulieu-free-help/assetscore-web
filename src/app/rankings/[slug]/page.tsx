@@ -118,8 +118,8 @@ export default async function RankingPage({ params }: RankingPageProps) {
           {RANKING_PAGES.map((item) => (
             <Link
               key={item.slug}
-              href={`/rankings/${item.slug}`}
-              className={`rounded-full border px-3 py-2 ${item.slug === page.slug ? "border-accent text-foreground" : "border-line text-muted hover:text-foreground"}`}
+              href={`/markets#${item.marketAnchor}`}
+              className={`rounded-full border px-3 py-2 text-accent ${item.slug === page.slug ? "border-accent" : "border-line hover:brightness-110"}`}
             >
               {item.name}
             </Link>

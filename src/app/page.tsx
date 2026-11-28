@@ -51,7 +51,7 @@ export default async function Home() {
   const [{ user, profile }, access, example, apple, microsoft, regeneron, coke, exxon, caterpillar] = await Promise.all([
     loadViewer(),
     loadAccess(),
-    loadStock("NVDA"),
+    loadStock("DELL"),
     loadStock("AAPL"),
     loadStock("MSFT"),
     loadStock("REGN"),

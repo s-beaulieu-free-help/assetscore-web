@@ -5,6 +5,7 @@ export const RANKING_PAGES = [
   {
     slug: "sp500",
     indexId: "sp500" as const,
+    marketAnchor: "sp500",
     name: "S&P 500",
     title: "Best quality S&P 500 stocks",
     description:
@@ -15,6 +16,7 @@ export const RANKING_PAGES = [
   {
     slug: "nasdaq100",
     indexId: "nasdaq100" as const,
+    marketAnchor: "nasdaq",
     name: "Nasdaq 100",
     title: "Best quality Nasdaq 100 stocks",
     description:
@@ -25,6 +27,7 @@ export const RANKING_PAGES = [
   {
     slug: "dow-jones",
     indexId: "dow" as const,
+    marketAnchor: "dow",
     name: "Dow Jones",
     title: "Best quality Dow Jones stocks",
     description:

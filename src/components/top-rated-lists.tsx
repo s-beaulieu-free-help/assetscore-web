@@ -9,6 +9,7 @@ export function TopRatedLists() {
       id: page.slug,
       name: page.name,
       href: `/rankings/${page.slug}`,
+      marketHref: `/markets#${page.marketAnchor}`,
       publishedAt: ranked.publishedAt,
       entries: ranked.rows.slice(0, 8).map((row, index) => ({
         rank: index + 1,
@@ -44,7 +45,11 @@ export function TopRatedLists() {
           {lists.map((list) => (
             <article key={list.id} className="rounded-2xl border border-line bg-card px-6 py-7">
               <div className="flex items-baseline justify-between gap-3">
-                <h3 className="text-xl font-medium tracking-[-0.03em]">{list.name}</h3>
+                <h3 className="text-xl font-medium tracking-[-0.03em]">
+                  <Link href={list.marketHref} className="text-accent hover:brightness-110">
+                    {list.name}
+                  </Link>
+                </h3>
                 <Link href={list.href} className="text-xs text-muted hover:text-accent">
                   Full ranking
                 </Link>

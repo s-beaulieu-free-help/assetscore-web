@@ -103,7 +103,7 @@ export function ScreenerShowcase() {
             <p className="text-sm font-medium">Stock Screener</p>
             <p className="text-xs text-muted">{updated ? `Published ${updated}` : "Daily dataset"}</p>
           </div>
-          <fieldset disabled className="px-4 py-4">
+          <fieldset disabled className="bg-panel px-4 py-4">
             <legend className="text-sm font-medium">Filters</legend>
             <div className="mt-3 flex flex-wrap gap-2">
               {SCREENER_PRESETS.filter((item) => presetAvailable(item, dataset.available)).map((item) => (
@@ -132,7 +132,7 @@ export function ScreenerShowcase() {
                     <input
                       readOnly
                       value={typeof value === "number" ? value : ""}
-                      className="mt-1 h-10 w-full rounded-xl border border-line bg-white/[0.03] px-3 text-sm text-foreground"
+                      className="mt-1 h-10 w-full rounded-xl border border-line bg-background px-3 text-sm text-foreground"
                     />
                   </label>
                 );
