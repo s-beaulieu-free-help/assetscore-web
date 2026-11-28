@@ -20,8 +20,7 @@ export function Hero({ signedIn = false }: { signedIn?: boolean }) {
             <span className="font-serif font-normal tracking-[-0.03em] text-accent">you own.</span>
           </h1>
           <p className="rise mt-7 max-w-[36rem] text-[17px] leading-8 text-foreground" style={{ animationDelay: "80ms" }}>
-            Evaluate stocks, discover investment opportunities, and understand your portfolio with a unified financial
-            analysis platform.
+            One Score. A Clearer View of Your Investments.
           </p>
           <nav className="rise mt-5 flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted" style={{ animationDelay: "100ms" }} aria-label="AssetScore tools">
             <Link href="/#evaluate" className="hover:text-foreground">Stock Analysis</Link>

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Features } from "@/components/features";
 import { Hero } from "@/components/hero";
 import { HomeCta } from "@/components/home-cta";
@@ -75,26 +74,16 @@ export default async function Home() {
     <div id="top">
       <SiteHeader />
       <main>
-        <p className="border-b border-line">
-          <span className="mx-auto block w-full max-w-6xl px-6 py-4 text-sm leading-6 text-muted">
-            {name ? (
-              <span className="text-foreground">
-                Welcome {name}
-                {access.trialEnded && access.isFree
-                  ? `. Your 30-day AssetScore Pro trial has ended. Upgrade for just ${PRO_MONTHLY_PRICE.label} to keep unlimited stock evaluations, the Stock Screener, new portfolios, and stock comparisons.`
-                  : ""}
-              </span>
-            ) : (
-              <>
-                <Link href="/register" className="text-foreground hover:text-accent">
-                  Create your free account
-                </Link>{" "}
-                and use unlimited stock evaluations, the Stock Screener, portfolios, and stock comparisons for 30 days. No credit card is required, and the trial
-                does not charge you when it ends.
-              </>
-            )}
-          </span>
-        </p>
+        {name ? (
+          <p className="border-b border-line">
+            <span className="mx-auto block w-full max-w-6xl px-6 py-4 text-sm leading-6 text-foreground">
+              Welcome {name}
+              {access.trialEnded && access.isFree
+                ? `. Your 30-day AssetScore Pro trial has ended. Upgrade for just ${PRO_MONTHLY_PRICE.label} to keep unlimited stock evaluations, the Stock Screener, new portfolios, and stock comparisons.`
+                : ""}
+            </span>
+          </p>
+        ) : null}
         <Hero signedIn={Boolean(user)} />
         <PortfolioPreview
           holdings={[
