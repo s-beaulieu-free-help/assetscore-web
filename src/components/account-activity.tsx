@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { buildStockPage, getFmpSnapshot } from "@/lib/fmp";
-import { weightedPortfolioScore } from "@/lib/portfolio-score";
+import { analyzePortfolio, type QualityHolding } from "@/lib/portfolio-quality";
+import { loadScreenerDataset, type ScreenerRow } from "@/lib/screener";
 import { loadViewer } from "@/lib/viewer";
 
 type Evaluation = { ticker: string; created_at: string };
@@ -22,59 +23,41 @@ export async function AccountActivity() {
   const favorites = (favoritesResult.data ?? []) as Favorite[];
   const portfolio = ((portfoliosResult.data ?? []) as Portfolio[])[0] ?? null;
   const lastAnalysis = evaluations[0]?.created_at ?? null;
+  const published = new Map(loadScreenerDataset().rows.map((row) => [row.symbol, row]));
+  const liveBudget = { remaining: 4 };
 
   const favoriteScores = await Promise.all(
     favorites.map(async (favorite) => {
-      try {
-        const stock = buildStockPage(await getFmpSnapshot(favorite.ticker));
-        return { ticker: favorite.ticker, score: stock.score, band: stock.band };
-      } catch {
-        return { ticker: favorite.ticker, score: null, band: null };
-      }
+      const stock = await publishedOrLive(favorite.ticker, published, liveBudget);
+      return { ticker: favorite.ticker, score: stock?.score ?? null, band: stock && "band" in stock ? stock.band : null };
     }),
   );
 
   let portfolioSummary: { name: string; href: string; score: number | null; note: string | null } | null = null;
   if (portfolio) {
-    const { data: rows } = await supabase
-      .from("portfolio_stocks")
-      .select("ticker, allocation")
-      .eq("portfolio_id", portfolio.id);
+    const { data: rows } = await supabase.from("portfolio_stocks").select("ticker, allocation").eq("portfolio_id", portfolio.id);
     const holdings = (rows ?? []) as Holding[];
-    if (holdings.length > 6) {
-      portfolioSummary = {
-        name: portfolio.name,
-        href: `/portfolios/${portfolio.id}`,
-        score: null,
-        note: "Open the portfolio to see its weighted score.",
-      };
-    } else {
-      const scored = await Promise.all(
-        holdings.map(async (holding) => {
-          try {
-            const stock = buildStockPage(await getFmpSnapshot(holding.ticker));
-            return { score: stock.score, allocation: Number(holding.allocation) };
-          } catch {
-            return { score: null, allocation: Number(holding.allocation) };
-          }
-        }),
-      );
-      const result = weightedPortfolioScore(scored);
-      portfolioSummary = {
-        name: portfolio.name,
-        href: `/portfolios/${portfolio.id}`,
-        score: result.score,
-        note: result.reason,
-      };
-    }
+    const quality = await Promise.all(holdings.map((holding) => qualityHolding(holding, published, liveBudget)));
+    const analysis = analyzePortfolio(quality);
+    portfolioSummary = {
+      name: portfolio.name,
+      href: `/portfolios/${portfolio.id}`,
+      score: analysis.overall.score ?? analysis.company.score,
+      note:
+        analysis.overall.score != null
+          ? analysis.overall.band
+          : analysis.company.score != null
+            ? "Company quality only. Open the portfolio for the full breakdown."
+            : analysis.overall.reason,
+    };
   }
 
   return (
     <section className="mt-10">
       <h2 className="text-lg font-medium">Your activity</h2>
       <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-        Recent Free-plan evaluations, current favorite scores, and the latest portfolio score. Past scores are not
-        stored, so changes in score or financial health are not shown.
+        Recent Free-plan evaluations, favorite scores from the daily dataset, and the latest portfolio score. Open a
+        portfolio to see its saved history.
       </p>
       <div className="mt-4 grid gap-4 lg:grid-cols-3">
         <article className="rounded-2xl border border-line bg-card p-5">
@@ -147,4 +130,42 @@ export async function AccountActivity() {
       </div>
     </section>
   );
+}
+
+async function publishedOrLive(ticker: string, published: Map<string, ScreenerRow>, liveBudget: { remaining: number }) {
+  const stored = published.get(ticker.toUpperCase());
+  if (stored) return stored;
+  if (liveBudget.remaining <= 0) return null;
+  liveBudget.remaining -= 1;
+  try {
+    return buildStockPage(await getFmpSnapshot(ticker));
+  } catch {
+    return null;
+  }
+}
+
+async function qualityHolding(holding: Holding, published: Map<string, ScreenerRow>, liveBudget: { remaining: number }): Promise<QualityHolding> {
+  const stock = await publishedOrLive(holding.ticker, published, liveBudget);
+  const pillars =
+    stock && "pillars" in stock
+      ? stock.pillars.map((pillar) => ({ label: pillar.label, score: pillar.score }))
+      : stock
+        ? [
+            { label: "Value", score: stock.value },
+            { label: "Growth", score: stock.growth },
+            { label: "Quality", score: stock.quality },
+            { label: "Financial Health", score: stock.health },
+            { label: "Momentum", score: stock.momentum },
+          ]
+        : [];
+  return {
+    ticker: holding.ticker,
+    name: stock?.name ?? holding.ticker,
+    allocation: Number(holding.allocation),
+    score: stock?.score ?? null,
+    sector: stock && "sector" in stock ? stock.sector : null,
+    isEtf: stock && "isEtf" in stock ? stock.isEtf : false,
+    statementDate: null,
+    pillars,
+  };
 }

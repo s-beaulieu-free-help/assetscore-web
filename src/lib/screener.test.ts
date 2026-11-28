@@ -84,8 +84,8 @@ describe("screener v2", () => {
     assert.deepEqual(sortScreener(rows, "score", "desc").map((item) => item.symbol), ["A", "B"]);
     assert.deepEqual(sortScreener(rows, "score", "asc").map((item) => item.symbol), ["B", "A"]);
     const paged = pageScreener(rows, 2);
-    assert.equal(paged.page, 2);
-    assert.equal(paged.rows.length, 0);
+    assert.equal(paged.page, 1);
+    assert.equal(paged.rows.length, 2);
     assert.equal(paged.total, 2);
     assert.deepEqual(applyScreener([], filters(), available), []);
   });

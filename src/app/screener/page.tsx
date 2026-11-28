@@ -201,6 +201,7 @@ async function ScreenerTool({
   const matrixSource = quadrant ? filtered.filter((row) => quadrantFor(row) === quadrant) : filtered;
   const listed = view === "matrix" && quadrant ? matrixSource : filtered;
   const page = pageScreener(listed, Number(typeof params.page === "string" ? params.page : "1"));
+  const favorites = await favoriteTickers(userId, page.rows.map((row) => row.symbol));
   const extra = { view, sort, dir: direction, cols: columns.join(","), ...(queryText ? { q: queryText } : {}), ...(quadrant ? { quadrant } : {}) };
   const screens = view === "filters" ? await loadScreens(userId) : null;
   const featured = SCREENER_PRESETS.filter((preset) => preset.featured);
@@ -268,6 +269,7 @@ async function ScreenerTool({
           extra={extra}
           signedIn={signedIn}
           canAdd={canAdd}
+          favorites={favorites}
           queryText={queryText}
         />
       )}
@@ -507,6 +509,7 @@ function Results({
   extra,
   signedIn,
   canAdd,
+  favorites,
   queryText,
 }: {
   pageRows: ScreenerRow[];
@@ -521,6 +524,7 @@ function Results({
   extra: Record<string, string>;
   signedIn: boolean;
   canAdd: boolean;
+  favorites: Set<string>;
   queryText: string;
 }) {
   const query = screenerQuery(filters, extra);
@@ -593,7 +597,7 @@ function Results({
                     </td>
                   ))}
                   <td className="px-4 py-3">
-                    <FavoriteButton ticker={row.symbol} signedIn={signedIn} canAdd={canAdd} initialFavorite={false} />
+                    <FavoriteButton ticker={row.symbol} signedIn={signedIn} canAdd={canAdd} initialFavorite={favorites.has(row.symbol)} compact />
                   </td>
                 </tr>
               ))
@@ -721,6 +725,14 @@ function ScreenFields({ filters, sort, direction }: { filters: ScreenerFilters; 
       {SCREENER_NUMERIC_KEYS.map((key) => (typeof filters[key] === "number" ? <input key={key} type="hidden" name={key} value={filters[key] as number} /> : null))}
     </>
   );
+}
+
+async function favoriteTickers(userId: string | null, symbols: string[]) {
+  if (!userId || symbols.length === 0) return new Set<string>();
+  const supabase = await createSupabaseServer();
+  if (!supabase) return new Set<string>();
+  const { data } = await supabase.from("favorite_stocks").select("ticker").eq("user_id", userId).in("ticker", symbols);
+  return new Set((data ?? []).map((row) => String(row.ticker).toUpperCase()));
 }
 
 async function loadScreens(userId: string | null) {

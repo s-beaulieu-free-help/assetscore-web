@@ -40,7 +40,7 @@ export async function ScoreCard() {
       <ScoreCardFrame>
         <div className="px-5 py-10 sm:px-6">
           <p className="font-mono text-[11px] tracking-[0.16em] text-muted uppercase">NVDA</p>
-          <p className="mt-3 text-sm leading-6 text-muted">The live score could not be loaded.</p>
+          <p className="mt-3 text-sm leading-6 text-muted">The example score could not be loaded.</p>
         </div>
       </ScoreCardFrame>
     );
@@ -49,13 +49,7 @@ export async function ScoreCard() {
   return (
     <ScoreCardFrame>
       <div className="flex items-center justify-between gap-4 border-b border-line px-5 py-3.5 sm:px-6">
-        <div className="flex items-center gap-3">
-          <span className="size-1.5 rounded-full bg-accent-2" aria-hidden />
-          <p className="font-mono text-[11px] tracking-[0.16em] text-muted uppercase">
-            {stock.exchange}
-          </p>
-        </div>
-        <p className="font-mono text-[11px] tracking-[0.16em] text-accent-2 uppercase">Live</p>
+        <p className="font-mono text-[11px] tracking-[0.16em] text-muted uppercase">{stock.exchange}</p>
       </div>
 
       <div className="px-5 py-7 sm:px-6">
@@ -106,7 +100,7 @@ export async function ScoreCard() {
       <dl className="grid grid-cols-3 border-t border-line">
         {[
           ["Band", stock.band ?? "—"],
-          ["Pillars", "5"],
+          ["Pillars", String(stock.pillars.length)],
           ["Scale", "0–100"],
         ].map(([label, value]) => (
           <div key={label} className="px-4 py-3.5 text-center sm:px-5">

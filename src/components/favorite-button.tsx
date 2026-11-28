@@ -11,11 +11,13 @@ export function FavoriteButton({
   signedIn,
   initialFavorite,
   canAdd,
+  compact = false,
 }: {
   ticker: string;
   signedIn: boolean;
   initialFavorite: boolean;
   canAdd: boolean;
+  compact?: boolean;
 }) {
   const router = useRouter();
   const [favorite, setFavorite] = useState(initialFavorite);
@@ -56,7 +58,7 @@ export function FavoriteButton({
   }
 
   return (
-    <div className="mt-4">
+    <div className={compact ? "" : "mt-4"}>
       {signedIn && !canAdd && !favorite ? (
         <Link
           href="/pricing"
@@ -69,7 +71,7 @@ export function FavoriteButton({
           type="button"
           onClick={toggle}
           disabled={pending}
-          className="inline-flex h-11 items-center rounded-full border border-line px-5 text-sm font-medium text-foreground transition hover:bg-white/5 disabled:opacity-60"
+          className={`inline-flex items-center rounded-full border border-line font-medium text-foreground transition hover:bg-white/5 disabled:opacity-60 ${compact ? "h-9 px-3 text-xs" : "h-11 px-5 text-sm"}`}
         >
           {favorite ? "Remove favorite" : "Add favorite"}
         </button>

@@ -7,6 +7,7 @@ import {
   filtersFromSearch,
   loadScreenerDataset,
   pageScreener,
+  searchScreener,
   sortScreener,
   type ScreenerSort,
 } from "@/lib/screener";
@@ -25,7 +26,7 @@ export async function GET(request: Request) {
   const filters = filtersFromSearch(params, params.preset);
   const sort = SCREENER_SORTS.includes(params.sort as ScreenerSort) ? (params.sort as ScreenerSort) : "score";
   const direction = params.dir === "asc" ? "asc" : "desc";
-  const filtered = sortScreener(applyScreener(dataset.rows, filters, dataset.available), sort, direction);
+  const filtered = sortScreener(searchScreener(applyScreener(dataset.rows, filters, dataset.available), params.q ?? ""), sort, direction);
   const page = pageScreener(filtered, Number(params.page ?? "1"));
   return NextResponse.json({
     publishedAt: dataset.publishedAt,

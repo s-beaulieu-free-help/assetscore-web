@@ -459,13 +459,15 @@ export function sortScreener(rows: ScreenerRow[], sort: ScreenerSort, direction:
 }
 
 export function pageScreener(rows: ScreenerRow[], page: number) {
-  const safePage = Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
+  const pages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+  const requested = Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
+  const safePage = Math.min(pages, requested);
   const start = (safePage - 1) * PAGE_SIZE;
   return {
     page: safePage,
     pageSize: PAGE_SIZE,
     total: rows.length,
-    pages: Math.max(1, Math.ceil(rows.length / PAGE_SIZE)),
+    pages,
     rows: rows.slice(start, start + PAGE_SIZE),
   };
 }
