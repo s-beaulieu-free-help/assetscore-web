@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { recordConsentedEvent } from "@/lib/analytics";
 import { loadAccess } from "@/lib/billing/access";
+import { afterSignupPath } from "@/lib/guest-stock";
 import { safeAppPath } from "@/lib/safe-path";
 import { createSupabaseServer } from "@/lib/supabase/server";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const safeNext = safeAppPath(url.searchParams.get("next") || undefined, "/account");
+  const destination = url.searchParams.get("signup") === "1" ? afterSignupPath(safeNext) : safeNext;
   const supabase = await createSupabaseServer();
 
   if (supabase) {
@@ -28,5 +30,5 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.redirect(new URL(safeNext, url.origin));
+  return NextResponse.redirect(new URL(destination, url.origin));
 }

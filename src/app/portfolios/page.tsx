@@ -74,7 +74,7 @@ export default async function PortfoliosPage() {
             <Link href="/login" className="text-foreground hover:text-accent">
               log in
             </Link>
-            . You can still browse stock scores without an account.
+            . The first stock you open stays available without an account.
           </p>
         )}
         <PromotionSlot placement="portfolio" enabled={access.shouldDisplayAds} />

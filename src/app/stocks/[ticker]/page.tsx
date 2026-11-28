@@ -13,6 +13,7 @@ import { loadViewer } from "@/lib/viewer";
 
 type StockPageProps = {
   params: Promise<{ ticker: string }>;
+  searchParams: Promise<{ welcome?: string }>;
 };
 
 export async function generateMetadata({ params }: StockPageProps): Promise<Metadata> {
@@ -38,8 +39,9 @@ export async function generateMetadata({ params }: StockPageProps): Promise<Meta
   }
 }
 
-export default async function StockPage({ params }: StockPageProps) {
+export default async function StockPage({ params, searchParams }: StockPageProps) {
   const { ticker: raw } = await params;
+  const welcome = (await searchParams).welcome === "1";
   const ticker = parseTicker(raw);
   if (!ticker) notFound();
 
@@ -78,6 +80,7 @@ export default async function StockPage({ params }: StockPageProps) {
       scoreHistory={await historyForSymbolResolved(snapshot.symbol)}
       showAds={access.shouldDisplayAds}
       signedIn={Boolean(user)}
+      welcome={welcome && Boolean(user)}
     />
   );
 }

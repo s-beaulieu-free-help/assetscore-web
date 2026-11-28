@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+import { afterSignupPath, tickerFromStockPath } from "@/lib/guest-stock";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { rememberStaySignedIn } from "@/lib/supabase/stay-signed-in";
 
@@ -38,7 +39,7 @@ async function runAuth(setPending: (value: boolean) => void, setMessage: (value:
   }
 }
 
-export function LoginForm() {
+export function LoginForm({ nextPath = "/screener" }: { nextPath?: string }) {
   const router = useRouter();
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
@@ -56,7 +57,7 @@ export function LoginForm() {
         setMessage(authMessage(error.message));
         return;
       }
-      router.push("/screener");
+      router.push(nextPath);
       router.refresh();
     });
   }
@@ -108,21 +109,11 @@ export function RegisterForm({ nextPath = "/onboarding" }: { nextPath?: string }
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
-    const displayName = String(form.get("displayName") ?? "").trim();
     const email = String(form.get("email") ?? "").trim();
     const password = String(form.get("password") ?? "");
-    const confirm = String(form.get("confirm") ?? "");
 
-    if (displayName.length < 2 || displayName.length > 40) {
-      setMessage("Choose a display name between 2 and 40 characters.");
-      return;
-    }
     if (password.length < 8) {
       setMessage("Use a password of at least 8 characters.");
-      return;
-    }
-    if (password !== confirm) {
-      setMessage("The passwords do not match.");
       return;
     }
 
@@ -132,7 +123,7 @@ export function RegisterForm({ nextPath = "/onboarding" }: { nextPath?: string }
       const { data, error } = await createSupabaseBrowser().auth.signUp({
         email,
         password,
-        options: { data: { display_name: displayName }, emailRedirectTo: redirectTo },
+        options: { emailRedirectTo: redirectTo },
       });
       if (error) {
         setMessage(authMessage(error.message));
@@ -144,17 +135,22 @@ export function RegisterForm({ nextPath = "/onboarding" }: { nextPath?: string }
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ event: "registration_completed" }),
         });
-        window.location.assign(next);
+        window.location.assign(afterSignupPath(next));
         return;
       }
       setDone(true);
     });
   }
 
+  const returnTicker = tickerFromStockPath(nextPath);
+  const loginHref = nextPath === "/onboarding" ? "/login" : `/login?next=${encodeURIComponent(nextPath)}`;
+
   if (done) {
     return (
       <p className="mt-8 text-sm leading-6 text-muted">
-        Check your inbox and confirm the email address. The 30-day Pro trial starts after that confirmation, with no credit card and no automatic charge. Your display name is saved with the account.
+        Check your inbox and confirm the email address.
+        {returnTicker ? ` After you confirm, you'll come back to ${returnTicker}.` : " After you confirm, the account is ready to use."}{" "}
+        The 30-day Pro trial starts after that confirmation, with no credit card and no automatic charge. A display name can be added later in account settings.
       </p>
     );
   }
@@ -162,20 +158,12 @@ export function RegisterForm({ nextPath = "/onboarding" }: { nextPath?: string }
   return (
     <form onSubmit={onSubmit} className="mt-8 space-y-4">
       <label className="block text-sm text-muted">
-        Display name
-        <input name="displayName" autoComplete="nickname" required className={`${inputClass} mt-2`} />
-      </label>
-      <label className="block text-sm text-muted">
         Email
         <input name="email" type="email" autoComplete="email" required className={`${inputClass} mt-2`} />
       </label>
       <label className="block text-sm text-muted">
         Password
-        <input name="password" type="password" autoComplete="new-password" required className={`${inputClass} mt-2`} />
-      </label>
-      <label className="block text-sm text-muted">
-        Confirm password
-        <input name="confirm" type="password" autoComplete="new-password" required className={`${inputClass} mt-2`} />
+        <input name="password" type="password" autoComplete="new-password" required minLength={8} className={`${inputClass} mt-2`} />
       </label>
       <button
         type="submit"
@@ -189,7 +177,7 @@ export function RegisterForm({ nextPath = "/onboarding" }: { nextPath?: string }
       </p>
       <p className="text-sm text-muted">
         Already registered?{" "}
-        <Link href="/login" className="text-foreground hover:text-accent">
+        <Link href={loginHref} className="text-foreground hover:text-accent">
           Log in
         </Link>
       </p>

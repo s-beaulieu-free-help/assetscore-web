@@ -39,7 +39,7 @@ export const homeFaqs = [
   {
     question: "Can I use AssetScore without subscribing?",
     answer:
-      "Yes. You can open stock scores without an account. Creating an account is free. After you confirm your email, 30 days include unlimited stock evaluations, the Stock Screener, new portfolios, and stock comparisons. After that trial, the Free plan still lets you evaluate a limited number of stocks each month.",
+      "Yes. The first stock you open stays available without an account. Creating an account is free and opens the next company. After you confirm your email, 30 days include unlimited stock evaluations, the Stock Screener, new portfolios, and stock comparisons. After that trial, the Free plan still lets you evaluate a limited number of stocks each month.",
   },
 ];
 

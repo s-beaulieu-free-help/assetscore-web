@@ -36,7 +36,7 @@ export function Hero({ signedIn = false }: { signedIn?: boolean }) {
                 href="/register"
                 className="inline-flex h-11 items-center justify-center rounded-full bg-accent px-5 text-sm font-medium text-ink transition hover:brightness-110"
               >
-                Start Your Free 30-Day Trial
+                Create a free account
               </Link>
             )}
             <Link

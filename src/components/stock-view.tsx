@@ -42,12 +42,14 @@ export function StockView({
   scoreHistory = [],
   showAds = false,
   signedIn = false,
+  welcome = false,
 }: {
   stock: StockPageData;
   ranks?: Array<{ slug: string; name: string; rank: number }>;
   scoreHistory?: ScoreObservation[];
   showAds?: boolean;
   signedIn?: boolean;
+  welcome?: boolean;
 }) {
   const positive = stock.change >= 0;
   const pageUrl = `https://assetscore.net/stocks/${stock.ticker}`;
@@ -88,6 +90,21 @@ export function StockView({
             Stocks
           </p>
         </div>
+
+        {welcome ? (
+          <section className="mt-6 rounded-2xl border border-line bg-card px-6 py-6">
+            <h2 className="text-xl font-medium tracking-[-0.03em]">Your account is ready.</h2>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
+              Compare {stock.ticker} with another company, or add {stock.ticker} as a favorite to come back to it.
+            </p>
+            <Link
+              href={`/compare/${stock.ticker}`}
+              className="mt-5 inline-flex h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-ink transition hover:brightness-110"
+            >
+              Compare {stock.ticker}
+            </Link>
+          </section>
+        ) : null}
 
         <div className="mt-6 flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
           <div>
@@ -171,6 +188,7 @@ export function StockView({
           </div>
         </section>
 
+        {welcome ? null : (
         <section className="mt-4 rounded-2xl border border-line bg-card px-6 py-6">
           <h2 className="text-xl font-medium tracking-[-0.03em]">What to do next</h2>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
@@ -198,6 +216,7 @@ export function StockView({
             </Link>
           </div>
         </section>
+        )}
 
         <nav className="mt-4 rounded-2xl border border-line bg-card px-6 py-6" aria-label="Related research">
           <h2 className="text-xl font-medium tracking-[-0.03em]">Related research</h2>

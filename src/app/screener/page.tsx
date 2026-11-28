@@ -136,7 +136,6 @@ function Preview({
   available: Set<keyof ScreenerRow>;
   free: boolean;
 }) {
-  const preview = [...datasetRows].sort((left, right) => right.score - left.score).slice(0, 5);
   return (
     <section className="mt-8">
       <div className="grid gap-3 sm:grid-cols-2">
@@ -152,19 +151,8 @@ function Preview({
           );
         })}
       </div>
-      <h2 className="mt-8 text-lg font-medium">Highest AssetScores</h2>
-      <ul className="mt-3 divide-y divide-line rounded-2xl border border-line">
-        {preview.map((row) => (
-          <li key={row.symbol} className="flex items-center justify-between px-4 py-3 text-sm">
-            <span>
-              {row.symbol} <span className="text-muted">{row.name}</span>
-            </span>
-            <span className={`font-mono tabular-nums ${scoreTextClass(row.score)}`}>{row.score}</span>
-          </li>
-        ))}
-      </ul>
       <p className="mt-6 max-w-2xl text-sm leading-6 text-muted">
-        Discover companies using the full power of AssetScore Pro.{" "}
+        The company list is available with an account.{" "}
         {free
           ? `Your trial has ended. Pro is ${PRO_MONTHLY_PRICE.label}.`
           : `The 30-day trial includes the full screener, with no credit card and no automatic charge. Pro is ${PRO_MONTHLY_PRICE.label}.`}
@@ -174,8 +162,8 @@ function Preview({
           See AssetScore Pro
         </UpgradeLink>
       ) : (
-        <UpgradeLink href="/register" className="mt-4 inline-flex h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-ink">
-          Start Your Free 30-Day Trial
+        <UpgradeLink href="/register?next=/screener" className="mt-4 inline-flex h-11 items-center rounded-full bg-accent px-5 text-sm font-medium text-ink">
+          Create a free account
         </UpgradeLink>
       )}
     </section>
