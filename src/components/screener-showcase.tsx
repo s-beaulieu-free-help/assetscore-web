@@ -8,6 +8,7 @@ import {
   type ScreenerFilters,
   type ScreenerRow,
 } from "@/lib/screener";
+import { scoreTextClass } from "@/lib/score";
 import { formatMoney } from "@/lib/stocks";
 
 const EXAMPLE_PRESET = "high-quality";
@@ -164,11 +165,11 @@ export function ScreenerShowcase() {
                         <span className="mt-1 block text-muted">{row.name}</span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="font-mono tabular-nums">{row.score}</span>
+                        <span className={`font-mono tabular-nums ${scoreTextClass(row.score)}`}>{row.score}</span>
                         <span className="mt-1 block text-xs text-muted">{row.band}</span>
                       </td>
-                      <td className="px-4 py-3 font-mono tabular-nums">{row.quality ?? "—"}</td>
-                      <td className="px-4 py-3 font-mono tabular-nums">{row.health ?? "—"}</td>
+                      <td className={`px-4 py-3 font-mono tabular-nums ${row.quality == null ? "" : scoreTextClass(row.quality)}`}>{row.quality ?? "—"}</td>
+                      <td className={`px-4 py-3 font-mono tabular-nums ${row.health == null ? "" : scoreTextClass(row.health)}`}>{row.health ?? "—"}</td>
                       <td className="px-4 py-3 font-mono tabular-nums">{row.price == null ? "—" : formatMoney(row.price)}</td>
                     </tr>
                   ))

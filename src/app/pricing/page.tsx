@@ -25,7 +25,6 @@ export default async function PricingPage({
   const [{ user }, access, limit] = await Promise.all([loadViewer(), loadAccess(), freeEvaluationLimit()]);
   const comparison = [
     ["Stock evaluations", `${limit} per calendar month`, "Unlimited"],
-    ["Stock scores on the stock page", "Same score", "Same score"],
     ["Stock Screener", "Not included", "Included"],
     ["New portfolios", "Not included", "Included"],
     ["Stock comparisons", "Not included", "Included"],

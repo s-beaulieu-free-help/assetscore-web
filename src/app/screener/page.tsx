@@ -8,6 +8,7 @@ import { recordDailyCount } from "@/lib/analytics";
 import { loadAccess } from "@/lib/billing/access";
 import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
 import { MATRIX_SPLIT, QUADRANTS, discoverStocks, matrixPoints, quadrantFor, type QuadrantId } from "@/lib/screener-discovery";
+import { scoreTextClass } from "@/lib/score";
 import { loadScoreHistory } from "@/lib/score-history";
 import {
   FILTER_HELP,
@@ -157,7 +158,7 @@ function Preview({
             <span>
               {row.symbol} <span className="text-muted">{row.name}</span>
             </span>
-            <span className="font-mono tabular-nums">{row.score}</span>
+            <span className={`font-mono tabular-nums ${scoreTextClass(row.score)}`}>{row.score}</span>
           </li>
         ))}
       </ul>
@@ -615,16 +616,20 @@ function Results({
                     <span className="mt-1 block text-muted">{row.symbol}</span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="font-mono text-base tabular-nums">{row.score}</span>
+                    <span className={`font-mono text-base tabular-nums ${scoreTextClass(row.score)}`}>{row.score}</span>
                     <span className="mt-1 block text-xs text-muted">{row.band}</span>
                   </td>
-                  {columns.map((column) => (
-                    <td key={column} className="px-4 py-3 font-mono tabular-nums">
-                      {column === "indexes"
-                        ? row.indexes.map((item) => SCREENER_INDEXES.find((index) => index.id === item)?.name ?? item).join(", ")
-                        : formatColumn(row, column)}
-                    </td>
-                  ))}
+                  {columns.map((column) => {
+                    const scoreColumn = column === "value" || column === "growth" || column === "quality" || column === "health" || column === "momentum";
+                    const score = scoreColumn ? row[column] : null;
+                    return (
+                      <td key={column} className={`px-4 py-3 font-mono tabular-nums ${typeof score === "number" ? scoreTextClass(score) : ""}`}>
+                        {column === "indexes"
+                          ? row.indexes.map((item) => SCREENER_INDEXES.find((index) => index.id === item)?.name ?? item).join(", ")
+                          : formatColumn(row, column)}
+                      </td>
+                    );
+                  })}
                   <td className="px-4 py-3">
                     <FavoriteButton ticker={row.symbol} signedIn={signedIn} canAdd={canAdd} initialFavorite={favorites.has(row.symbol)} compact />
                   </td>
