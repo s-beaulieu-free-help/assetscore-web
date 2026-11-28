@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ScoreGauge } from "@/components/score-gauge";
 import type { StockPageData } from "@/lib/fmp";
-import { allocationTotal, weightedPortfolioScore } from "@/lib/portfolio-score";
+import { analyzePortfolio } from "@/lib/portfolio-quality";
 
 export type ExampleHolding = {
   ticker: string;
@@ -9,6 +9,8 @@ export type ExampleHolding = {
   score: number | null;
   band: string | null;
   allocation: number;
+  sector: string | null;
+  isEtf: boolean;
   pillars: { label: string; score: number | null }[];
 };
 
@@ -123,20 +125,99 @@ function CompareDemo({ left, right }: { left: StockPageData; right: StockPageDat
   );
 }
 
+export function PortfolioPreview({ holdings }: { holdings: ExampleHolding[] }) {
+  const analysis = analyzePortfolio(
+    holdings.map((holding) => ({
+      ticker: holding.ticker,
+      name: holding.name,
+      allocation: holding.allocation,
+      score: holding.score,
+      sector: holding.sector,
+      isEtf: holding.isEtf,
+      statementDate: null,
+      pillars: holding.pillars,
+    })),
+  );
+  const scores = [
+    ["Overall", analysis.overall.score, analysis.overall.band],
+    ["Company quality", analysis.company.score, analysis.company.status === "partial" ? "Partial coverage" : null],
+    ["Construction", analysis.construction.score, null],
+  ] as const;
+
+  return (
+    <section id="portfolio" className="scroll-mt-24 border-t border-line">
+      <div className="mx-auto w-full max-w-6xl px-6 py-20 lg:py-24">
+        <p className="font-mono text-[11px] tracking-[0.2em] text-muted uppercase">Portfolio analysis</p>
+        <h2 className="mt-4 max-w-xl text-[2rem] leading-[1.1] font-medium tracking-[-0.035em] sm:text-4xl">
+          See the bigger picture.
+        </h2>
+        <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
+          Company Quality is the allocation-weighted average of the same AssetScores used on each stock page. Portfolio
+          Construction looks at how those allocations are spread across companies and sectors. Overall combines the two,
+          60% company quality and 40% construction, only when both can be calculated. This example uses live scores for
+          a healthcare company, a consumer staple, an energy company, and an industrial, weighted 15%, 25%, 40%, and 20%.
+        </p>
+        <div className="mt-10 rounded-2xl border border-line bg-card p-5 sm:p-6">
+          <div className="grid gap-8 sm:grid-cols-3">
+            {scores.map(([label, score, note]) => (
+              <div key={label} className="flex flex-col items-center text-center">
+                {typeof score === "number" ? (
+                  <ScoreGauge score={score} size={132} id={`home-portfolio-${label}`} />
+                ) : (
+                  <p className="grid h-[132px] place-items-center text-sm text-muted">Unavailable</p>
+                )}
+                <p className="mt-3 text-sm font-medium">{label}</p>
+                {note ? <p className="mt-1 text-xs text-muted">{note}</p> : null}
+              </div>
+            ))}
+          </div>
+          <p className="mt-6 text-sm leading-6 text-muted">
+            {analysis.holdings} holdings · Allocation {analysis.allocationTotal.toFixed(0)}% · Score coverage{" "}
+            {analysis.company.coverage == null ? "—" : `${analysis.company.coverage.toFixed(0)}%`}
+            {analysis.construction.stock.largest
+              ? ` · Largest holding ${analysis.construction.stock.largest.ticker} ${analysis.construction.stock.largest.allocation.toFixed(0)}%`
+              : ""}
+          </p>
+          {analysis.overall.reason ? <p className="mt-3 text-sm leading-6 text-muted">{analysis.overall.reason}</p> : null}
+          <ul className="mt-4 divide-y divide-line border-t border-line">
+            {holdings.map((holding) => (
+              <li key={holding.ticker} className="flex flex-col gap-2 py-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <Link href={`/stocks/${holding.ticker}`} className="text-lg font-medium hover:text-accent">
+                    {holding.ticker}
+                  </Link>
+                  <p className="mt-1 text-sm text-muted">
+                    {holding.name}
+                    {holding.sector ? ` · ${holding.sector}` : ""}
+                  </p>
+                </div>
+                <div className="flex items-baseline gap-4">
+                  <p className="font-mono text-sm tabular-nums">
+                    {holding.score == null ? "Score unavailable" : `${holding.score} ${holding.band ?? ""}`.trim()}
+                  </p>
+                  <p className="font-mono text-sm tabular-nums">{holding.allocation.toFixed(0)}%</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <Link href="/register" className="mt-2 inline-flex text-sm text-foreground hover:text-accent">
+            Create a free account to build a portfolio
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export function ProductDemos({
   example,
   left,
   right,
-  holdings,
 }: {
   example: StockPageData | null;
   left: StockPageData | null;
   right: StockPageData | null;
-  holdings: ExampleHolding[];
 }) {
-  const weighted = weightedPortfolioScore(holdings);
-  const total = allocationTotal(holdings.map((holding) => holding.allocation));
-  const remaining = Math.max(0, Math.round((100 - total) * 10000) / 10000);
   return (
     <div>
       <section id="evaluate" className="scroll-mt-24 border-t border-line">
@@ -161,76 +242,6 @@ export function ProductDemos({
                 .
               </p>
             )}
-          </div>
-        </div>
-      </section>
-
-      <section id="portfolio" className="scroll-mt-24 border-t border-line">
-        <div className="mx-auto w-full max-w-6xl px-6 py-20 lg:py-24">
-          <p className="font-mono text-[11px] tracking-[0.2em] text-muted uppercase">Portfolio analysis</p>
-          <h2 className="mt-4 max-w-xl text-[2rem] leading-[1.1] font-medium tracking-[-0.035em] sm:text-4xl">
-            See the bigger picture.
-          </h2>
-          <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
-            Registered users add the stocks they own and give each one a percentage of the portfolio. The portfolio
-            score is the allocation-weighted average of those AssetScores. This example is four live scores, weighted
-            15%, 25%, 40%, and 20%: a healthcare company, a consumer staple, an energy company, and an industrial. Their
-            bands and pillar scores show how the same 0–100 scale treats a stronger business and a weaker cyclical one.
-          </p>
-          <div className="mt-10 rounded-2xl border border-line bg-card p-5 sm:p-6">
-            <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
-              {weighted.score == null ? (
-                <p className="font-mono text-sm text-muted">Score incomplete</p>
-              ) : (
-                <ScoreGauge score={weighted.score} size={148} id="home-portfolio" />
-              )}
-              <div>
-                <p className="font-mono text-[11px] tracking-[0.16em] text-muted uppercase">Portfolio score</p>
-                <h3 className="mt-3 text-2xl font-medium tracking-[-0.03em]">
-                  {weighted.score == null ? "Incomplete" : `${weighted.score} of 100`}
-                </h3>
-                <p className="mt-3 max-w-xl text-sm leading-6 text-muted">
-                  {weighted.reason ??
-                    "The score is the allocation-weighted average of each stock's AssetScore. It uses the same stock scores as the stock pages."}
-                </p>
-              </div>
-            </div>
-            <p className="mt-6 font-mono text-sm text-muted tabular-nums">
-              {holdings.length} stocks · Total allocation {total.toFixed(2)}% · Remaining {remaining.toFixed(2)}%
-            </p>
-            <ul className="mt-4 divide-y divide-line border-t border-line">
-              {holdings.map((holding) => (
-                <li key={holding.ticker} className="py-4">
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <Link href={`/stocks/${holding.ticker}`} className="text-lg font-medium hover:text-accent">
-                        {holding.ticker}
-                      </Link>
-                      <p className="mt-1 text-sm text-muted">{holding.name}</p>
-                    </div>
-                    <div className="flex items-baseline gap-4">
-                      <p className="font-mono text-sm tabular-nums">
-                        {holding.score == null ? "Score unavailable" : `${holding.score} ${holding.band ?? ""}`.trim()}
-                      </p>
-                      <p className="font-mono text-sm tabular-nums">{holding.allocation.toFixed(2)}%</p>
-                    </div>
-                  </div>
-                  {holding.pillars.length > 0 ? (
-                    <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-5">
-                      {holding.pillars.map((pillar) => (
-                        <div key={pillar.label}>
-                          <dt className="text-[11px] tracking-[0.14em] text-muted uppercase">{pillar.label}</dt>
-                          <dd className="mt-1 font-mono text-sm tabular-nums">{pillar.score ?? "—"}</dd>
-                        </div>
-                      ))}
-                    </dl>
-                  ) : null}
-                </li>
-              ))}
-            </ul>
-            <Link href="/register" className="mt-2 inline-flex text-sm text-foreground hover:text-accent">
-              Create a free account to build a portfolio
-            </Link>
           </div>
         </div>
       </section>

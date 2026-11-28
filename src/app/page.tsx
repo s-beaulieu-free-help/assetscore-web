@@ -5,7 +5,7 @@ import { Hero } from "@/components/hero";
 import { HomeCta } from "@/components/home-cta";
 import { HomeFaq, homeFaqs } from "@/components/home-faq";
 import { Pillars } from "@/components/pillars";
-import { ProductDemos, type ExampleHolding } from "@/components/product-demos";
+import { PortfolioPreview, ProductDemos, type ExampleHolding } from "@/components/product-demos";
 import { ScreenerShowcase } from "@/components/screener-showcase";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -41,6 +41,8 @@ function exampleHolding(stock: StockPageData | null, ticker: string, allocation:
     score: stock?.score ?? null,
     band: stock?.band ?? null,
     allocation,
+    sector: stock?.sector ?? null,
+    isEtf: stock?.isEtf ?? false,
     pillars: stock?.pillars.map((pillar) => ({ label: pillar.label, score: pillar.score })) ?? [],
   };
 }
@@ -94,12 +96,7 @@ export default async function Home() {
           </span>
         </p>
         <Hero signedIn={Boolean(user)} />
-        <TopRatedLists />
-        <ScreenerShowcase />
-        <ProductDemos
-          example={example}
-          left={apple}
-          right={microsoft}
+        <PortfolioPreview
           holdings={[
             exampleHolding(regeneron, "REGN", 15),
             exampleHolding(coke, "KO", 25),
@@ -107,6 +104,9 @@ export default async function Home() {
             exampleHolding(caterpillar, "CAT", 20),
           ]}
         />
+        <TopRatedLists />
+        <ScreenerShowcase />
+        <ProductDemos example={example} left={apple} right={microsoft} />
         <Pillars />
         <Trust />
         <Features />
