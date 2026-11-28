@@ -10,10 +10,7 @@ export function SiteFooter() {
             <BrandLogo className="size-8" />
             <span>
               <span className="block text-sm font-medium tracking-[-0.02em]">
-                <span className="text-accent" data-brand="1">
-                  AssetScore
-                </span>
-                .net
+                AssetScore.net
               </span>
               <span className="mt-1 block text-sm text-muted">
                 Score any investment in seconds.

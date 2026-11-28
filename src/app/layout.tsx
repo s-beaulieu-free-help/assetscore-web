@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import { AnalyticsConsent } from "@/components/analytics-consent";
-import { AssetScoreColor } from "@/components/asset-score-color";
 import { VisitBeacon } from "@/components/visit-beacon";
 import "./globals.css";
 
@@ -82,7 +81,6 @@ export default function RootLayout({
     >
       <body className="min-h-full bg-background text-foreground">
         {children}
-        <AssetScoreColor />
         <VisitBeacon />
         <AnalyticsConsent />
       </body>
