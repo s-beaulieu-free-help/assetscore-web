@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { Stars } from "@/components/stars";
 import { PRO_MONTHLY_PRICE } from "@/lib/billing/plans";
 import { reviewRejectionReason } from "@/lib/moderation";
+
+const REVIEW_TEXT_LIMIT = 1000;
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 
 export type ReviewItem = {
@@ -79,8 +81,8 @@ export function ReviewPanel({
       setMessage("Choose a rating from 1 to 5 stars.");
       return;
     }
-    if (text.length > 200) {
-      setMessage("The written review must be 200 characters or fewer.");
+    if (text.length > REVIEW_TEXT_LIMIT) {
+      setMessage(`The written review must be ${REVIEW_TEXT_LIMIT} characters or fewer.`);
       return;
     }
     const localReason = reviewRejectionReason(text);
@@ -182,7 +184,7 @@ export function ReviewPanel({
               <div className="mt-2">
                 <Stars value={review.rating} />
               </div>
-              {review.text ? <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">{review.text}</p> : null}
+              {review.text ? <p className="mt-3 max-w-2xl text-sm leading-6 break-words whitespace-pre-wrap text-muted">{review.text}</p> : null}
               {review.status !== "approved" ? (
                 <p className="mt-2 text-xs tracking-[0.12em] text-muted uppercase">{review.status}</p>
               ) : null}
@@ -210,13 +212,13 @@ export function ReviewPanel({
             </div>
             <textarea
               value={text}
-              onChange={(event) => setText(event.target.value.slice(0, 200))}
-              maxLength={200}
-              rows={4}
-              placeholder="Optional. Up to 200 characters."
+              onChange={(event) => setText(event.target.value.slice(0, REVIEW_TEXT_LIMIT))}
+              maxLength={REVIEW_TEXT_LIMIT}
+              rows={6}
+              placeholder={`Optional. Up to ${REVIEW_TEXT_LIMIT} characters.`}
               className="mt-4 w-full rounded-xl border border-line bg-white/[0.03] px-3 py-3 text-sm text-foreground outline-none placeholder:text-muted/70 focus:border-white/20"
             />
-            <p className="mt-2 text-xs text-muted">{text.length}/200</p>
+            <p className="mt-2 text-xs text-muted">{text.length}/{REVIEW_TEXT_LIMIT}</p>
             <div className="mt-4 flex flex-wrap gap-3">
               <button
                 type="button"
