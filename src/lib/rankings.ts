@@ -1,4 +1,5 @@
-import { HEADLINE_SCORE_SUMMARY } from "@/lib/score";
+import { headlineScore, HEADLINE_SCORE_SUMMARY } from "@/lib/score";
+import { loadScoreHistory } from "@/lib/score-history";
 import { loadScreenerDataset, SCREENER_INDEXES, type ScreenerIndexId, type ScreenerRow } from "@/lib/screener";
 
 export const RANKING_PAGES = [
@@ -93,6 +94,61 @@ export function rankedIndex(indexId: ScreenerIndexId) {
     .filter((row) => row.indexes.includes(indexId))
     .sort((left, right) => right.score - left.score || left.symbol.localeCompare(right.symbol));
   return { publishedAt: dataset.publishedAt, rows };
+}
+
+export type RankChange = { label: string; direction: "up" | "down" | "new"; title: string };
+
+export function rankChanges(indexId: ScreenerIndexId, current: Array<{ symbol: string }>) {
+  const ranked = rankedIndex(indexId);
+  const members = new Set(ranked.rows.map((row) => row.symbol));
+  const history = loadScoreHistory().filter((row) => members.has(row.symbol));
+  const publishedDay = ranked.publishedAt?.slice(0, 10) ?? null;
+  const previousDay = [...new Set(history.map((row) => row.asOf))]
+    .filter((day) => !publishedDay || day < publishedDay)
+    .sort()
+    .at(-1);
+  if (!previousDay || members.size === 0) return new Map<string, RankChange>();
+  const prior = new Map<string, (typeof history)[number]>();
+  for (const row of history) {
+    if (row.asOf !== previousDay) continue;
+    const existing = prior.get(row.symbol);
+    if (!existing || row.methodologyVersion > existing.methodologyVersion) prior.set(row.symbol, row);
+  }
+  if (prior.size < Math.ceil(members.size * 0.8)) return new Map<string, RankChange>();
+  const previousRank = new Map(
+    [...prior.values()]
+      .map((row) => ({
+        symbol: row.symbol,
+        score: headlineScore([row.value, row.growth, row.quality, row.health, row.momentum]) ?? row.score,
+      }))
+      .sort((left, right) => right.score - left.score || left.symbol.localeCompare(right.symbol))
+      .map((row, index) => [row.symbol, index + 1] as const),
+  );
+  const changes = new Map<string, RankChange>();
+  current.forEach((row, index) => {
+    const earlier = previousRank.get(row.symbol);
+    if (earlier == null) {
+      changes.set(row.symbol, { label: "New", direction: "new", title: "Not in the previous stored list." });
+      return;
+    }
+    const places = earlier - (index + 1);
+    if (places > 0) {
+      changes.set(row.symbol, {
+        label: `↑ ${places}`,
+        direction: "up",
+        title: `Rank is ${places} ${places === 1 ? "place" : "places"} higher than the previous stored list.`,
+      });
+    }
+    if (places < 0) {
+      const dropped = Math.abs(places);
+      changes.set(row.symbol, {
+        label: `↓ ${dropped}`,
+        direction: "down",
+        title: `Rank is ${dropped} ${dropped === 1 ? "place" : "places"} lower than the previous stored list.`,
+      });
+    }
+  });
+  return changes;
 }
 
 export function rankingSymbols() {

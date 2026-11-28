@@ -11,6 +11,7 @@ import { StockReviews } from "@/components/stock-reviews";
 import type { StockPageData } from "@/lib/fmp";
 import { PILLAR_COPY } from "@/lib/pillar-copy";
 import type { ScoreObservation } from "@/lib/score-history";
+import { scoreFillClass, scoreTextClass } from "@/lib/score";
 import { jsonLd } from "@/lib/seo";
 import { scoreStory } from "@/lib/score-story";
 import { formatChange, formatMoney } from "@/lib/stocks";
@@ -143,7 +144,7 @@ export function StockView({
             <h2 className="mt-3 text-3xl font-medium tracking-[-0.03em] sm:text-4xl">
               {stock.score == null ? "Not enough inputs for a score." : `${stock.score} of 100`}
             </h2>
-            {stock.band ? <p className="mt-2 text-lg text-foreground">{stock.band}</p> : null}
+            {stock.band ? <p className="score-band mt-2 text-lg text-foreground">{stock.band}</p> : null}
             <HowItsScored className="mt-4 max-w-xl" />
             <p className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm">
               {ranks.map((entry) => (
@@ -213,7 +214,7 @@ export function StockView({
             <article key={pillar.label} className="rounded-2xl border border-line bg-card p-5">
               <div className="flex items-baseline justify-between gap-3">
                 <h3 className="text-sm tracking-[-0.01em]">{pillar.label}</h3>
-                <span className="font-mono text-lg tabular-nums">{pillar.score ?? "—"}</span>
+                <span className={`font-mono text-lg tabular-nums ${pillar.score == null ? "text-muted" : scoreTextClass(pillar.score)}`}>{pillar.score ?? "—"}</span>
               </div>
               <div
                 className="mt-4 h-1 overflow-hidden rounded-full bg-white/8"
@@ -223,7 +224,7 @@ export function StockView({
                 aria-valuemax={pillar.score == null ? undefined : 100}
                 aria-valuenow={pillar.score ?? undefined}
               >
-                <div className="h-full rounded-full bg-accent" style={{ width: `${pillar.score ?? 0}%` }} />
+                <div className={`h-full rounded-full ${scoreFillClass(pillar.score)}`} style={{ width: `${pillar.score ?? 0}%` }} />
               </div>
               <p className="mt-3 text-xs leading-5 text-muted">{pillar.note}</p>
             </article>
@@ -290,7 +291,7 @@ export function StockView({
               <article key={pillar.label} className="rounded-2xl border border-line bg-card p-6">
                 <div className="flex items-baseline justify-between gap-4">
                   <h2 className="text-xl font-medium tracking-[-0.03em]">{pillar.label}</h2>
-                  <span className="font-mono text-lg tabular-nums">{pillar.score ?? "—"}</span>
+                  <span className={`font-mono text-lg tabular-nums ${pillar.score == null ? "text-muted" : scoreTextClass(pillar.score)}`}>{pillar.score ?? "—"}</span>
                 </div>
                 <p className="mt-3 text-sm leading-6 text-muted">{copy.measures}</p>
                 <p className="mt-3 text-sm leading-6 text-muted">{copy.matters}</p>

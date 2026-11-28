@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 
@@ -85,6 +86,17 @@ export function SearchWidget() {
         >
           Analyze
         </button>
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {["AAPL", "MSFT", "DELL"].map((symbol) => (
+          <Link
+            key={symbol}
+            href={`/stocks/${symbol}`}
+            className="rounded-full border border-line px-3 py-1 text-xs text-muted transition hover:border-accent hover:text-foreground"
+          >
+            {symbol}
+          </Link>
+        ))}
       </div>
       <p aria-live="polite" className="mt-3 min-h-5 text-[13px] leading-5 text-muted">
         {message || "US-listed tickers only."}

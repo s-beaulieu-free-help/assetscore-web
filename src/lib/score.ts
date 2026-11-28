@@ -120,6 +120,15 @@ export function scoreTextClass(score: number) {
   return "text-[#c47b3a]";
 }
 
+export function scoreFillClass(score: number | null) {
+  if (score == null) return "bg-white/15";
+  if (score >= 90) return "bg-accent-2";
+  if (score >= 80) return "bg-[#9adf6a]";
+  if (score >= 70) return "bg-accent";
+  if (score >= 60) return "bg-[#e2c15a]";
+  return "bg-[#c47b3a]";
+}
+
 function percent(value: number, digits = 1) {
   const scaled = value * 100;
   const sign = scaled > 0 ? "+" : "";

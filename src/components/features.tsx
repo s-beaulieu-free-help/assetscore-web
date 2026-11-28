@@ -1,5 +1,4 @@
 import { HowItsScored } from "@/components/how-its-scored";
-import { HEADLINE_SCORE_SUMMARY } from "@/lib/score";
 
 const features = [
   {
@@ -17,8 +16,7 @@ const features = [
   {
     title: "Transparent",
     line: "See exactly how the score is calculated",
-    detail:
-      `${HEADLINE_SCORE_SUMMARY} Open How it's scored for the figure behind each pillar.`,
+    detail: "Open How it's scored for the figure behind each pillar.",
   },
 ];
 

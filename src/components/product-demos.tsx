@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ScoreGauge } from "@/components/score-gauge";
 import type { StockPageData } from "@/lib/fmp";
 import { analyzePortfolio } from "@/lib/portfolio-quality";
-import { scoreTextClass } from "@/lib/score";
+import { scoreFillClass, scoreTextClass } from "@/lib/score";
 
 export type ExampleHolding = {
   ticker: string;
@@ -30,7 +30,7 @@ function PillarRow({ label, score }: { label: string; score: number | null }) {
         aria-valuemax={score == null ? undefined : 100}
         aria-valuenow={score ?? undefined}
       >
-        <div className="h-full rounded-full bg-accent" style={{ width: `${score ?? 0}%` }} />
+        <div className={`bar-fill h-full rounded-full ${scoreFillClass(score)}`} style={{ width: `${score ?? 0}%` }} />
       </div>
     </div>
   );

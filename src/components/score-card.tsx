@@ -2,13 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { ScoreGauge } from "@/components/score-gauge";
 import { buildStockPage, getFmpSnapshot, type StockPageData } from "@/lib/fmp";
-import { scoreTextClass } from "@/lib/score";
-
-function barClass(score: number) {
-  if (score >= 90) return "from-accent-2 to-accent";
-  if (score >= 80) return "from-[#9adf6a] to-accent";
-  return "from-[#e2c15a] to-accent";
-}
+import { scoreFillClass, scoreTextClass } from "@/lib/score";
 
 function ScoreCardFrame({ children }: { children: ReactNode }) {
   return (
@@ -61,7 +55,7 @@ export async function ScoreCard() {
             <p className="mt-1 text-sm text-muted">{stock.name}</p>
           </div>
           {stock.band ? (
-            <p className="rounded-full border border-line px-2.5 py-1 font-mono text-[10px] tracking-[0.14em] text-accent uppercase">
+            <p className={`score-band rounded-full border border-line px-2.5 py-1 font-mono text-[10px] tracking-[0.14em] uppercase ${scoreTextClass(stock.score)}`}>
               {stock.band}
             </p>
           ) : null}
@@ -87,7 +81,7 @@ export async function ScoreCard() {
                 aria-valuenow={pillar.score ?? undefined}
               >
                 <div
-                  className={`bar-fill h-full rounded-full bg-gradient-to-r ${barClass(pillar.score ?? 0)}`}
+                  className={`bar-fill h-full rounded-full ${scoreFillClass(pillar.score)}`}
                   style={{
                     width: `${pillar.score ?? 0}%`,
                     animationDelay: `${280 + index * 70}ms`,

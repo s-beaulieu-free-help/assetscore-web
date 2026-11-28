@@ -1,5 +1,4 @@
 import { HowItsScored } from "@/components/how-its-scored";
-import { HEADLINE_SCORE_SUMMARY } from "@/lib/score";
 
 const pillars = [
   {
@@ -38,7 +37,7 @@ export function Pillars() {
           Five ways to read a company.
         </h2>
         <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
-          {HEADLINE_SCORE_SUMMARY} The score explains the latest figures. It is not a recommendation to buy or sell.
+          Each pillar reads one part of the company. The score explains the latest figures. It is not a recommendation to buy or sell.
         </p>
         <HowItsScored className="mt-6 max-w-2xl" />
         <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-6">

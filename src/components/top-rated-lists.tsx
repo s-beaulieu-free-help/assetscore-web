@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { RANKING_PAGES, rankedIndex } from "@/lib/rankings";
-import { scoreTextClass } from "@/lib/score";
+import { RANKING_PAGES, rankChanges, rankedIndex } from "@/lib/rankings";
+import { scoreFillClass, scoreTextClass } from "@/lib/score";
 
 export function TopRatedLists() {
   const lists = RANKING_PAGES.map((page) => {
     const ranked = rankedIndex(page.indexId);
+    const changes = rankChanges(page.indexId, ranked.rows);
     return {
       id: page.slug,
       name: page.name,
@@ -17,6 +18,7 @@ export function TopRatedLists() {
         name: row.name,
         score: row.score,
         band: row.band,
+        change: changes.get(row.symbol) ?? null,
       })),
     };
   });
@@ -65,13 +67,22 @@ export function TopRatedLists() {
                         className="flex items-baseline justify-between gap-3 py-3 transition hover:text-accent"
                       >
                         <span className="min-w-0">
+                          <span className={`mr-2 inline-block size-1.5 rounded-full ${scoreFillClass(entry.score)}`} />
                           <span className="font-mono text-xs text-muted">{entry.rank}</span>
                           <span className="ml-3 font-medium">{entry.symbol}</span>
                           <span className="mt-1 block truncate text-sm text-muted">{entry.name}</span>
                         </span>
                         <span className="shrink-0 text-right">
                           <span className={`block font-mono text-sm tabular-nums ${scoreTextClass(entry.score)}`}>{entry.score}</span>
-                          <span className="block text-xs text-muted">{entry.band}</span>
+                          <span className={`block text-xs ${scoreTextClass(entry.score)}`}>{entry.band}</span>
+                          {entry.change ? (
+                            <span
+                              className={`mt-0.5 block font-mono text-[10px] tabular-nums ${entry.change.direction === "down" ? "text-[#c47b3a]" : entry.change.direction === "new" ? "text-accent" : "text-accent-2"}`}
+                              title={entry.change.title}
+                            >
+                              {entry.change.label}
+                            </span>
+                          ) : null}
                         </span>
                       </Link>
                     </li>

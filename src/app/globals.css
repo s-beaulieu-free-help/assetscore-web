@@ -90,6 +90,10 @@ body {
   animation: gauge-draw 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+.score-band {
+  animation: rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.85s both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -97,7 +101,8 @@ body {
 
   .rise,
   .bar-fill,
-  .gauge-arc {
+  .gauge-arc,
+  .score-band {
     animation: none;
   }
 }
