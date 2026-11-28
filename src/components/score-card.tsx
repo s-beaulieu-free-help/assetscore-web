@@ -18,8 +18,8 @@ function ScoreCardFrame({ children }: { children: ReactNode }) {
       style={{ animationDelay: "140ms" }}
     >
       <Link
-        href="/stocks/NVDA"
-        aria-label="Open the NVDA stock page"
+        href="/stocks/AAPL"
+        aria-label="Open the AAPL stock page"
         className="block text-inherit transition hover:bg-white/[0.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       >
         {children}
@@ -31,7 +31,7 @@ function ScoreCardFrame({ children }: { children: ReactNode }) {
 export async function ScoreCard() {
   let stock: StockPageData | null = null;
   try {
-    stock = buildStockPage(await getFmpSnapshot("NVDA"));
+    stock = buildStockPage(await getFmpSnapshot("AAPL"));
   } catch {
     stock = null;
   }
@@ -40,7 +40,7 @@ export async function ScoreCard() {
     return (
       <ScoreCardFrame>
         <div className="px-5 py-10 sm:px-6">
-          <p className="font-mono text-[11px] tracking-[0.16em] text-muted uppercase">NVDA</p>
+          <p className="font-mono text-[11px] tracking-[0.16em] text-muted uppercase">AAPL</p>
           <p className="mt-3 text-sm leading-6 text-muted">The example score could not be loaded.</p>
         </div>
       </ScoreCardFrame>
