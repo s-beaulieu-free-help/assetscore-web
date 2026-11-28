@@ -9,7 +9,7 @@ export function ScoreGauge({ score, size = 168, id }: ScoreGaugeProps) {
   const radius = (size - stroke) / 2;
   const circ = 2 * Math.PI * radius;
   const offset = circ * (1 - score / 100);
-  const gradientId = `score-gauge-${id ?? size}`;
+  const gradientId = `score-gauge-${String(id ?? size).replace(/[^A-Za-z0-9_-]/g, "-")}`;
 
   return (
     <div className="relative grid place-items-center" style={{ width: size, height: size }}>
